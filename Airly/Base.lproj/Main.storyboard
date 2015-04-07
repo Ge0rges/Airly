@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14D127a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="w52-UJ-ye6">
+    <dependencies>
+        <development version="6000" identifier="xcode"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Home VC-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController storyboardIdentifier="HomeVC" title="Home VC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
+                        <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jV-Xu-bUU">
+                                <rect key="frame" x="216" y="518" width="88" height="30"/>
+                                <state key="normal" title="Join Session">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="kZK-1q-Ba6" kind="push" id="4zg-G7-jgq"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEU-GK-6Ba">
+                                <rect key="frame" x="16" y="518" width="91" height="30"/>
+                                <state key="normal" title="Host Session">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <segue destination="IKt-m6-pCZ" kind="push" id="ctR-4K-Ab1"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="vEU-GK-6Ba" secondAttribute="bottom" constant="20" id="AKr-wC-iLB"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="DbS-l2-nWC"/>
+                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="EUl-gl-fdd"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="3jV-Xu-bUU" secondAttribute="bottom" constant="20" id="Wut-tD-da3"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="height" secondItem="3jV-Xu-bUU" secondAttribute="height" id="zTg-mT-y1R"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="zC8-Jg-yrB"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1155" y="340"/>
+        </scene>
+        <!--Host VC-->
+        <scene sceneID="7dq-Go-7pc">
+            <objects>
+                <viewController storyboardIdentifier="HostVC" title="Host VC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="IKt-m6-pCZ" customClass="HostViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="JAj-oQ-DSi"/>
+                        <viewControllerLayoutGuide type="bottom" id="lHr-gN-7Xa"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="5kJ-D9-OyW">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AAe-P7-Fvw">
+                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                                <items>
+                                    <navigationItem title="Host" id="J5j-ys-6M4">
+                                        <barButtonItem key="leftBarButtonItem" title="Done" style="done" id="ueg-bh-jMF">
+                                            <connections>
+                                                <action selector="dismissView:" destination="IKt-m6-pCZ" id="zfM-Tm-q7o"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="QJ9-mH-pCJ">
+                                <rect key="frame" x="0.0" y="64" width="320" height="290"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Song title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TEl-Yx-v4S">
+                                <rect key="frame" x="16" y="367" width="288" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Song artist" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UrD-fK-BZt">
+                                <rect key="frame" x="16" y="396" width="288" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpH-0U-U4h">
+                                <rect key="frame" x="0.0" y="431" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="7vv-7L-xCB"/>
+                                    <barButtonItem systemItem="rewind" id="36e-VX-tx1">
+                                        <connections>
+                                            <action selector="rewindButtonPressed:" destination="IKt-m6-pCZ" id="zXq-FU-AfL"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem width="18" style="plain" systemItem="fixedSpace" id="1f1-tU-YOb"/>
+                                    <barButtonItem tag="-1" title="►" id="iDR-hF-s4o">
+                                        <connections>
+                                            <action selector="playButtonPressed:" destination="IKt-m6-pCZ" id="LrT-yt-dhL"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem width="16" style="plain" systemItem="fixedSpace" id="rIv-Bx-W3k"/>
+                                    <barButtonItem systemItem="fastForward" id="sv4-1E-83L">
+                                        <connections>
+                                            <action selector="forwardButtonPressed:" destination="IKt-m6-pCZ" id="zCQ-XU-d44"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="dqr-L3-z9g"/>
+                                </items>
+                                <color key="barTintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </toolbar>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GvU-8e-WWQ">
+                                <rect key="frame" x="0.0" y="524" width="320" height="44"/>
+                                <items>
+                                    <barButtonItem title="Invite" id="fNO-Xh-psI">
+                                        <connections>
+                                            <action selector="invitePlayers:" destination="IKt-m6-pCZ" id="b1g-fD-oZ2"/>
+                                        </connections>
+                                    </barButtonItem>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="fQi-9v-9k6"/>
+                                    <barButtonItem style="plain" systemItem="add" id="CVF-Qo-hHS">
+                                        <connections>
+                                            <action selector="addSongs:" destination="IKt-m6-pCZ" id="mJC-tY-ZZl"/>
+                                        </connections>
+                                    </barButtonItem>
+                                </items>
+                            </toolbar>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="lXT-Hq-MfT"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="albumImageView" destination="QJ9-mH-pCJ" id="CUx-9h-xuS"/>
+                        <outlet property="songArtistLabel" destination="UrD-fK-BZt" id="jc7-dU-t60"/>
+                        <outlet property="songTitleLabel" destination="TEl-Yx-v4S" id="zMl-iA-pt1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wb3-lO-pbW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1628" y="37"/>
+        </scene>
+        <!--Player VC-->
+        <scene sceneID="e2a-Rv-54U">
+            <objects>
+                <viewController storyboardIdentifier="JoinVC" title="Player VC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="kZK-1q-Ba6" customClass="PlayerViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="5zD-bn-ZqM"/>
+                        <viewControllerLayoutGuide type="bottom" id="Ea0-Md-6KT"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="lMt-4j-deh">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <navigationBar contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aLq-YU-A5n">
+                                <rect key="frame" x="0.0" y="20" width="320" height="44"/>
+                                <items>
+                                    <navigationItem title="Player" id="Rpj-zp-lrX">
+                                        <barButtonItem key="leftBarButtonItem" title="Done" style="done" id="DAs-KB-kap">
+                                            <connections>
+                                                <action selector="dismissView:" destination="kZK-1q-Ba6" id="5Ue-l4-TFb"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="XC9-PG-QhB">
+                                <rect key="frame" x="0.0" y="64" width="320" height="290"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Song title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s9r-b3-soG">
+                                <rect key="frame" x="16" y="367" width="288" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="18"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Song artist" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hgP-UY-IGp">
+                                <rect key="frame" x="16" y="396" width="288" height="21"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="GMv-y9-b6C"/>
+                    <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <simulatedOrientationMetrics key="simulatedOrientationMetrics"/>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="albumImageView" destination="XC9-PG-QhB" id="3P9-e2-k1R"/>
+                        <outlet property="songArtistLabel" destination="hgP-UY-IGp" id="9kw-TC-5Qr"/>
+                        <outlet property="songTitleLabel" destination="s9r-b3-soG" id="hiG-NX-WqK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SvF-3A-4ur" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1628" y="666"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="fII-4N-9Ep">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="w52-UJ-ye6" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" id="yDh-Fh-QuT"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="v1D-GP-Io3">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="oCN-bh-mRI"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eeb-xf-ufp" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="623" y="340"/>
+        </scene>
+    </scenes>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
+</document>
