@@ -64,6 +64,8 @@
 -(void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
 
     //fix the path
+    if (!localURL) return;
+
     NSString *fixedUrl = [[localURL.absoluteString stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resource.caf"];
     
     //move the file to change its name to the right format

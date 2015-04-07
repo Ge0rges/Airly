@@ -145,15 +145,15 @@
     //create NSData to send
     NSData *dataToSend = [stringToEncode dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
     
+    //send data
+    [self.connectivityManger sendData:dataToSend toPeers:peers reliable:YES];
+    
     //play at the same time
     if (sender.tag == 1) {
         [self.playerManager play];
-    }  else if (sender.tag == -1) {
+    } else if (sender.tag == -1) {
         [self.playerManager pause];
     }
-    
-    [self.connectivityManger sendData:dataToSend toPeers:peers reliable:YES];
-    
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
@@ -188,7 +188,7 @@
     [self.playerManager loadMediaCollection:mediaItemCollection];
 
     //set the current playing item
-    [self.playerManager play];
+    [self.playerManager.musicController prepareToPlay];
     
     //send song
     [self sendSongToPeers];
