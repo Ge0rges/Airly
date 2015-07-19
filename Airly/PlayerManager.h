@@ -11,8 +11,8 @@
 
 @protocol PlayerManagerDelegate <NSObject>
 @optional
--(void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection;
--(void)mediaPickerDidCancel:(MPMediaPickerController *)mediaPicker;
+- (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection;
+- (void)mediaPickerDidCancel:(MPMediaPickerController *)mediaPicker;
 @end
 
 @interface PlayerManager : NSObject <MPMediaPickerControllerDelegate> {
@@ -23,17 +23,18 @@
 @property (strong, nonatomic) MPMusicPlayerController *musicController;
 @property (strong, nonatomic) MPMediaItemCollection *mediaCollection;
 
--(instancetype)init;
--(void)presentMediaPickerOnController:(UIViewController *)viewController;
--(void)loadMediaCollection:(MPMediaItemCollection *)mediaCollection;
--(MPMediaItem *)currentSong;
--(void)play;
--(void)pause;
--(void)nextSong;
--(void)previousSong;
--(MPMediaItem *)nextMediaItem;
--(NSString *)currentSongName;
--(NSString *)currentSongArtist;
--(UIImage *)currentSongAlbumArt;
--(float)currentSongProgress;
+- (instancetype)init;
+- (void)presentMediaPickerOnController:(UIViewController *)viewController;
+- (void)loadMediaCollection:(MPMediaItemCollection *)mediaCollection;
+- (MPMediaItem *)currentSong;
+- (void)play;
+- (void)pause;
+- (void)nextSong;
+- (void)previousSong;
+- (MPMediaItem *)nextMediaItem;
+- (NSString *)currentSongName;
+- (NSString *)currentSongArtist;
+- (UIImage *)currentSongAlbumArt;
+- (float)currentSongProgress;
+
 @end

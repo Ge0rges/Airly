@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14D127a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="w52-UJ-ye6">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14E17e" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="w52-UJ-ye6">
     <dependencies>
         <development version="6000" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -106,7 +106,7 @@
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem width="18" style="plain" systemItem="fixedSpace" id="1f1-tU-YOb"/>
-                                    <barButtonItem tag="-1" title="►" id="iDR-hF-s4o">
+                                    <barButtonItem tag="-1" systemItem="play" id="iDR-hF-s4o">
                                         <connections>
                                             <action selector="playButtonPressed:" destination="IKt-m6-pCZ" id="LrT-yt-dhL"/>
                                         </connections>

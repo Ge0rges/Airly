@@ -7,24 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
-#import "ConnectivityManager.h"
 
-@interface PlayerViewController : UIViewController <ConnectivityManagerDelegate> {
-    unsigned long receivingItemMaxCount;
-    
-    NSString *songTitle;
-    NSString *songArtist;
-    
-    UIImage *albumImage;
-}
-
-@property (nonatomic, strong) ConnectivityManager *connectivityManger;
-@property (nonatomic, strong) AVPlayer *player;
-
-@property (strong, nonatomic) NSMutableArray *localSongUrls;
-@property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
-@property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
-@property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
+@interface PlayerViewController : UIViewController
 
 @end

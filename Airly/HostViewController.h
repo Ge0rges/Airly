@@ -7,19 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
-#import "ConnectivityManager.h"
-#import "PlayerManager.h"
 
-@interface HostViewController : UIViewController <ConnectivityManagerDelegate, PlayerManagerDelegate> {
-    BOOL shouldNilOut;
-}
-
-@property (nonatomic, strong) ConnectivityManager *connectivityManger;
-@property (nonatomic, strong) PlayerManager *playerManager;
-
-@property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
-@property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
-@property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
+@interface HostViewController : UIViewController
 
 @end

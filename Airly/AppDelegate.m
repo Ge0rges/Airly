@@ -17,8 +17,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    //init connectivity manager
     self.connectivityManager = [ConnectivityManager new];
+  
     return YES;
 }
 
