@@ -43,59 +43,60 @@
   self.connectivityManger.delegate = self;
   
   //init localSong array
-  self.localSongUrls = [NSMutableArray new];
+  localSongUrls = [NSMutableArray new];
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-  
-  self.connectivityManger = nil;
-  self.player = nil;
-}
-
-- (void)didReceiveMemoryWarning {
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
 
 #pragma mark - ConnectivityManagerDelegate
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
-  //we received data from host either: 1 (play); -1(pause)
-  NSString *command = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  // We received data from host either
+  NSDictionary *dataDic = [NSKeyedUnarchiver unarchiveObjectWithData:data];
   
-  if ([command containsString:@"title"]) {
-    songTitle = [command stringByReplacingOccurrencesOfString:@"title " withString:@""];
+  if ([dataDic[@"command"] isEqualToString:@"title"]) {
+    songTitle = [dataDic[@"data"] stringByReplacingOccurrencesOfString:@"title " withString:@""];
     
-  } else if ([command containsString:@"artist"]) {
-    songArtist = [command stringByReplacingOccurrencesOfString:@"artist " withString:@""];
+  } else if ([dataDic[@"command"] isEqualToString:@"artist"]) {
+    songArtist = [dataDic[@"data"] stringByReplacingOccurrencesOfString:@"artist " withString:@""];
     
-  } else if ([command isEqualToString:@"1"]) {
-    [self.player play];
+  } else if ([dataDic[@"command"] isEqualToString:@"play"]) {
+    // Play at specified date
+    NSTimer *playTimer = [NSTimer timerWithTimeInterval:0 target:self.player selector:@selector(play) userInfo:nil repeats:NO];
+    playTimer.fireDate = (NSDate*)dataDic[@"data"];
     
-  } else if ([command isEqualToString:@"-1"]) {
-    [self.player pause];
+    [[NSRunLoop mainRunLoop] addTimer:playTimer forMode:@"NSDefaultRunLoopMode"];
     
-  } else {
-    albumImage = [UIImage imageWithData:data];
+    // Set the playback time
+    [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)dataDic[@"playTime"]).doubleValue, 1000000)];
+    
+  } else if ([dataDic[@"command"] isEqualToString:@"pause"]) {
+    // Pause at specified date
+    NSTimer *pauseTimer = [NSTimer timerWithTimeInterval:0 target:self.player selector:@selector(pause) userInfo:nil repeats:NO];
+    pauseTimer.fireDate = (NSDate*)dataDic[@"data"];
+    
+    [[NSRunLoop mainRunLoop] addTimer:pauseTimer forMode:@"NSDefaultRunLoopMode"];
+    
+  } else if ([dataDic[@"command"] isEqualToString:@"albumImage"]) {
+    albumImage = [UIImage imageWithData:dataDic[@"data"]];
   }
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
   
-  //fix the path
+  // We received the song file
   if (!localURL) return;
   
+  // Fix the path
   NSString *fixedUrl = [[localURL.absoluteString stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resource.caf"];
   
-  //move the file to change its name to the right format
+  // Move the file to change its name to the right format
   [[NSFileManager new] removeItemAtURL:[NSURL URLWithString:fixedUrl] error:nil];//delete current file
   [[NSFileManager new] moveItemAtURL:localURL toURL:[NSURL URLWithString:fixedUrl] error:nil];//move the file
   
-  //load the song
+  // Load the song
   dispatch_sync(dispatch_get_main_queue(), ^{
     self.player = [AVPlayer playerWithURL:[NSURL URLWithString:fixedUrl]];
     
-    //update UI
+    // Update UI
     [self updatePlayerUI];
   });
 }
@@ -103,8 +104,10 @@
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
   if (state == MCSessionStateConnecting) {
     NSLog(@"Connecting to %@", peerID.displayName);
+  
   } else if (state == MCSessionStateConnected) {
     NSLog(@"Connected to %@", peerID.displayName);
+  
   } else if (state == MCSessionStateNotConnected) {
     NSLog(@"Disconnected from %@", peerID.displayName);
   }

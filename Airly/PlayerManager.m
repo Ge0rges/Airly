@@ -18,6 +18,7 @@
     picker.delegate = self;
     picker.allowsPickingMultipleItems = YES;
     picker.showsCloudItems = NO;
+    picker.showsItemsWithProtectedAssets = NO;
   }
   
   return self;
@@ -56,9 +57,11 @@
 - (void)play {
   [self.musicController play];
 }
+
 - (void)pause {
   [self.musicController pause];
 }
+
 - (void)nextSong {
   [self.musicController skipToNextItem];
 }

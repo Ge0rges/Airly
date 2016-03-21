@@ -9,6 +9,15 @@
 
 #import "ConnectivityManager.h"
 
+#define serviceTypeKey @"Airly"
+
+@interface ConnectivityManager ()
+
+@property (nonatomic, strong) MCPeerID *peerID;
+@property (nonatomic, strong) MCAdvertiserAssistant *advertiser;
+
+@end
+
 @implementation ConnectivityManager
 
 @synthesize delegate;
@@ -25,40 +34,42 @@
 
 - (MCSession *)availableSession {
   
-  //Try and use an existing session (_sessions is a mutable array)
-  for (MCSession *session in _sessions)
-    if ([session.connectedPeers count]<kMCSessionMaximumNumberOfPeers)
+  //Try and use an existing session (self.sessions is a mutable array)
+  for (MCSession *session in self.sessions) {
+    if ([session.connectedPeers count] < kMCSessionMaximumNumberOfPeers) {
       return session;
+    }
+  }
   
   //Or create a new session
   MCSession *newSession = [self newSession];
-  [_sessions addObject:newSession];
+  [self.sessions addObject:newSession];
   
   return newSession;
 }
 
 - (MCSession *)newSession {
-  MCSession *session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionOptional];
+  MCSession *session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionNone];
   session.delegate = self;
   
   return session;
 }
 
 - (void)setupBrowser {
-  self.browser = [[MCBrowserViewController alloc] initWithServiceType:@serviceTypeKey session:[self availableSession]];
+  self.browser = [[MCBrowserViewController alloc] initWithServiceType:serviceTypeKey session:[self availableSession]];
   self.browser.delegate = self;
 }
 
 - (void)advertiser:(MCNearbyServiceAdvertiser *)advertiser didReceiveInvitationFromPeer:(MCPeerID *)peerID withContext:(NSData *)context invitationHandler:(void (^)(BOOL, MCSession *))invitationHandler {
   
   MCSession *session = [self availableSession];
-  invitationHandler(YES,session);
+  if (invitationHandler) invitationHandler(YES, session);
 }
 
 - (void)advertiseSelfInSessions:(BOOL)advertise {
-  for (MCSession *session in _sessions) {
+  for (MCSession *session in self.sessions) {
     if (advertise) {
-      self.advertiser = [[MCAdvertiserAssistant alloc] initWithServiceType:@serviceTypeKey discoveryInfo:nil session:session];
+      self.advertiser = [[MCAdvertiserAssistant alloc] initWithServiceType:serviceTypeKey discoveryInfo:nil session:session];
       self.advertiser.delegate = self;
       [self.advertiser start];
       
@@ -79,34 +90,29 @@
 #pragma mark - Sending & Receiving Data
 #pragma mark Sending
 - (void)sendData:(NSData *)data toPeers:(NSArray *)peerIDs reliable:(BOOL)reliable {
-  
   if ([peerIDs count] == 0) return;
   
   NSPredicate *peerNamePred = [NSPredicate predicateWithFormat:@"displayName in %@", [peerIDs valueForKey:@"displayName"]];
   
-  MCSessionSendDataMode mode = (reliable) ? MCSessionSendDataReliable : MCSessionSendDataUnreliable;
-  
-  //Need to match up peers to their session
-  for (MCSession *session in _sessions){
+  // Need to match up peers to their session
+  for (MCSession *session in self.sessions){
     
     NSArray *filteredPeerIDs = [session.connectedPeers filteredArrayUsingPredicate:peerNamePred];
     
-    [session sendData:data toPeers:filteredPeerIDs withMode:mode error:nil];
+    [session sendData:data toPeers:filteredPeerIDs withMode:(reliable) ? MCSessionSendDataReliable : MCSessionSendDataUnreliable error:nil];
   }
 }
 
 - (void)sendResourceAtURL:(NSURL *)assetUrl withName:(NSString *)name toPeers:(NSArray *)peerIDs withCompletionHandler:(void(^)(NSError *error))handler {
-  
-  if ([peerIDs count]==0) return;
+  if ([peerIDs count] == 0) return;
   
   NSPredicate *peerNamePred = [NSPredicate predicateWithFormat:@"displayName in %@", [peerIDs valueForKey:@"displayName"]];
   
   //Need to match up peers to their session
-  for (MCSession *session in _sessions){
+  for (MCSession *session in self.sessions){
     NSArray *filteredPeerIDs = [session.connectedPeers filteredArrayUsingPredicate:peerNamePred];
     
     for (MCPeerID *filteredPeerID in filteredPeerIDs) [session sendResourceAtURL:assetUrl withName:name toPeer:filteredPeerID withCompletionHandler:handler];
-    NSLog(@"sent resource");
   }
 }
 

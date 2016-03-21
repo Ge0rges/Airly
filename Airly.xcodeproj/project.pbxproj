@@ -87,9 +87,7 @@
 				DA5DFD921A92602500849BA1 /* Airly */,
 				DA5DFDAC1A92602600849BA1 /* AirlyTests */,
 				DA5DFD911A92602500849BA1 /* Products */,
-				DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */,
-				DA5DFDC41A94C67400849BA1 /* MediaPlayer.framework */,
-				DA5DFDBC1A9264C000849BA1 /* MultipeerConnectivity.framework */,
+				FBC0E61B1CA02ABD004A8852 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -175,6 +173,16 @@
 			name = Helpers;
 			sourceTree = "<group>";
 		};
+		FBC0E61B1CA02ABD004A8852 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */,
+				DA5DFDC41A94C67400849BA1 /* MediaPlayer.framework */,
+				DA5DFDBC1A9264C000849BA1 /* MultipeerConnectivity.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -219,7 +227,7 @@
 		DA5DFD881A92602500849BA1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Georges Kanaan";
 				TargetAttributes = {
 					DA5DFD8F1A92602500849BA1 = {
@@ -348,6 +356,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -411,8 +420,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Airly/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -423,8 +433,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = Airly/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -444,6 +455,7 @@
 				);
 				INFOPLIST_FILE = AirlyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Airly.app/Airly";
 			};
@@ -459,6 +471,7 @@
 				);
 				INFOPLIST_FILE = AirlyTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ge0rges.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Airly.app/Airly";
 			};
@@ -483,6 +496,7 @@
 				DA5DFDB51A92602600849BA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DA5DFDB61A92602600849BA1 /* Build configuration list for PBXNativeTarget "AirlyTests" */ = {
 			isa = XCConfigurationList;
@@ -491,6 +505,7 @@
 				DA5DFDB81A92602600849BA1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

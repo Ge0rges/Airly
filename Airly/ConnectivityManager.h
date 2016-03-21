@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <MultipeerConnectivity/MultipeerConnectivity.h>
 
-#define serviceTypeKey "Airly"
 @protocol ConnectivityManagerDelegate <NSObject>
 
 @optional
@@ -27,10 +26,8 @@
 @interface ConnectivityManager : NSObject <MCSessionDelegate, MCAdvertiserAssistantDelegate, MCBrowserViewControllerDelegate>
 
 @property (nonatomic, assign) id<ConnectivityManagerDelegate> delegate;
-@property (nonatomic, strong) MCPeerID *peerID;
-@property (nonatomic, strong) NSMutableArray *sessions;
 @property (nonatomic, strong) MCBrowserViewController *browser;
-@property (nonatomic, strong) MCAdvertiserAssistant *advertiser;
+@property (nonatomic, strong) NSMutableArray *sessions;
 
 - (instancetype)initWithPeerWithDisplayName:(NSString *)displayName;
 - (MCSession *)availableSession;
