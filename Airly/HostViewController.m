@@ -7,18 +7,29 @@
 //
 
 #import "HostViewController.h"
-#import <AVFoundation/AVFoundation.h>
+
+// Managers
 #import "ConnectivityManager.h"
 #import "PlayerManager.h"
+#import "HostPlayerManager.h"
 
-@interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate>
+@interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate> {
+  NSTimer *nowPlayingItemTimer;
+  BOOL presentedInitialWorkflow;
+}
 
-@property (nonatomic, strong) ConnectivityManager *connectivityManger;
+@property (nonatomic, strong) ConnectivityManager *connectivityManager;
 @property (nonatomic, strong) PlayerManager *playerManager;
 
 @property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
 @property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
+
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *pausePlaybackButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *playPlaybackButton;
+@property (strong, nonatomic) IBOutlet UIToolbar *playbackControlsToolbar;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *forwardPlaybackButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *rewindPlaybackButton;
 
 @end
 
@@ -29,78 +40,46 @@
   // Do any additional setup after loading the view.
   
   // Setup the Connectivity Manager
-  self.connectivityManger = [[ConnectivityManager alloc] initWithPeerWithDisplayName:[[UIDevice currentDevice] name]];
-  [self.connectivityManger setupBrowser];
-  self.connectivityManger.delegate = self;
+  self.connectivityManager = [ConnectivityManager sharedInstanceWithDisplayName:[[UIDevice currentDevice] name]];
+  [self.connectivityManager setupBrowser];
+  self.connectivityManager.delegate = self;
   
   // Setup the Player Manager
   self.playerManager = [PlayerManager new];
   self.playerManager.delegate = self;
   
-  NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-  
-  [notificationCenter addObserver:self selector:@selector(playingItemDidChange) name:MPMusicPlayerControllerNowPlayingItemDidChangeNotification object:nil];
-  
+  // Notifications when playing item changes (for syncing).
   [self.playerManager.musicController beginGeneratingPlaybackNotifications];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playingItemDidChange) name:MPMusicPlayerControllerNowPlayingItemDidChangeNotification object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  
+  // Guide the user on launch.
+  if (!presentedInitialWorkflow) {
+    presentedInitialWorkflow = YES;
+    
+    // Start the initial workflow by inviting players.
+    [self invitePlayers:nil];
+    
+    // Remove pause button (initial)
+    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+    
+    if ([toolbarButtons containsObject:self.pausePlaybackButton]) {
+      [toolbarButtons removeObject:self.pausePlaybackButton];
+    }
+    
+    self.pausePlaybackButton.enabled = NO;
+    self.playPlaybackButton.enabled = NO;
+    
+    [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+  }
 }
 
 #pragma mark - Connectivity
 - (IBAction)invitePlayers:(UIBarButtonItem *)sender {
-  [self presentViewController:self.connectivityManger.browser animated:YES completion:nil];
-}
-
-- (void)sendSongToPeers {
-  // Get all peers
-  NSMutableArray *peers = [NSMutableArray new];
-  for (MCSession *session in self.connectivityManger.sessions) {
-    for (MCPeerID *peerID in session.connectedPeers) {
-      [peers addObject:peerID];
-    }
-  }
-  
-  // Send the song metadata
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-    // Create the metadata
-    NSData *titleData = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"title", @"data": [self.playerManager currentSongName]}];
-    NSData *artistData = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"artist", @"data": [self.playerManager currentSongArtist]}];
-    NSData *imageData = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"albumImage", @"data": UIImagePNGRepresentation([self.playerManager currentSongAlbumArt])}];
-
-    [self.connectivityManger sendData:artistData toPeers:peers reliable:YES];
-    [self.connectivityManger sendData:imageData toPeers:peers reliable:YES];
-    [self.connectivityManger sendData:titleData toPeers:peers reliable:YES];
-    
-  });
-  
-  // Send the song file
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-    // Get resource path
-    NSString *tempPath = NSTemporaryDirectory();
-    NSURL *url = [[self.playerManager currentSong] valueForProperty:MPMediaItemPropertyAssetURL];
-    
-    AVURLAsset *songAsset = [AVURLAsset URLAssetWithURL:url options:nil];
-    AVAssetExportSession *exporter = [[AVAssetExportSession alloc] initWithAsset:songAsset presetName:AVAssetExportPresetPassthrough];
-    exporter.outputFileType = @"com.apple.coreaudio-format";
-    
-    NSString *fname = [@"play" stringByAppendingString:@".caf"];
-    NSString *exportFile = [tempPath stringByAppendingPathComponent:fname];
-    
-    exporter.outputURL = [NSURL fileURLWithPath:exportFile];
-    
-    [exporter exportAsynchronouslyWithCompletionHandler:^{
-      // Send resource file
-      [self.connectivityManger sendResourceAtURL:exporter.outputURL withName:[self.playerManager currentSongName] toPeers:peers withCompletionHandler:^(NSError *error) {
-        if (!error) {
-          // Enable the play button
-          UIBarButtonItem *btn = (UIBarButtonItem *)[self.view viewWithTag:1];
-          [btn setEnabled:YES];
-          
-          // Start playing
-          [self playButtonPressed:btn];
-        }
-        
-      }];
-    }];
-  });
+  [self presentViewController:self.connectivityManager.browser animated:YES completion:nil];
 }
 
 #pragma mark - Player
@@ -108,96 +87,138 @@
   [self.albumImageView setImage:[self.playerManager currentSongAlbumArt]];
   [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
   [self.songTitleLabel setText:[self.playerManager currentSongName]];
+  
+  if ([self.playerManager nextMediaItem]) {
+    self.forwardPlaybackButton.enabled = YES;
+  }
+  
+  if ([self.playerManager previousMediaItem]) {
+    self.rewindPlaybackButton.enabled = YES;
+  }
 }
 
 - (IBAction)addSongs:(UIBarButtonItem *)sender {
-  [self.playerManager presentMediaPickerOnController:self];
+  sender.enabled = NO;
+  [self.playerManager presentMediaPickerOnController:self completion:^{
+    sender.enabled = YES;
+  }];
+}
+
+- (IBAction)playbackToggleButtonPressed:(UIBarButtonItem *)sender {
+  // A playback toggle control button was pressed.
+  if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {
+    [self pausePlayback];
+  
+  } else  {
+    [self startPlayback];
+  }
 }
 
 - (IBAction)rewindButtonPressed:(id)sender {
-  // Go to previous song
-  [self playButtonPressed:(UIBarButtonItem *)[self.view viewWithTag:1]];
-  [self.playerManager previousSong];
-  
-  // Send song to peers
-  [self sendSongToPeers];
-  
-  // Update UI
-  [self updatePlayerUI];
-}
+  // Pause playback
+  [self pausePlayback];
 
-- (IBAction)playButtonPressed:(UIBarButtonItem *)sender {
-  NSString *command = @"";
+  // Go to previous song
+  [self.playerManager skipToPreviousSong];
   
-  if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {
-    command = @"play";
-    [sender setTitle:@"||"];
-    
-  }  else if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePaused) {
-    command = @"pause";
-    [sender setTitle:@"►"];
-  }
-  
-  // Get peers
-  NSMutableArray *peers = [NSMutableArray new];
-  for (MCSession *session in self.connectivityManger.sessions) {
-    for (MCPeerID *peerID in session.connectedPeers) {
-      [peers addObject:peerID];
-    }
-  }
-  
-  // Create NSData to send
-  NSDate *dateToPlay = [NSDate dateWithTimeIntervalSinceNow:1];
-  NSData *dataToSend = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": command,
-                                                                     @"data": dateToPlay,
-                                                                     @"playTime": [NSNumber numberWithDouble:[self.playerManager.musicController currentPlaybackTime]]
-                                                                     }
-                        ];
-  
-  // Send data
-  [self.connectivityManger sendData:dataToSend toPeers:peers reliable:YES];
-  
-  // Play at the same time
-  if ([command isEqualToString:@"play"]) {
-    // Play at specified date
-    NSTimer *playTimer = [NSTimer timerWithTimeInterval:0 target:self.playerManager selector:@selector(play) userInfo:nil repeats:NO];
-    playTimer.fireDate = dateToPlay;
-    
-    [[NSRunLoop mainRunLoop] addTimer:playTimer forMode:@"NSDefaultRunLoopMode"];
-    
-  } else if ([command isEqualToString:@"pause"]) {
-    // Pause at specified date
-    NSTimer *pauseTimer = [NSTimer timerWithTimeInterval:0 target:self.playerManager selector:@selector(pause) userInfo:nil repeats:NO];
-    pauseTimer.fireDate = dateToPlay;
-    
-    [[NSRunLoop mainRunLoop] addTimer:pauseTimer forMode:@"NSDefaultRunLoopMode"];
-    
-  }
+  // Notify that the playing item changed
+  [self playingItemDidChange];
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
-  // Go to next song and pause
-  [self playButtonPressed:(UIBarButtonItem *)[self.view viewWithTag:1]];
-
-  [self.playerManager nextSong];
+  // Pause playback
+  [self pausePlayback];
   
-  // Send song to peers
-  [self sendSongToPeers];
+  // Go to next song
+  [self.playerManager skipToNextSong];
   
-  // Update UI
-  [self updatePlayerUI];
+  // Notify that the playing item changed
+  [self playingItemDidChange];
 }
 
 - (void)playingItemDidChange {
-  // Pause song and update button
-  [self.playerManager pause];
-  [self playButtonPressed:(UIBarButtonItem *)[self.view viewWithTag:1]];
+  // Pause playback
+  [self pausePlayback];
+  
+  // Send song metadata to peers
+  [HostPlayerManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
+    // Update UI
+    [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
+  }];
   
   // Send song to peers
-  [self sendSongToPeers];
+  __block NSInteger peersReceived = 0;
+  [HostPlayerManager sendSong:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
+    // Increment the peers received number.
+    if (!error) {
+      peersReceived +=1;
+    }
+    
+    if (peersReceived == [self.connectivityManager allPeers].count) {
+      [self startPlayback];
+    }
+  }];
+}
+
+- (void)startPlayback {
+  // Hide play button. Show pause button.
+  NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
   
-  // Update UI
-  [self updatePlayerUI];
+  if (![toolbarButtons containsObject:self.pausePlaybackButton] && [toolbarButtons containsObject:self.playPlaybackButton]) {
+    [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.playPlaybackButton] withObject:self.pausePlaybackButton];
+  }
+  
+  self.playPlaybackButton.enabled = NO;
+  
+  [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+  self.pausePlaybackButton.enabled = YES;
+  
+  // Order a Synchronize play
+  NSDate *dateToPlay = [HostPlayerManager synchronisePlayWithCurrentTime:self.playerManager.musicController.currentPlaybackTime];
+  
+  // Play at specified date
+  NSTimer *playTimer = [NSTimer timerWithTimeInterval:0 target:self.playerManager selector:@selector(play) userInfo:nil repeats:NO];
+  playTimer.fireDate = dateToPlay;
+  
+  [[NSRunLoop mainRunLoop] addTimer:playTimer forMode:@"NSDefaultRunLoopMode"];
+  
+  // Set a timer to update at the end of the song
+  if ([self.playerManager nextMediaItem]) {
+    nowPlayingItemTimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(playingItemDidChange) userInfo:nil repeats:NO];
+    
+    NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
+    nowPlayingItemTimer.fireDate = [NSDate dateWithTimeInterval:timeLeft+0.2 sinceDate:dateToPlay];
+    
+    [[NSRunLoop mainRunLoop] addTimer:nowPlayingItemTimer forMode:@"NSDefaultRunLoopMode"];
+    
+  }
+}
+
+- (void)pausePlayback {
+  // Hide pause button. Show play button.
+  NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+  
+  if (![toolbarButtons containsObject:self.playPlaybackButton]) {
+    [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
+  }
+  
+  self.pausePlaybackButton.enabled = NO;
+  
+  [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+  self.playPlaybackButton.enabled = YES;
+
+  // Remove the timer.
+  [nowPlayingItemTimer invalidate];
+  nowPlayingItemTimer = nil;
+  
+  // Order a synchronized pause
+  NSDate *dateToPause = [HostPlayerManager synchronisePause];
+  
+  // Pause at specified date
+  NSTimer *pauseTimer = [NSTimer timerWithTimeInterval:0 target:self.playerManager selector:@selector(pause) userInfo:nil repeats:NO];
+  pauseTimer.fireDate = dateToPause;
+  
+  [[NSRunLoop mainRunLoop] addTimer:pauseTimer forMode:@"NSDefaultRunLoopMode"];
 }
 
 #pragma mark - ConnectivityManagerDelegate & PlayerManagerDelegate
@@ -206,7 +227,12 @@
 }
 
 - (void)browserViewControllerDidFinish:(MCBrowserViewController *)browserViewController {
-  [self dismissViewControllerAnimated:YES completion:nil];
+  [self dismissViewControllerAnimated:YES completion:^{
+    // If the user hasn't picked any songs yet, ask him too.
+    if (![self.playerManager currentMediaItem]) {
+      [self addSongs:nil];
+    }
+  }];
 }
 
 - (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection {
@@ -217,14 +243,8 @@
   // Load the media collection
   [self.playerManager loadMediaCollection:mediaItemCollection];
   
-  // Set the current playing item
-  [self.playerManager.musicController prepareToPlay];
-  
-  // Send song
-  [self sendSongToPeers];
-  
-  // Update UI
-  [self updatePlayerUI];
+  // Notify that the playing item changed
+  [self playingItemDidChange];
   
   // Dismiss the media picker
   [self dismissViewControllerAnimated:YES completion:nil];
@@ -240,13 +260,18 @@
       NSLog(@"Connecting to %@", peerID.displayName);
       break;
       
-    case MCSessionStateConnected:
+    case MCSessionStateConnected: {
       NSLog(@"Connected to %@", peerID.displayName);
       
-      if ([self.playerManager.musicController nowPlayingItem]) {
-        [self sendSongToPeers];
+      // Already loaded/playing a song, update only the new peer.
+      MPMediaItem *nowPlayingItem = [self.playerManager.musicController nowPlayingItem];
+      if (nowPlayingItem) {
+        #warning figure out a way to make the peer be in the same status.
+        [HostPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID] completion:nil];
+        [HostPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:nil];
       }
-      
+    }
+  
       break;
       
     case MCSessionStateNotConnected:
@@ -256,11 +281,6 @@
     default:
       break;
   }
-}
-
-#pragma mark - Navigation
-- (IBAction)dismissView:(id)sender {
-  [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 @end

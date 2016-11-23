@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Georges Kanaan. All rights reserved.
 //
 
+// Frameworks
 #import <Foundation/Foundation.h>
 #import <MultipeerConnectivity/MultipeerConnectivity.h>
 
@@ -29,10 +30,14 @@
 @property (nonatomic, strong) MCBrowserViewController *browser;
 @property (nonatomic, strong) NSMutableArray *sessions;
 
-- (instancetype)initWithPeerWithDisplayName:(NSString *)displayName;
++ (instancetype)sharedInstanceWithDisplayName:(NSString *)displayName;
+
 - (MCSession *)availableSession;
+- (NSMutableArray *)allPeers;
+
 - (void)setupBrowser;
 - (void)advertiseSelfInSessions:(BOOL)advertise;
+
 - (void)sendData:(NSData *)data toPeers:(NSArray *)peerIDs reliable:(BOOL)reliable;
 - (void)sendResourceAtURL:(NSURL *)assetUrl withName:(NSString *)name toPeers:(NSArray *)peerIDs withCompletionHandler:(void(^)(NSError*__strong))handler;
 @end

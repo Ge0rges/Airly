@@ -22,26 +22,29 @@
 
 @synthesize delegate;
 
-- (instancetype)initWithPeerWithDisplayName:(NSString *)displayName {
-  if (self = [super init]) {
-    self.peerID = [[MCPeerID alloc] initWithDisplayName:displayName];//set peer id
-    self.sessions = [NSMutableArray new];//init the array to store sessions
-    [self availableSession];//create a session
-  }
++ (instancetype)sharedInstanceWithDisplayName:(NSString *)displayName {
+  static ConnectivityManager *sharedManager = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedManager = [[self alloc] init];
+    
+    sharedManager.peerID = [[MCPeerID alloc] initWithDisplayName:displayName];
+    sharedManager.sessions = [NSMutableArray new];// Init the array to store sessions
+    [sharedManager availableSession];// Create a session
+  });
   
-  return self;
+  return sharedManager;
 }
 
 - (MCSession *)availableSession {
-  
-  //Try and use an existing session (self.sessions is a mutable array)
+  // Try and use an existing session (self.sessions is a mutable array)
   for (MCSession *session in self.sessions) {
     if ([session.connectedPeers count] < kMCSessionMaximumNumberOfPeers) {
       return session;
     }
   }
   
-  //Or create a new session
+  // Or create a new session
   MCSession *newSession = [self newSession];
   [self.sessions addObject:newSession];
   
@@ -78,6 +81,18 @@
       self.advertiser = nil;
     }
   }
+}
+
+- (NSMutableArray * _Nullable)allPeers {
+  // Get all peers
+  NSMutableArray *peers = [NSMutableArray new];
+  for (MCSession *session in self.sessions) {
+    for (MCPeerID *peerID in session.connectedPeers) {
+      [peers addObject:peerID];
+    }
+  }
+  
+  return peers;
 }
 
 #pragma mark - MCSessionDelegate

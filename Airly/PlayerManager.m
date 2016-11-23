@@ -10,24 +10,29 @@
 
 @implementation PlayerManager
 
-- (instancetype)init {
-  if (self = [super init]) {
++ (instancetype)sharedInstance {
+  static PlayerManager *sharedManager = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedManager = [[self alloc] init];
+    
     //create the picker
-    //create and configure MPMediaPickerController
-    picker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
-    picker.delegate = self;
-    picker.allowsPickingMultipleItems = YES;
-    picker.showsCloudItems = NO;
-    picker.showsItemsWithProtectedAssets = NO;
-  }
+    sharedManager.picker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
+    sharedManager.picker.delegate = sharedManager;
+    sharedManager.picker.allowsPickingMultipleItems = YES;
+    
+#warning test protected assets, cloud items.
+    sharedManager.picker.showsCloudItems = NO;
+    sharedManager.picker.showsItemsWithProtectedAssets = NO;
+  });
   
-  return self;
+  return sharedManager;
 }
 
 #pragma mark - MediaItemCollection Management
-- (void)presentMediaPickerOnController:(UIViewController *)viewController {
+- (void)presentMediaPickerOnController:(UIViewController *)viewController completion:(void (^ __nullable)(void))completion {
   //show MPMediaPickerControllerDelegate
-  [viewController presentViewController:picker animated:YES completion:nil];
+  [viewController presentViewController:self.picker animated:YES completion:completion];
 }
 
 - (void)loadMediaCollection:(MPMediaItemCollection *)mediaCollection {
@@ -62,19 +67,46 @@
   [self.musicController pause];
 }
 
-- (void)nextSong {
+- (void)skipToNextSong {
   [self.musicController skipToNextItem];
 }
-- (void)previousSong {
+- (void)skipToPreviousSong {
   [self.musicController skipToPreviousItem];
 }
 
+#pragma mark - Song Order
+- (MPMediaItem *)nextMediaItem {
+  if (self.mediaCollection.items.count-1 >= self.musicController.indexOfNowPlayingItem+1) {
+    return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem+1];
+  
+  } else {
+    return nil;
+  }
+}
+- (MPMediaItem *)currentMediaItem {
+  return self.musicController.nowPlayingItem;
+}
+
+- (MPMediaItem * _Nullable)previousMediaItem {
+  if (self.musicController.indexOfNowPlayingItem-1 > 0) {
+    return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem-1];
+    
+  } else {
+    return nil;
+  }
+}
+
 #pragma mark - Song Details
-- (MPMediaItem *)nextMediaItem {return [[self.mediaCollection items] objectAtIndex:self.musicController.indexOfNowPlayingItem+1];}
-- (MPMediaItem *)currentSong {return [self.musicController nowPlayingItem];}
-- (NSString *)currentSongName {return [[self.musicController nowPlayingItem] valueForProperty:MPMediaItemPropertyTitle];}
-- (NSString *)currentSongArtist {return [[self.musicController nowPlayingItem] valueForProperty:MPMediaItemPropertyArtist];}
-- (UIImage *)currentSongAlbumArt {return [[[self.musicController nowPlayingItem] valueForProperty:MPMediaItemPropertyArtwork]  imageWithSize:CGSizeMake(320, 290)];}
-- (float)currentSongProgress {return [self.musicController currentPlaybackTime];}
+- (NSString *)currentSongName {
+  return self.musicController.nowPlayingItem.title;
+}
+
+- (NSString *)currentSongArtist {
+  return self.musicController.nowPlayingItem.artist;
+}
+
+- (UIImage *)currentSongAlbumArt {
+  return [self.musicController.nowPlayingItem.artwork  imageWithSize:CGSizeMake(320, 290)];
+}
 
 @end
