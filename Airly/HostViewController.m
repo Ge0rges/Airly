@@ -45,7 +45,7 @@
   self.connectivityManager.delegate = self;
   
   // Setup the Player Manager
-  self.playerManager = [PlayerManager new];
+  self.playerManager = [PlayerManager sharedInstance];
   self.playerManager.delegate = self;
   
   // Notifications when playing item changes (for syncing).
@@ -117,12 +117,12 @@
 - (IBAction)rewindButtonPressed:(id)sender {
   // Pause playback
   [self pausePlayback];
-
-  // Go to previous song
-  [self.playerManager skipToPreviousSong];
+  
+  // Go to next song
+  [self.playerManager performSelector:@selector(skipToPreviousSong) withObject:nil afterDelay:0.2];
   
   // Notify that the playing item changed
-  [self playingItemDidChange];
+  [self performSelector:@selector(playingItemDidChange) withObject:nil afterDelay:0.22];
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
@@ -130,22 +130,33 @@
   [self pausePlayback];
   
   // Go to next song
-  [self.playerManager skipToNextSong];
+  [self.playerManager performSelector:@selector(skipToNextSong) withObject:nil afterDelay:0.2];
   
   // Notify that the playing item changed
-  [self playingItemDidChange];
+  [self performSelector:@selector(playingItemDidChange) withObject:nil afterDelay:0.22];
 }
 
 - (void)playingItemDidChange {
   // Pause playback
   [self pausePlayback];
   
-  // Send song metadata to peers
-  [HostPlayerManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
-    // Update UI
-    [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
-  }];
+  // Disable the play/pause buttons
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.playPlaybackButton.enabled = NO;
+    self.pausePlaybackButton.enabled = NO;
+  });
   
+  // Send song metadata to peers
+  NSDate *updateUIDate = [HostPlayerManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers]];
+  
+  // Update UI at specified date
+  NSTimer *updateUITimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(updatePlayerUI) userInfo:nil repeats:NO];
+  updateUITimer.fireDate = updateUIDate;
+  
+  [[NSRunLoop mainRunLoop] addTimer:updateUITimer forMode:@"NSDefaultRunLoopMode"];
+  
+
+#warning when skipping through songs, they will all be sent and played.
   // Send song to peers
   __block NSInteger peersReceived = 0;
   [HostPlayerManager sendSong:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
@@ -162,16 +173,18 @@
 
 - (void)startPlayback {
   // Hide play button. Show pause button.
-  NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
-  
-  if (![toolbarButtons containsObject:self.pausePlaybackButton] && [toolbarButtons containsObject:self.playPlaybackButton]) {
-    [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.playPlaybackButton] withObject:self.pausePlaybackButton];
-  }
-  
-  self.playPlaybackButton.enabled = NO;
-  
-  [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-  self.pausePlaybackButton.enabled = YES;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+    
+    if (![toolbarButtons containsObject:self.pausePlaybackButton] && [toolbarButtons containsObject:self.playPlaybackButton]) {
+      [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.playPlaybackButton] withObject:self.pausePlaybackButton];
+    }
+    
+    self.playPlaybackButton.enabled = NO;
+    
+    [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+    self.pausePlaybackButton.enabled = YES;
+  });
   
   // Order a Synchronize play
   NSDate *dateToPlay = [HostPlayerManager synchronisePlayWithCurrentTime:self.playerManager.musicController.currentPlaybackTime];
@@ -187,7 +200,7 @@
     nowPlayingItemTimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(playingItemDidChange) userInfo:nil repeats:NO];
     
     NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
-    nowPlayingItemTimer.fireDate = [NSDate dateWithTimeInterval:timeLeft+0.2 sinceDate:dateToPlay];
+    nowPlayingItemTimer.fireDate = [NSDate dateWithTimeInterval:timeLeft+0.01 sinceDate:dateToPlay];
     
     [[NSRunLoop mainRunLoop] addTimer:nowPlayingItemTimer forMode:@"NSDefaultRunLoopMode"];
     
@@ -196,17 +209,19 @@
 
 - (void)pausePlayback {
   // Hide pause button. Show play button.
-  NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+    
+    if (![toolbarButtons containsObject:self.playPlaybackButton]) {
+      [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
+    }
+    
+    self.pausePlaybackButton.enabled = NO;
+    
+    [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+    self.playPlaybackButton.enabled = YES;
+  });
   
-  if (![toolbarButtons containsObject:self.playPlaybackButton]) {
-    [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
-  }
-  
-  self.pausePlaybackButton.enabled = NO;
-  
-  [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-  self.playPlaybackButton.enabled = YES;
-
   // Remove the timer.
   [nowPlayingItemTimer invalidate];
   nowPlayingItemTimer = nil;
@@ -242,6 +257,7 @@
   
   // Load the media collection
   [self.playerManager loadMediaCollection:mediaItemCollection];
+  [self.playerManager.musicController prepareToPlay];
   
   // Notify that the playing item changed
   [self playingItemDidChange];
@@ -267,7 +283,7 @@
       MPMediaItem *nowPlayingItem = [self.playerManager.musicController nowPlayingItem];
       if (nowPlayingItem) {
         #warning figure out a way to make the peer be in the same status.
-        [HostPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID] completion:nil];
+        [HostPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID]];
         [HostPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:nil];
       }
     }

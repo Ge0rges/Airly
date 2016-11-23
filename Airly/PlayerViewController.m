@@ -56,17 +56,18 @@
   NSDictionary *dataDic = [NSKeyedUnarchiver unarchiveObjectWithData:data];
 
   if ([dataDic[@"command"] isEqualToString:@"metadata"]) {
-    NSLog(@"received metadata");
-
     songTitle = [dataDic[@"songName"] stringByReplacingOccurrencesOfString:@"title " withString:@""];
     songArtist = [dataDic[@"songArtist"] stringByReplacingOccurrencesOfString:@"artist " withString:@""];
     albumImage = [UIImage imageWithData:dataDic[@"songAlbumArt"]];
     
-    [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
-
-  } else if ([dataDic[@"command"] isEqualToString:@"play"]) {
-    NSLog(@"received command to play");
-        
+    // Update UI at specified date
+    NSTimer *updateUITimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(updatePlayerUI) userInfo:nil repeats:NO];
+    updateUITimer.fireDate = (NSDate*)dataDic[@"date"];
+    
+    [[NSRunLoop mainRunLoop] addTimer:updateUITimer forMode:@"NSDefaultRunLoopMode"];
+    
+  } else
+  if ([dataDic[@"command"] isEqualToString:@"play"]) {
     // Play at specified date
     NSTimer *playTimer = [NSTimer timerWithTimeInterval:0 target:self.player selector:@selector(play) userInfo:nil repeats:NO];
     playTimer.fireDate = (NSDate*)dataDic[@"date"];
@@ -76,9 +77,8 @@
     // Set the playback time
     [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)dataDic[@"commandTime"]).doubleValue, 1000000)];
     
-  } else if ([dataDic[@"command"] isEqualToString:@"pause"]) {
-    NSLog(@"received command to pause");
-
+  } else
+  if ([dataDic[@"command"] isEqualToString:@"pause"]) {
     // Pause at specified date
     NSTimer *pauseTimer = [NSTimer timerWithTimeInterval:0 target:self.player selector:@selector(pause) userInfo:nil repeats:NO];
     pauseTimer.fireDate = (NSDate*)dataDic[@"date"];

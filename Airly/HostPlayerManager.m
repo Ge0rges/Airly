@@ -19,23 +19,15 @@
 + (NSDate * _Nonnull)synchronisePlayWithCurrentTime:(NSTimeInterval)currentPlaybackTime {
   ConnectivityManager *connectivityManager = [ConnectivityManager sharedInstanceWithDisplayName:[[UIDevice currentDevice] name]];
   
-  // Get peers
-  NSMutableArray *peers = [NSMutableArray new];
-  for (MCSession *session in connectivityManager.sessions) {
-    for (MCPeerID *peerID in session.connectedPeers) {
-      [peers addObject:peerID];
-    }
-  }
-  
   // Create NSData to send
   NSDate *dateToPlay = [NSDate dateWithTimeIntervalSinceNow:0.5];
-  NSData *dataToSend = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
-                                                                     @"date": dateToPlay,
-                                                                     @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime]
-                                                                     }];
+  NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
+                                                                  @"date": dateToPlay,
+                                                                  @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime]
+                                                                  }];
   
   // Send data
-  [connectivityManager sendData:dataToSend toPeers:peers reliable:YES];
+  [connectivityManager sendData:payload toPeers:[connectivityManager allPeers] reliable:YES];
   
   return dateToPlay;
 }
@@ -45,25 +37,27 @@
   ConnectivityManager *connectivityManager = [ConnectivityManager sharedInstanceWithDisplayName:[[UIDevice currentDevice] name]];
   
   // Create NSData to send
-  NSDate *dateToPause = [NSDate dateWithTimeIntervalSinceNow:0.5];
-  NSData *dataToSend = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"pause",
-                                                                     @"date": dateToPause,
-                                                                     }];
+  NSDate *dateToPause = [NSDate dateWithTimeIntervalSinceNow:0.2];
+  NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"pause",
+                                                                  @"date": dateToPause,
+                                                                  }];
   
   // Send data
-  [connectivityManager sendData:dataToSend toPeers:[connectivityManager allPeers] reliable:YES];
+  [connectivityManager sendData:payload toPeers:[connectivityManager allPeers] reliable:YES];
   
   return dateToPause;
 }
 
 
-+ (void)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler {
++ (NSDate * _Nonnull)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers {
   ConnectivityManager *connectivityManager = [ConnectivityManager sharedInstanceWithDisplayName:[[UIDevice currentDevice] name]];
-
+  
   // Send the song metadata
+  NSDate *dateToUpdateUI = [NSDate dateWithTimeIntervalSinceNow:0.5];
   NSMutableDictionary *metadataDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"metadata",
                                                                                        @"songName": (mediaItem.title) ?: @"Unknown Song Name",
                                                                                        @"songArtist": (mediaItem.artist) ?: @"Unknown Artist",
+                                                                                       @"date": dateToUpdateUI
                                                                                        }];
   
   UIImage *albumArtwork = [mediaItem.artwork imageWithSize:CGSizeMake(320, 290)];
@@ -74,6 +68,8 @@
   NSData *metadata = [NSKeyedArchiver archivedDataWithRootObject:metadataDic];
   
   [connectivityManager sendData:metadata toPeers:peers reliable:YES];
+  
+  return dateToUpdateUI;
 }
 
 
@@ -93,7 +89,7 @@
   [[NSFileManager defaultManager] removeItemAtPath:exportFilePath error:nil];// Delete the last song
   
   exporter.outputURL = [NSURL fileURLWithPath:exportFilePath];
-    
+  
   [exporter exportAsynchronouslyWithCompletionHandler:^{
     // Send resource file
     [connectivityManager sendResourceAtURL:exporter.outputURL withName:mediaItem.title toPeers:peers withCompletionHandler:handler];

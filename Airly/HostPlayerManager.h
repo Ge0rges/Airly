@@ -15,7 +15,7 @@
 
 + (NSDate * _Nonnull)synchronisePlayWithCurrentTime:(NSTimeInterval)currentPlaybackTime;
 + (NSDate * _Nonnull)synchronisePause;
-+ (void)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
++ (NSDate * _Nonnull)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers;
 + (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
 
 

@@ -84,11 +84,13 @@
   }
 }
 - (MPMediaItem *)currentMediaItem {
+#warning loops around
   return self.musicController.nowPlayingItem;
 }
 
 - (MPMediaItem * _Nullable)previousMediaItem {
-  if (self.musicController.indexOfNowPlayingItem-1 > 0) {
+#warning doesnt work
+  if (self.musicController.indexOfNowPlayingItem > 1) {
     return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem-1];
     
   } else {
