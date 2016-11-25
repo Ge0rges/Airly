@@ -27,10 +27,11 @@
 @interface ConnectivityManager : NSObject <MCSessionDelegate, MCAdvertiserAssistantDelegate, MCBrowserViewControllerDelegate>
 
 @property (nonatomic, assign) id<ConnectivityManagerDelegate> delegate;
+@property (nonatomic, assign) id<ConnectivityManagerDelegate> networkPlayerManager;
 @property (nonatomic, strong) MCBrowserViewController *browser;
 @property (nonatomic, strong) NSMutableArray *sessions;
 
-+ (instancetype)sharedInstanceWithDisplayName:(NSString *)displayName;
++ (instancetype)sharedManagerWithDisplayName:(NSString *)displayName;
 
 - (MCSession *)availableSession;
 - (NSMutableArray *)allPeers;
@@ -40,4 +41,5 @@
 
 - (void)sendData:(NSData *)data toPeers:(NSArray *)peerIDs reliable:(BOOL)reliable;
 - (void)sendResourceAtURL:(NSURL *)assetUrl withName:(NSString *)name toPeers:(NSArray *)peerIDs withCompletionHandler:(void(^)(NSError*__strong))handler;
+
 @end

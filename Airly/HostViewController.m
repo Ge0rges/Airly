@@ -11,15 +11,15 @@
 // Managers
 #import "ConnectivityManager.h"
 #import "PlayerManager.h"
-#import "HostPlayerManager.h"
+#import "NetworkPlayerManager.h"
 
 @interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate> {
-  NSTimer *nowPlayingItemTimer;
   BOOL presentedInitialWorkflow;
 }
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
 @property (nonatomic, strong) PlayerManager *playerManager;
+@property (nonatomic, strong) NetworkPlayerManager *networkPlayerManager;
 
 @property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
 @property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
@@ -39,14 +39,19 @@
   [super viewDidLoad];
   // Do any additional setup after loading the view.
   
-  // Setup the Connectivity Manager
-  self.connectivityManager = [ConnectivityManager sharedInstanceWithDisplayName:[[UIDevice currentDevice] name]];
-  [self.connectivityManager setupBrowser];
-  self.connectivityManager.delegate = self;
-  
   // Setup the Player Manager
-  self.playerManager = [PlayerManager sharedInstance];
+  self.playerManager = [PlayerManager sharedManager];
   self.playerManager.delegate = self;
+  
+  // Setup NetworkPlayerManager
+  self.networkPlayerManager = [NetworkPlayerManager sharedManager];
+  
+  // Setup the Connectivity Manager
+  self.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
+  self.connectivityManager.delegate = self;
+  self.connectivityManager.networkPlayerManager = self.networkPlayerManager;
+  
+  [self.connectivityManager setupBrowser];
   
   // Notifications when playing item changes (for syncing).
   [self.playerManager.musicController beginGeneratingPlaybackNotifications];
@@ -147,19 +152,18 @@
   });
   
   // Send song metadata to peers
-  NSDate *updateUIDate = [HostPlayerManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers]];
+  uint64_t updateUITime = [self.networkPlayerManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers]];
   
   // Update UI at specified date
-  NSTimer *updateUITimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(updatePlayerUI) userInfo:nil repeats:NO];
-  updateUITimer.fireDate = updateUIDate;
-  
-  [[NSRunLoop mainRunLoop] addTimer:updateUITimer forMode:@"NSDefaultRunLoopMode"];
+  [self.networkPlayerManager atExactTime:updateUITime runBlock:^{
+    [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
+  }];
   
 
 #warning when skipping through songs, they will all be sent and played.
   // Send song to peers
   __block NSInteger peersReceived = 0;
-  [HostPlayerManager sendSong:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
+  [self.networkPlayerManager sendSong:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
     // Increment the peers received number.
     if (!error) {
       peersReceived +=1;
@@ -187,23 +191,17 @@
   });
   
   // Order a Synchronize play
-  NSDate *dateToPlay = [HostPlayerManager synchronisePlayWithCurrentTime:self.playerManager.musicController.currentPlaybackTime];
+  uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentTime:self.playerManager.musicController.currentPlaybackTime];
   
   // Play at specified date
-  NSTimer *playTimer = [NSTimer timerWithTimeInterval:0 target:self.playerManager selector:@selector(play) userInfo:nil repeats:NO];
-  playTimer.fireDate = dateToPlay;
-  
-  [[NSRunLoop mainRunLoop] addTimer:playTimer forMode:@"NSDefaultRunLoopMode"];
+  [self.networkPlayerManager atExactTime:timeToPlay runBlock:^{
+    [self.playerManager play];
+  }];
   
   // Set a timer to update at the end of the song
   if ([self.playerManager nextMediaItem]) {
-    nowPlayingItemTimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(playingItemDidChange) userInfo:nil repeats:NO];
-    
-    NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
-    nowPlayingItemTimer.fireDate = [NSDate dateWithTimeInterval:timeLeft+0.01 sinceDate:dateToPlay];
-    
-    [[NSRunLoop mainRunLoop] addTimer:nowPlayingItemTimer forMode:@"NSDefaultRunLoopMode"];
-    
+#warning implement
+    //NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
   }
 }
 
@@ -222,18 +220,13 @@
     self.playPlaybackButton.enabled = YES;
   });
   
-  // Remove the timer.
-  [nowPlayingItemTimer invalidate];
-  nowPlayingItemTimer = nil;
-  
   // Order a synchronized pause
-  NSDate *dateToPause = [HostPlayerManager synchronisePause];
+  uint64_t timeToPause = [self.networkPlayerManager synchronisePause];
   
   // Pause at specified date
-  NSTimer *pauseTimer = [NSTimer timerWithTimeInterval:0 target:self.playerManager selector:@selector(pause) userInfo:nil repeats:NO];
-  pauseTimer.fireDate = dateToPause;
-  
-  [[NSRunLoop mainRunLoop] addTimer:pauseTimer forMode:@"NSDefaultRunLoopMode"];
+  [self.networkPlayerManager atExactTime:timeToPause runBlock:^{
+    [self.playerManager pause];
+  }];
 }
 
 #pragma mark - ConnectivityManagerDelegate & PlayerManagerDelegate
@@ -283,8 +276,8 @@
       MPMediaItem *nowPlayingItem = [self.playerManager.musicController nowPlayingItem];
       if (nowPlayingItem) {
         #warning figure out a way to make the peer be in the same status.
-        [HostPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID]];
-        [HostPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:nil];
+        [self.networkPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID]];
+        [self.networkPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:nil];
       }
     }
   
@@ -298,5 +291,6 @@
       break;
   }
 }
+
 
 @end

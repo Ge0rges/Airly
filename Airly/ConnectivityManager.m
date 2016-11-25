@@ -22,7 +22,7 @@
 
 @synthesize delegate;
 
-+ (instancetype)sharedInstanceWithDisplayName:(NSString *)displayName {
++ (instancetype)sharedManagerWithDisplayName:(NSString *)displayName {
   static ConnectivityManager *sharedManager = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -97,7 +97,9 @@
 
 #pragma mark - MCSessionDelegate
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
-  [self.delegate session:session peer:peerID didChangeState:state];
+  if ([self.delegate respondsToSelector:@selector(session:peer:didChangeState:)]) {
+    [self.delegate session:session peer:peerID didChangeState:state];
+  }
 }
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {}
@@ -114,7 +116,7 @@
     
     NSArray *filteredPeerIDs = [session.connectedPeers filteredArrayUsingPredicate:peerNamePred];
     
-    [session sendData:data toPeers:filteredPeerIDs withMode:(reliable) ? MCSessionSendDataReliable : MCSessionSendDataUnreliable error:nil];
+    BOOL success = [session sendData:data toPeers:filteredPeerIDs withMode:(reliable) ? MCSessionSendDataReliable : MCSessionSendDataUnreliable error:nil];
   }
 }
 
@@ -139,11 +141,19 @@
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
-  [self.delegate session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
+  if ([self.delegate respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
+    [self.delegate session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
+  }
 }
 
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
-  [self.delegate session:session didReceiveData:data fromPeer:peerID];
+  if ([self.delegate respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
+    [self.delegate session:session didReceiveData:data fromPeer:peerID];
+  }
+  
+  if ([self.networkPlayerManager respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
+    [self.networkPlayerManager session:session didReceiveData:data fromPeer:peerID];
+  }
 }
 
 #pragma mark - MCBrowserViewControllerDelegate
@@ -157,6 +167,5 @@
     [self.delegate browserViewControllerDidFinish:browserViewController];
   }
 }
-
 
 @end

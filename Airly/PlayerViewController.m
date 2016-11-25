@@ -7,8 +7,13 @@
 //
 
 #import "PlayerViewController.h"
+
+// Frameworks
 #import <AVFoundation/AVFoundation.h>
+
+// Managers
 #import "ConnectivityManager.h"
+#import "NetworkPlayerManager.h"
 
 @interface PlayerViewController () <ConnectivityManagerDelegate> {
   unsigned long receivingItemMaxCount;
@@ -19,13 +24,13 @@
   UIImage *albumImage;
 }
 
-@property (nonatomic, strong) ConnectivityManager *connectivityManger;
-@property (nonatomic, strong) AVPlayer *player;
+@property (strong, nonatomic) ConnectivityManager *connectivityManger;
+@property (strong, nonatomic) NetworkPlayerManager *networkPlayerManager;
+@property (strong, nonatomic) AVPlayer *player;
 
 @property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
 @property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
-
 
 @end
 
@@ -35,10 +40,13 @@
   [super viewDidLoad];
   // Do any additional setup after loading the view.
   
-  //setup the connectivity manager
-  self.connectivityManger = [ConnectivityManager sharedInstanceWithDisplayName:[[UIDevice currentDevice] name]];
+  // Setup the connectivity manager
+  self.connectivityManger = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
   [self.connectivityManger advertiseSelfInSessions:YES];
   self.connectivityManger.delegate = self;
+  
+  // Setup the Network Player Manager
+  self.networkPlayerManager = [NetworkPlayerManager sharedManager];
   
   // Setup the player
   self.player = [AVPlayer new];
@@ -53,47 +61,39 @@
 #pragma mark - ConnectivityManagerDelegate
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
   // We received data from host either
-  NSDictionary *dataDic = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+  NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:data];
 
-  if ([dataDic[@"command"] isEqualToString:@"metadata"]) {
-    songTitle = [dataDic[@"songName"] stringByReplacingOccurrencesOfString:@"title " withString:@""];
-    songArtist = [dataDic[@"songArtist"] stringByReplacingOccurrencesOfString:@"artist " withString:@""];
-    albumImage = [UIImage imageWithData:dataDic[@"songAlbumArt"]];
+  if ([payload[@"command"] isEqualToString:@"metadata"]) {
+    songTitle = [payload[@"songName"] stringByReplacingOccurrencesOfString:@"title " withString:@""];
+    songArtist = [payload[@"songArtist"] stringByReplacingOccurrencesOfString:@"artist " withString:@""];
+    albumImage = [UIImage imageWithData:payload[@"songAlbumArt"]];
     
     // Update UI at specified date
-    NSTimer *updateUITimer = [NSTimer timerWithTimeInterval:0 target:self selector:@selector(updatePlayerUI) userInfo:nil repeats:NO];
-    updateUITimer.fireDate = (NSDate*)dataDic[@"date"];
+    [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+      [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
+    }];
     
-    [[NSRunLoop mainRunLoop] addTimer:updateUITimer forMode:@"NSDefaultRunLoopMode"];
-    
-  } else
-  if ([dataDic[@"command"] isEqualToString:@"play"]) {
+  } else if ([payload[@"command"] isEqualToString:@"play"]) {
     // Play at specified date
-    NSTimer *playTimer = [NSTimer timerWithTimeInterval:0 target:self.player selector:@selector(play) userInfo:nil repeats:NO];
-    playTimer.fireDate = (NSDate*)dataDic[@"date"];
-    
-    [[NSRunLoop mainRunLoop] addTimer:playTimer forMode:@"NSDefaultRunLoopMode"];
+    [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+      [self.player play];
+    }];
     
     // Set the playback time
-    [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)dataDic[@"commandTime"]).doubleValue, 1000000)];
+    [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000000)];
+
     
-  } else
-  if ([dataDic[@"command"] isEqualToString:@"pause"]) {
+  } else if ([payload[@"command"] isEqualToString:@"pause"]) {
     // Pause at specified date
-    NSTimer *pauseTimer = [NSTimer timerWithTimeInterval:0 target:self.player selector:@selector(pause) userInfo:nil repeats:NO];
-    pauseTimer.fireDate = (NSDate*)dataDic[@"date"];
-    
-    [[NSRunLoop mainRunLoop] addTimer:pauseTimer forMode:@"NSDefaultRunLoopMode"];
-    
+    [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+      [self.player pause];
+    }];
   }
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
-  
   // If there is no local URL, then this is not a song.
-  if (localURL) {
-    NSLog(@"got a song: %@", resourceName);
-    
+  if (localURL) {    
     // Fix the path
     NSString *fixedPath = [[localURL.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resourc.caf"];
     NSURL *fixedURL = [NSURL fileURLWithPath:fixedPath isDirectory:NO];
@@ -114,6 +114,8 @@
   
   } else if (state == MCSessionStateConnected) {
     NSLog(@"Connected to %@", peerID.displayName);
+    
+    [self.networkPlayerManager calculateTimeOffsetWithHost];
 
   } else if (state == MCSessionStateNotConnected) {
     NSLog(@"Disconnected from %@", peerID.displayName);

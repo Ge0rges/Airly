@@ -20,7 +20,7 @@
 		DA5DFDC51A94C67400849BA1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5DFDC41A94C67400849BA1 /* MediaPlayer.framework */; };
 		DA5DFDCB1A95AAA200849BA1 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5DFDCA1A95AAA200849BA1 /* PlayerViewController.m */; };
 		DA5DFDCD1A95F95500849BA1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */; };
-		FB181CBC1DE61590000BCFA4 /* HostPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB181CBB1DE61590000BCFA4 /* HostPlayerManager.m */; };
+		FB181CBC1DE61590000BCFA4 /* NetworkPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB181CBB1DE61590000BCFA4 /* NetworkPlayerManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,8 +45,8 @@
 		DA5DFDC91A95AAA200849BA1 /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
 		DA5DFDCA1A95AAA200849BA1 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
 		DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		FB181CBA1DE61590000BCFA4 /* HostPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HostPlayerManager.h; sourceTree = "<group>"; };
-		FB181CBB1DE61590000BCFA4 /* HostPlayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HostPlayerManager.m; sourceTree = "<group>"; };
+		FB181CBA1DE61590000BCFA4 /* NetworkPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkPlayerManager.h; sourceTree = "<group>"; };
+		FB181CBB1DE61590000BCFA4 /* NetworkPlayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkPlayerManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,7 +122,7 @@
 			children = (
 				DA5DFDC71A94C69100849BA1 /* ConnectivityManager */,
 				DA5DFDC61A94C68600849BA1 /* Player Manager */,
-				FB181CBD1DE61594000BCFA4 /* HostPlayerManager */,
+				FB181CBD1DE61594000BCFA4 /* NetworkPlayerManager */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -169,13 +169,13 @@
 			name = Controllers;
 			sourceTree = "<group>";
 		};
-		FB181CBD1DE61594000BCFA4 /* HostPlayerManager */ = {
+		FB181CBD1DE61594000BCFA4 /* NetworkPlayerManager */ = {
 			isa = PBXGroup;
 			children = (
-				FB181CBA1DE61590000BCFA4 /* HostPlayerManager.h */,
-				FB181CBB1DE61590000BCFA4 /* HostPlayerManager.m */,
+				FB181CBA1DE61590000BCFA4 /* NetworkPlayerManager.h */,
+				FB181CBB1DE61590000BCFA4 /* NetworkPlayerManager.m */,
 			);
-			name = HostPlayerManager;
+			name = NetworkPlayerManager;
 			sourceTree = "<group>";
 		};
 		FBC0E61B1CA02ABD004A8852 /* Frameworks */ = {
@@ -268,7 +268,7 @@
 				DA5DFD9C1A92602500849BA1 /* ViewController.m in Sources */,
 				DA5DFDC01A93C4B700849BA1 /* HostViewController.m in Sources */,
 				DA5DFDC31A94C66500849BA1 /* PlayerManager.m in Sources */,
-				FB181CBC1DE61590000BCFA4 /* HostPlayerManager.m in Sources */,
+				FB181CBC1DE61590000BCFA4 /* NetworkPlayerManager.m in Sources */,
 				DA5DFD991A92602500849BA1 /* AppDelegate.m in Sources */,
 				DA5DFDBB1A92624B00849BA1 /* ConnectivityManager.m in Sources */,
 				DA5DFD961A92602500849BA1 /* main.m in Sources */,

@@ -10,7 +10,7 @@
 
 @implementation PlayerManager
 
-+ (instancetype)sharedInstance {
++ (instancetype)sharedManager {
   static PlayerManager *sharedManager = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{

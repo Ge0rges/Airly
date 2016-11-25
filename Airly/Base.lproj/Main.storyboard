@@ -25,11 +25,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jV-Xu-bUU">
-                                <rect key="frame" x="192" y="64" width="188" height="603"/>
+                                <rect key="frame" x="190" y="64" width="190" height="603"/>
                                 <color key="backgroundColor" red="0.89385302833866531" green="0.90522441348114313" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="188" id="88l-jc-nP4"/>
-                                </constraints>
                                 <state key="normal" title="Join Session">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 </state>
@@ -38,7 +35,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEU-GK-6Ba">
-                                <rect key="frame" x="0.0" y="64" width="192" height="603"/>
+                                <rect key="frame" x="0.0" y="64" width="190" height="603"/>
                                 <color key="backgroundColor" red="1" green="0.90049187592750002" blue="0.90288234944334289" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal" title="Host Session">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -51,6 +48,7 @@
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="baseline" secondItem="3jV-Xu-bUU" secondAttribute="firstBaseline" id="2vK-bG-QK8"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="width" secondItem="3jV-Xu-bUU" secondAttribute="width" id="INq-UW-Fd6"/>
                             <constraint firstAttribute="trailingMargin" secondItem="3jV-Xu-bUU" secondAttribute="trailing" constant="-21" id="agt-Pf-zKP"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="d0n-m4-8uw"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="top" secondItem="3jV-Xu-bUU" secondAttribute="top" id="g93-6p-wI7"/>

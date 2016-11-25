@@ -23,7 +23,7 @@
 @property (strong, nonatomic) MPMediaItemCollection * _Nullable mediaCollection;
 @property (strong, nonatomic) MPMediaPickerController * _Nullable picker;
 
-+ (instancetype _Nonnull)sharedInstance;
++ (instancetype _Nonnull)sharedManager;
 
 - (void)presentMediaPickerOnController:(UIViewController * _Nonnull)viewController completion:(void (^ _Nullable)(void))completion;
 - (void)loadMediaCollection:(MPMediaItemCollection * _Nonnull)mediaCollection;
