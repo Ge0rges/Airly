@@ -116,7 +116,7 @@
     
     NSArray *filteredPeerIDs = [session.connectedPeers filteredArrayUsingPredicate:peerNamePred];
     
-    BOOL success = [session sendData:data toPeers:filteredPeerIDs withMode:(reliable) ? MCSessionSendDataReliable : MCSessionSendDataUnreliable error:nil];
+    [session sendData:data toPeers:filteredPeerIDs withMode:(reliable) ? MCSessionSendDataReliable : MCSessionSendDataUnreliable error:nil];
   }
 }
 

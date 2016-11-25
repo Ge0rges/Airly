@@ -15,6 +15,7 @@
 
 @interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate> {
   BOOL presentedInitialWorkflow;
+  uint64_t endSongTime;
 }
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
@@ -160,16 +161,16 @@
   }];
   
 
-#warning when skipping through songs, they will all be sent and played.
   // Send song to peers
   __block NSInteger peersReceived = 0;
-  [self.networkPlayerManager sendSong:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
+  __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
+  [self.networkPlayerManager sendSong:currentMediaItem toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
     // Increment the peers received number.
     if (!error) {
       peersReceived +=1;
     }
     
-    if (peersReceived == [self.connectivityManager allPeers].count) {
+    if (peersReceived == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
       [self startPlayback];
     }
   }];
@@ -191,7 +192,7 @@
   });
   
   // Order a Synchronize play
-  uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentTime:self.playerManager.musicController.currentPlaybackTime];
+  uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime];
   
   // Play at specified date
   [self.networkPlayerManager atExactTime:timeToPlay runBlock:^{
@@ -200,8 +201,16 @@
   
   // Set a timer to update at the end of the song
   if ([self.playerManager nextMediaItem]) {
-#warning implement
-    //NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
+    NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
+    
+    endSongTime = [self.networkPlayerManager currentTime] + timeLeft*1000000000;// Seconds to Nanoseconds
+    
+    [self.networkPlayerManager atExactTime:endSongTime runBlock:^{
+      if (llabs((int64_t)([self.networkPlayerManager currentTime] - endSongTime)) <= 10) {// Make sure the endSongTime is still valid
+        [self playingItemDidChange];// Manually notify the player of the song change.
+      }
+    }];
+    
   }
 }
 
@@ -275,12 +284,19 @@
       // Already loaded/playing a song, update only the new peer.
       MPMediaItem *nowPlayingItem = [self.playerManager.musicController nowPlayingItem];
       if (nowPlayingItem) {
-        #warning figure out a way to make the peer be in the same status.
         [self.networkPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID]];
-        [self.networkPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:nil];
+        
+        __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
+        [self.networkPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:^(NSError * _Nullable error) {
+          if ([currentMediaItem isEqual:[self.playerManager currentMediaItem]] && self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {
+#warning this should be calculated (offset between host and peer.)
+            // Play at current playback time + the time of the delay (1 second) + the time for the message to be received. (hardcoded)
+            //[self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime + 1.2];
+          }
+        }];
       }
     }
-  
+      
       break;
       
     case MCSessionStateNotConnected:

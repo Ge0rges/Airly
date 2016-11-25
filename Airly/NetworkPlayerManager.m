@@ -15,6 +15,8 @@
 @interface NetworkPlayerManager () {
   uint64_t hostTimeOffset;
   uint64_t tempHostTimeOffset;
+  BOOL secondPing;
+  BOOL calibrated;
   
 }
 
@@ -31,16 +33,18 @@
     sharedManager = [[self alloc] init];
     sharedManager.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
     sharedManager->tempHostTimeOffset = 0;
+    sharedManager->secondPing = NO;
+    sharedManager->calibrated = NO;
   });
   
   return sharedManager;
 }
 
 #pragma mark - Player
-- (uint64_t)synchronisePlayWithCurrentTime:(NSTimeInterval)currentPlaybackTime {
+- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime {
   
   // Create NSData to send
-  uint64_t timeToPlay = [self getCurrentTime] + 1000000000;// Add 1 second1
+  uint64_t timeToPlay = [self currentTime] + 1000000000;// Add 1 second1
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPlay],
                                                                   @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime]
@@ -54,7 +58,7 @@
 
 - (uint64_t)synchronisePause {
   // Create NSData to send
-  uint64_t timeToPause = [self getCurrentTime] + 1000000000;// Add 1 second
+  uint64_t timeToPause = [self currentTime] + 1000000000;// Add 1 second
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"pause",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPause],
                                                                   }];
@@ -67,7 +71,7 @@
 
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers {
   // Send the song metadata
-  uint64_t timeToUpdateUI = [self getCurrentTime] + 1000000000;// Add 1 second
+  uint64_t timeToUpdateUI = [self currentTime] + 1000000000;// Add 1 second
   NSMutableDictionary *metadataDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"metadata",
                                                                                        @"songName": (mediaItem.title) ?: @"Unknown Song Name",
                                                                                        @"songArtist": (mediaItem.artist) ?: @"Unknown Artist",
@@ -112,11 +116,10 @@
 
 - (void)calculateTimeOffsetWithHost {
   hostTimeOffset = 0;
-  
   self.connectivityManager.networkPlayerManager = self;// Needed for reply.
   
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                      @"timeSent": [NSNumber numberWithUnsignedLongLong:[self getCurrentTime]]
+                                                                                      @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
                                                                                       }];
   
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
@@ -124,7 +127,7 @@
   [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];// Speakers are only connected to the host.
 }
 
-- (uint64_t)getCurrentTime {
+- (uint64_t)currentTime {
   uint64_t baseTime = mach_absolute_time();
   // Convert from ticks to nanoseconds:
   static mach_timebase_info_data_t s_timebase_info;
@@ -144,10 +147,12 @@
   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
   dispatch_source_set_event_handler(timer, ^{
     dispatch_source_cancel(timer); // one shot timer
-    while ((int64_t)(val - [self getCurrentTime]) > 200) {
+    uint64_t currentTime = [self currentTime];
+    while ((int64_t)(val - currentTime) > 1) {//while ((int64_t)(val - [self getCurrentTime]) > 1) {
       [NSThread sleepForTimeInterval:0];
+      currentTime = [self currentTime];
     }
-    NSLog(@"Launched at CurrentTime: %lli", [self getCurrentTime]);
+    NSLog(@"Launched at exact block with difference: %lli", (int64_t)(val - currentTime));
     block();
   });
   // Now, we employ a dirty trick:
@@ -156,7 +161,7 @@
   // that we wanted. This takes us from an accuracy of ~1ms to an accuracy of ~0.01ms, i.e. two orders
   // of magnitude improvement. However, of course the downside is that this will block the main thread
   // for 1.3ms.
-  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, val - [self getCurrentTime] - 1300000);
+  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, val - [self currentTime] - 1300000);
   dispatch_source_set_timer(timer, at_time, DISPATCH_TIME_FOREVER /*one shot*/, 0 /* minimal leeway */);
   dispatch_resume(timer);
 }
@@ -168,7 +173,7 @@
   // This is done on the peer with which we are calculating the offset (Host).
   if ([payload[@"command"] isEqualToString:@"syncPing"]) {
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
-                                                                                        @"timeReceived": [NSNumber numberWithUnsignedLongLong:[self getCurrentTime]],
+                                                                                        @"timeReceived": [NSNumber numberWithUnsignedLongLong:[self currentTime]],
                                                                                         @"timeSent": payload[@"timeSent"]
                                                                                         }];
     
@@ -178,26 +183,25 @@
     
     
     // This is done on the person who callled calculateTimeOffsetWithHost (Player).
-  } else if ([payload[@"command"] isEqualToString:@"syncPong"]) {
-    if (tempHostTimeOffset != 0) {
-      hostTimeOffset = (([self getCurrentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
+  } else if ([payload[@"command"] isEqualToString:@"syncPong"] && !calibrated) {
+    if (secondPing) {
+      hostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
       // Check that two calculated offsets don't differ by much, do the average.
-      NSLog(@"Difference between offsets: %lli", llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)));
-
-      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 500) {// Error margin
+      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 10000) {// Error margin in nano seconds
         // Offsets are above error margin, restart process.
-        tempHostTimeOffset = 0;
+        secondPing = NO;
         [self calculateTimeOffsetWithHost];
-      
+        
       } else {
         // Offsets meet the acceptable error margin.
-        NSLog(@"Offsets are acceptable: %lli", hostTimeOffset);
-        tempHostTimeOffset = 0;// Reset for next time. Not really necessary.
+        secondPing = NO; // Reset for next ping
+        calibrated = YES; // No calibrating twice.
       }
       
     } else {
-      tempHostTimeOffset = (([self getCurrentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
+      secondPing = YES;
+      tempHostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
       
       [self calculateTimeOffsetWithHost];// We do the average of the two.
     }
