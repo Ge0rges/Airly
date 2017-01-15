@@ -8,6 +8,13 @@
 
 #import "ViewController.h"
 
+// Frameworks
+#import <AVFoundation/AVFoundation.h>
+
+// Managers
+#import "ConnectivityManager.h"
+#import "PlayerManager.h"
+
 @interface ViewController ()
 
 @end
@@ -19,9 +26,18 @@
   // Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void)didReceiveMemoryWarning {
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  
+  // Stop advertising
+  ConnectivityManager *connectivityManger = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
+  [connectivityManger advertiseSelfInSessions:NO];
+  
+  // Stop all music
+  AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+  [audioSession setActive:YES error:nil];
+  
+  [[PlayerManager sharedManager].musicController stop];
 }
 
 @end

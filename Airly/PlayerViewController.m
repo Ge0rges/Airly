@@ -21,6 +21,8 @@
   NSString *songTitle;
   NSString *songArtist;
   
+  NSTimer *offsetCalculationTimer;
+  
   UIImage *albumImage;
 }
 
@@ -110,15 +112,27 @@
 
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
   if (state == MCSessionStateConnecting) {
-    NSLog(@"Connecting to %@", peerID.displayName);
-  
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.songTitleLabel setText:[NSString stringWithFormat:@"Connecting to %@", peerID.displayName]];
+    });
+    
   } else if (state == MCSessionStateConnected) {
-    NSLog(@"Connected to %@", peerID.displayName);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.songTitleLabel setText:[NSString stringWithFormat:@"Connected to %@", peerID.displayName]];
+    });
+    
+    // Periodicaly resync the offset (latency issues)
+    //offsetCalculationTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self.networkPlayerManager selector:@selector(calculateTimeOffsetWithHost) userInfo:nil repeats:YES];
     
     [self.networkPlayerManager calculateTimeOffsetWithHost];
 
   } else if (state == MCSessionStateNotConnected) {
-    NSLog(@"Disconnected from %@", peerID.displayName);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.songTitleLabel setText:[NSString stringWithFormat:@"Disconnected from %@", peerID.displayName]];
+    });
+    
+    [offsetCalculationTimer invalidate];
+    offsetCalculationTimer = nil;
   }
 }
 

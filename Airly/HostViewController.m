@@ -15,7 +15,8 @@
 
 @interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate> {
   BOOL presentedInitialWorkflow;
-  uint64_t endSongTime;
+  __block uint64_t endSongTime;
+  __block MPMediaItem *mediaItemAtCheck;
 }
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
@@ -53,10 +54,6 @@
   self.connectivityManager.networkPlayerManager = self.networkPlayerManager;
   
   [self.connectivityManager setupBrowser];
-  
-  // Notifications when playing item changes (for syncing).
-  [self.playerManager.musicController beginGeneratingPlaybackNotifications];
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playingItemDidChange) name:MPMusicPlayerControllerNowPlayingItemDidChangeNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -94,13 +91,8 @@
   [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
   [self.songTitleLabel setText:[self.playerManager currentSongName]];
   
-  if ([self.playerManager nextMediaItem]) {
-    self.forwardPlaybackButton.enabled = YES;
-  }
-  
-  if ([self.playerManager previousMediaItem]) {
-    self.rewindPlaybackButton.enabled = YES;
-  }
+  self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+  self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
 }
 
 - (IBAction)addSongs:(UIBarButtonItem *)sender {
@@ -114,42 +106,38 @@
   // A playback toggle control button was pressed.
   if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {
     [self pausePlayback];
-  
+    
   } else  {
-    [self startPlayback];
+    [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
   }
 }
 
 - (IBAction)rewindButtonPressed:(id)sender {
-  // Pause playback
   [self pausePlayback];
   
   // Go to next song
-  [self.playerManager performSelector:@selector(skipToPreviousSong) withObject:nil afterDelay:0.2];
+  [self.playerManager skipToPreviousSong];
   
   // Notify that the playing item changed
-  [self performSelector:@selector(playingItemDidChange) withObject:nil afterDelay:0.22];
+  [self playingItemDidChange];
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
-  // Pause playback
   [self pausePlayback];
   
   // Go to next song
-  [self.playerManager performSelector:@selector(skipToNextSong) withObject:nil afterDelay:0.2];
+  [self.playerManager skipToNextSong];
   
   // Notify that the playing item changed
-  [self performSelector:@selector(playingItemDidChange) withObject:nil afterDelay:0.22];
+  [self playingItemDidChange];
 }
 
 - (void)playingItemDidChange {
-  // Pause playback
-  [self pausePlayback];
-  
   // Disable the play/pause buttons
   dispatch_async(dispatch_get_main_queue(), ^{
     self.playPlaybackButton.enabled = NO;
     self.pausePlaybackButton.enabled = NO;
+    
   });
   
   // Send song metadata to peers
@@ -159,24 +147,28 @@
   [self.networkPlayerManager atExactTime:updateUITime runBlock:^{
     [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
   }];
-  
 
+  
   // Send song to peers
   __block NSInteger peersReceived = 0;
+  __block NSInteger peersFailed = 0;
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   [self.networkPlayerManager sendSong:currentMediaItem toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
     // Increment the peers received number.
     if (!error) {
       peersReceived +=1;
+      
+    } else {
+      peersFailed += 1;
     }
     
-    if (peersReceived == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
-      [self startPlayback];
+    if (peersReceived+peersFailed == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
+      [self startPlaybackAtTime:0];
     }
   }];
 }
 
-- (void)startPlayback {
+- (void)startPlaybackAtTime:(NSTimeInterval)playbackTime {
   // Hide play button. Show pause button.
   dispatch_async(dispatch_get_main_queue(), ^{
     NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
@@ -192,7 +184,7 @@
   });
   
   // Order a Synchronize play
-  uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime];
+  uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
   
   // Play at specified date
   [self.networkPlayerManager atExactTime:timeToPlay runBlock:^{
@@ -203,14 +195,24 @@
   if ([self.playerManager nextMediaItem]) {
     NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
     
-    endSongTime = [self.networkPlayerManager currentTime] + timeLeft*1000000000;// Seconds to Nanoseconds
+    endSongTime = self.networkPlayerManager.currentTime + timeLeft*1000000000;// Seconds to Nanoseconds
+    
+    mediaItemAtCheck = [self.playerManager currentMediaItem];
     
     [self.networkPlayerManager atExactTime:endSongTime runBlock:^{
-      if (llabs((int64_t)([self.networkPlayerManager currentTime] - endSongTime)) <= 10) {// Make sure the endSongTime is still valid
-        [self playingItemDidChange];// Manually notify the player of the song change.
+      uint64_t timeAtCheck =  self.networkPlayerManager.currentTime;
+      
+      if (timeAtCheck - endSongTime <= 10000 && (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime) < 2) {// Make sure the endSongTime is still valid
+        if ([mediaItemAtCheck isEqual:[self.playerManager currentMediaItem]]) {// The song might have a not switched yet
+          [self forwardButtonPressed:nil];// Go to next song
+          
+        } else {
+          [self pausePlayback];
+          
+          [self playingItemDidChange];// Notify the player of the song change.
+        }
       }
     }];
-    
   }
 }
 
@@ -274,34 +276,34 @@
 
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
   switch (state) {
-    case MCSessionStateConnecting:
-      NSLog(@"Connecting to %@", peerID.displayName);
+    case MCSessionStateConnecting: {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self.songTitleLabel setText:[NSString stringWithFormat:@"Connecting to %@", peerID.displayName]];
+      });
+      
       break;
+    }
       
     case MCSessionStateConnected: {
-      NSLog(@"Connected to %@", peerID.displayName);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self.songTitleLabel setText:[NSString stringWithFormat:@"Connected to %@", peerID.displayName]];
+      });
       
-      // Already loaded/playing a song, update only the new peer.
-      MPMediaItem *nowPlayingItem = [self.playerManager.musicController nowPlayingItem];
-      if (nowPlayingItem) {
-        [self.networkPlayerManager sendSongMetadata:nowPlayingItem toPeers:@[peerID]];
-        
-        __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
-        [self.networkPlayerManager sendSong:nowPlayingItem toPeers:@[peerID] completion:^(NSError * _Nullable error) {
-          if ([currentMediaItem isEqual:[self.playerManager currentMediaItem]] && self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {
-#warning this should be calculated (offset between host and peer.)
-            // Play at current playback time + the time of the delay (1 second) + the time for the message to be received. (hardcoded)
-            //[self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime + 1.2];
-          }
-        }];
+      // Already loaded a song, update only the new peer.
+      if (self.playerManager.currentMediaItem) {
+        [self playingItemDidChange];
       }
     }
       
       break;
       
-    case MCSessionStateNotConnected:
-      NSLog(@"Disconnected from %@", peerID.displayName);
+    case MCSessionStateNotConnected: {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self.songTitleLabel setText:[NSString stringWithFormat:@"Disconnected from %@", peerID.displayName]];
+      });
+      
       break;
+    }
       
     default:
       break;

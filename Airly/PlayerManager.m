@@ -20,7 +20,7 @@
     sharedManager.picker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
     sharedManager.picker.delegate = sharedManager;
     sharedManager.picker.allowsPickingMultipleItems = YES;
-    sharedManager.picker.showsCloudItems = NO;
+    sharedManager.picker.showsCloudItems = YES;
     sharedManager.picker.showsItemsWithProtectedAssets = NO;
   });
   
@@ -74,7 +74,7 @@
 
 #pragma mark - Song Order
 - (MPMediaItem *)nextMediaItem {
-  if (self.mediaCollection.items.count-1 >= self.musicController.indexOfNowPlayingItem+1) {
+  if (self.mediaCollection.items.count > self.musicController.indexOfNowPlayingItem+1) {
     return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem+1];
   
   } else {
@@ -82,13 +82,11 @@
   }
 }
 - (MPMediaItem *)currentMediaItem {
-#warning loops around
   return self.musicController.nowPlayingItem;
 }
 
 - (MPMediaItem * _Nullable)previousMediaItem {
-#warning doesnt work
-  if (self.musicController.indexOfNowPlayingItem > 1) {
+  if (self.musicController.indexOfNowPlayingItem >= 1) {
     return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem-1];
     
   } else {

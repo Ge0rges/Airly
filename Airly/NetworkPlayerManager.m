@@ -44,7 +44,7 @@
 - (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime {
   
   // Create NSData to send
-  uint64_t timeToPlay = [self currentTime] + 1000000000;// Add 1 second1
+  uint64_t timeToPlay = [self currentTime] + 1000000000;// Add 1 second
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPlay],
                                                                   @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime]
@@ -91,6 +91,8 @@
 }
 
 - (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler {
+  if (peers.count == 0) return;
+  
   // Send the song file
   // Get resource path
   NSURL *url = [mediaItem valueForProperty:MPMediaItemPropertyAssetURL];
@@ -112,8 +114,7 @@
 }
 
 #pragma mark - Network Time Sync
-//Meant for speakers.
-
+// Meant for speakers.
 - (void)calculateTimeOffsetWithHost {
   hostTimeOffset = 0;
   self.connectivityManager.networkPlayerManager = self;// Needed for reply.
@@ -152,7 +153,6 @@
       [NSThread sleepForTimeInterval:0];
       currentTime = [self currentTime];
     }
-    NSLog(@"Launched at exact block with difference: %lli", (int64_t)(val - currentTime));
     block();
   });
   // Now, we employ a dirty trick:
