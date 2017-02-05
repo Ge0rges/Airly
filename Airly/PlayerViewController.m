@@ -26,6 +26,8 @@
   UIImage *albumImage;
 }
 
+@property (strong, nonnull) UIImageView *backgroundImageView;
+
 @property (strong, nonatomic) ConnectivityManager *connectivityManger;
 @property (strong, nonatomic) NetworkPlayerManager *networkPlayerManager;
 @property (strong, nonatomic) AVPlayer *player;
@@ -57,8 +59,16 @@
   AVAudioSession *audioSession = [AVAudioSession sharedInstance];
   [audioSession setActive:YES error:nil];
   [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+  
+  // Set a gradient as the background image
+  if (!self.backgroundImageView) {
+    self.backgroundImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:self.backgroundImageView];
+    [self.view sendSubviewToBack:self.backgroundImageView];
+  }
+  
+  [self.backgroundImageView setImage:[self gradientFromColor:[self generateRandomColor] toColor:[self generateRandomColor] withSize:self.backgroundImageView.frame.size]];
 }
-
 
 #pragma mark - ConnectivityManagerDelegate
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
@@ -134,6 +144,34 @@
     [offsetCalculationTimer invalidate];
     offsetCalculationTimer = nil;
   }
+}
+
+#pragma mark - Background Color
+// Gradient Generator
+- (UIImage *)gradientFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor withSize:(CGSize)size {
+  CAGradientLayer *layer = [CAGradientLayer layer];
+  layer.frame = CGRectMake(0, 0, size.width, size.height);
+  layer.colors = @[(__bridge id)fromColor.CGColor,
+                   (__bridge id)toColor.CGColor];
+  
+  UIGraphicsBeginImageContext(size);
+  [layer renderInContext:UIGraphicsGetCurrentContext()];
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  
+  return image;
+}
+
+- (UIColor *)generateRandomColor {
+  CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
+  CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
+  CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
+  return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
+}
+
+// White status bar
+- (UIStatusBarStyle)preferredStatusBarStyle {
+  return UIStatusBarStyleLightContent;
 }
 
 #pragma mark - Player

@@ -23,6 +23,8 @@
 @property (nonatomic, strong) PlayerManager *playerManager;
 @property (nonatomic, strong) NetworkPlayerManager *networkPlayerManager;
 
+@property (strong, nonnull) UIImageView *backgroundImageView;
+
 @property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
 @property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
@@ -54,6 +56,19 @@
   self.connectivityManager.networkPlayerManager = self.networkPlayerManager;
   
   [self.connectivityManager setupBrowser];
+  
+  // Set a gradient as the background image
+  if (!self.backgroundImageView) {
+    self.backgroundImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
+    [self.view addSubview:self.backgroundImageView];
+    [self.view sendSubviewToBack:self.backgroundImageView];
+  }
+  
+  [self.backgroundImageView setImage:[self gradientFromColor:[self generateRandomColor] toColor:[self generateRandomColor] withSize:self.backgroundImageView.frame.size]];
+  
+  // Transparent toolbar
+  [self.playbackControlsToolbar setBackgroundImage:[UIImage new] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+  [self.playbackControlsToolbar setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -308,6 +323,34 @@
     default:
       break;
   }
+}
+
+#pragma mark - Background Color
+// Gradient Generator
+- (UIImage *)gradientFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor withSize:(CGSize)size {
+  CAGradientLayer *layer = [CAGradientLayer layer];
+  layer.frame = CGRectMake(0, 0, size.width, size.height);
+  layer.colors = @[(__bridge id)fromColor.CGColor,
+                   (__bridge id)toColor.CGColor];
+  
+  UIGraphicsBeginImageContext(size);
+  [layer renderInContext:UIGraphicsGetCurrentContext()];
+  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  
+  return image;
+}
+
+- (UIColor *)generateRandomColor {
+  CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
+  CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
+  CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
+  return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
+}
+
+// White status bar
+- (UIStatusBarStyle)preferredStatusBarStyle {
+  return UIStatusBarStyleLightContent;
 }
 
 
