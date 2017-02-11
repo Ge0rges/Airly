@@ -33,7 +33,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jV-Xu-bUU">
-                                <rect key="frame" x="186" y="0.0" width="188" height="667"/>
+                                <rect key="frame" x="187" y="0.0" width="188" height="667"/>
                                 <state key="normal" title="Listen to Music">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -50,7 +50,7 @@
                             <constraint firstItem="3jV-Xu-bUU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Zab-oI-Rq0"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="jxQ-Mi-K3e"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.5" id="pSM-ch-GPo"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="3jV-Xu-bUU" secondAttribute="trailing" constant="-15" id="sOh-L7-KfR"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="3jV-Xu-bUU" secondAttribute="trailing" constant="-16" id="sOh-L7-KfR"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-16" id="sk9-zz-pCs"/>
                             <constraint firstItem="3jV-Xu-bUU" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="tUA-Ud-acm"/>
                         </constraints>
