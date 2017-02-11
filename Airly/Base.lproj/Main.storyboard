@@ -33,7 +33,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jV-Xu-bUU">
-                                <rect key="frame" x="187" y="0.0" width="187" height="667"/>
+                                <rect key="frame" x="186" y="0.0" width="188" height="667"/>
                                 <state key="normal" title="Listen to Music">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -45,7 +45,7 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.5" id="WEh-IA-Dmw"/>
+                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.502" id="WEh-IA-Dmw"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ZD6-ZX-wKg"/>
                             <constraint firstItem="3jV-Xu-bUU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Zab-oI-Rq0"/>
                             <constraint firstItem="vEU-GK-6Ba" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="jxQ-Mi-K3e"/>

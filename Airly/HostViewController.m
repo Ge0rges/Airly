@@ -154,7 +154,6 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     self.playPlaybackButton.enabled = NO;
     self.pausePlaybackButton.enabled = NO;
-    
   });
   
   // Send song metadata to peers
@@ -179,7 +178,7 @@
       peersFailed += 1;
     }
     
-    if (peersReceived+peersFailed == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
+    if ((peersReceived+peersFailed) == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
       [self startPlaybackAtTime:(NSTimeInterval)0];
     }
   }];
@@ -212,28 +211,30 @@
   }];
   
   // Set a timer to update at the end of the song
-  if ([self.playerManager nextMediaItem]) {
-    NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
+  NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
+  
+  endSongTime = self.networkPlayerManager.currentTime + timeLeft*1000000000;// Seconds to Nanoseconds
+  
+  mediaItemAtCheck = [self.playerManager currentMediaItem];
+  
+  [self.networkPlayerManager atExactTime:endSongTime runBlock:^{
+    uint64_t timeAtCheck =  self.networkPlayerManager.currentTime;
     
-    endSongTime = self.networkPlayerManager.currentTime + timeLeft*1000000000;// Seconds to Nanoseconds
-    
-    mediaItemAtCheck = [self.playerManager currentMediaItem];
-    
-    [self.networkPlayerManager atExactTime:endSongTime runBlock:^{
-      uint64_t timeAtCheck =  self.networkPlayerManager.currentTime;
-      
-      if (timeAtCheck - endSongTime <= 10000 && (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime) < 2) {// Make sure the endSongTime is still valid
-        if ([mediaItemAtCheck isEqual:[self.playerManager currentMediaItem]]) {// The song might have a not switched yet
-          [self forwardButtonPressed:nil];// Go to next song
-          
-        } else {
-          [self pausePlayback];
-          
-          [self playingItemDidChange];// Notify the player of the song change.
-        }
+    if (timeAtCheck - endSongTime <= 10000 && (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime) < 2) {// Make sure the endSongTime is still valid
+      if ([mediaItemAtCheck isEqual:[self.playerManager currentMediaItem]] && [self.playerManager nextMediaItem]) {// The song might have a not switched yet
+        [self forwardButtonPressed:nil];// Go to next song
+        
+      } else if ([self.playerManager nextMediaItem]) {
+        [self pausePlayback];
+        
+        [self playingItemDidChange];// Notify the player of the song change.
+        
+      } else {
+        [self.playerManager.musicController pause];
+        [self pausePlayback];
       }
-    }];
-  }
+    }
+  }];
 }
 
 - (void)pausePlayback {
