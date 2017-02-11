@@ -225,6 +225,7 @@
         [self forwardButtonPressed:nil];// Go to next song
         
       } else if ([self.playerManager nextMediaItem]) {
+        [self.playerManager pause];
         [self pausePlayback];
         
         [self playingItemDidChange];// Notify the player of the song change.
