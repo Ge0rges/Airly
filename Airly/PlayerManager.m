@@ -20,7 +20,7 @@
     sharedManager.picker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
     sharedManager.picker.delegate = sharedManager;
     sharedManager.picker.allowsPickingMultipleItems = YES;
-    sharedManager.picker.showsCloudItems = YES;
+    sharedManager.picker.showsCloudItems = NO;
     sharedManager.picker.showsItemsWithProtectedAssets = NO;
   });
   

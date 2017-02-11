@@ -86,14 +86,14 @@
     }];
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
+    // Set the playback time
+    [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+
     // Play at specified date
     [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       [self.player play];
     }];
     
-    // Set the playback time
-    [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000000)];
-
     
   } else if ([payload[@"command"] isEqualToString:@"pause"]) {
     // Pause at specified date

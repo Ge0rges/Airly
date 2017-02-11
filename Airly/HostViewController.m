@@ -128,6 +128,7 @@
 }
 
 - (IBAction)rewindButtonPressed:(id)sender {
+  [self.playerManager pause];
   [self pausePlayback];
   
   // Go to next song
@@ -138,6 +139,7 @@
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
+  [self.playerManager pause];
   [self pausePlayback];
   
   // Go to next song
@@ -162,7 +164,7 @@
   [self.networkPlayerManager atExactTime:updateUITime runBlock:^{
     [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
   }];
-
+  
   
   // Send song to peers
   __block NSInteger peersReceived = 0;
@@ -178,7 +180,7 @@
     }
     
     if (peersReceived+peersFailed == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
-      [self startPlaybackAtTime:0];
+      [self startPlaybackAtTime:(NSTimeInterval)0];
     }
   }];
 }
@@ -197,6 +199,9 @@
     [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
     self.pausePlaybackButton.enabled = YES;
   });
+  
+  // Set the playback time on the current device
+  self.playerManager.musicController.currentPlaybackTime = playbackTime;
   
   // Order a Synchronize play
   uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:playbackTime];

@@ -5,8 +5,6 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
-        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -24,18 +22,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jV-Xu-bUU">
-                                <rect key="frame" x="190" y="44" width="190" height="623"/>
-                                <state key="normal" title="Listen to Music">
-                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                </state>
-                                <connections>
-                                    <segue destination="kZK-1q-Ba6" kind="show" id="4zg-G7-jgq"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vEU-GK-6Ba">
-                                <rect key="frame" x="0.0" y="44" width="190" height="623"/>
+                                <rect key="frame" x="0.0" y="0.0" width="187" height="667"/>
                                 <state key="normal" title="Broadcast Music">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -44,18 +32,27 @@
                                     <segue destination="IKt-m6-pCZ" kind="show" id="ctR-4K-Ab1"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3jV-Xu-bUU">
+                                <rect key="frame" x="187" y="0.0" width="187" height="667"/>
+                                <state key="normal" title="Listen to Music">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                </state>
+                                <connections>
+                                    <segue destination="kZK-1q-Ba6" kind="show" id="4zg-G7-jgq"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="baseline" secondItem="3jV-Xu-bUU" secondAttribute="firstBaseline" id="2vK-bG-QK8"/>
-                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="width" secondItem="3jV-Xu-bUU" secondAttribute="width" id="INq-UW-Fd6"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="3jV-Xu-bUU" secondAttribute="trailing" constant="-21" id="agt-Pf-zKP"/>
-                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="d0n-m4-8uw"/>
-                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="top" secondItem="3jV-Xu-bUU" secondAttribute="top" id="g93-6p-wI7"/>
-                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="leading" secondItem="vEU-GK-6Ba" secondAttribute="trailing" id="gNG-DE-AyZ"/>
-                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-20" id="jBt-P0-HeC"/>
-                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="oSL-RF-gDq"/>
-                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="baseline" secondItem="vEU-GK-6Ba" secondAttribute="firstBaseline" id="z9L-nD-iBZ"/>
+                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.5" id="WEh-IA-Dmw"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ZD6-ZX-wKg"/>
+                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="Zab-oI-Rq0"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="jxQ-Mi-K3e"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="width" secondItem="8bC-Xf-vdC" secondAttribute="width" multiplier="0.5" id="pSM-ch-GPo"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="3jV-Xu-bUU" secondAttribute="trailing" constant="-15" id="sOh-L7-KfR"/>
+                            <constraint firstItem="vEU-GK-6Ba" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-16" id="sk9-zz-pCs"/>
+                            <constraint firstItem="3jV-Xu-bUU" firstAttribute="height" secondItem="8bC-Xf-vdC" secondAttribute="height" id="tUA-Ud-acm"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="zC8-Jg-yrB"/>
@@ -206,13 +203,13 @@
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hgP-UY-IGp">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hgP-UY-IGp">
                                 <rect key="frame" x="16" y="506" width="343" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="H1t-nR-AHk"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="15"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
