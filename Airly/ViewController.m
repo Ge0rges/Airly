@@ -15,6 +15,10 @@
 #import "ConnectivityManager.h"
 #import "PlayerManager.h"
 
+// Extensions
+#import "UIImage+Gradient.h"
+#import "UIColor+Helpers.h"
+
 @interface ViewController ()
 
 @property (strong, nonatomic) IBOutlet UIButton *broadcastButton;
@@ -46,36 +50,19 @@
   [self.navigationController setNavigationBarHidden:YES animated:YES];
   
   // Color the buttons
-  [self.broadcastButton setBackgroundImage:[self gradientFromColor:[self generateRandomColor] toColor:[self generateRandomColor] withSize:self.broadcastButton.frame.size] forState:UIControlStateNormal];
-  [self.listenButton setBackgroundImage:[self gradientFromColor:[self generateRandomColor] toColor:[self generateRandomColor] withSize:self.listenButton.frame.size] forState:UIControlStateNormal];
+  UIColor *firstColor = [UIColor generateRandomColor];
+  UIColor *secondColor = [UIColor generateRandomColor];
+  
+  UIImage *leftGradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:self.broadcastButton.frame.size];
+  UIImage *rightGradientBackground = [UIImage gradientFromColor:secondColor toColor:firstColor withSize:self.listenButton.frame.size];
+  
+  [self.broadcastButton setBackgroundImage:leftGradientBackground forState:UIControlStateNormal];
+  [self.listenButton setBackgroundImage:rightGradientBackground forState:UIControlStateNormal];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
   // Hide the nav bar
   [self.navigationController setNavigationBarHidden:NO animated:YES];
-}
-
-#pragma mark - Background Color
-// Gradient Generator
-- (UIImage *)gradientFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor withSize:(CGSize)size {
-  CAGradientLayer *layer = [CAGradientLayer layer];
-  layer.frame = CGRectMake(0, 0, size.width, size.height);
-  layer.colors = @[(__bridge id)fromColor.CGColor,
-                   (__bridge id)toColor.CGColor];
-  
-  UIGraphicsBeginImageContext(size);
-  [layer renderInContext:UIGraphicsGetCurrentContext()];
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  
-  return image;
-}
-
-- (UIColor *)generateRandomColor {
-  CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
-  CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
-  CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
-  return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
 }
 
 // White status bar

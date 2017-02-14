@@ -21,6 +21,11 @@
 		DA5DFDCB1A95AAA200849BA1 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5DFDCA1A95AAA200849BA1 /* PlayerViewController.m */; };
 		DA5DFDCD1A95F95500849BA1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */; };
 		FB181CBC1DE61590000BCFA4 /* NetworkPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB181CBB1DE61590000BCFA4 /* NetworkPlayerManager.m */; };
+		FB2745271E53746B001CE6F3 /* UIImage+Gradient.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */; };
+		FB27452B1E5374CA001CE6F3 /* UIColor+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = FB27452A1E5374CA001CE6F3 /* UIColor+Helpers.m */; };
+		FB2745361E537DE1001CE6F3 /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745311E537DE1001CE6F3 /* SLColorArt.m */; };
+		FB2745371E537DE1001CE6F3 /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745331E537DE1001CE6F3 /* UIImage+ColorArt.m */; };
+		FB2745381E537DE1001CE6F3 /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -47,6 +52,16 @@
 		DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FB181CBA1DE61590000BCFA4 /* NetworkPlayerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkPlayerManager.h; sourceTree = "<group>"; };
 		FB181CBB1DE61590000BCFA4 /* NetworkPlayerManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkPlayerManager.m; sourceTree = "<group>"; };
+		FB2745251E53746B001CE6F3 /* UIImage+Gradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Gradient.h"; sourceTree = "<group>"; };
+		FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Gradient.m"; sourceTree = "<group>"; };
+		FB2745291E5374CA001CE6F3 /* UIColor+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Helpers.h"; sourceTree = "<group>"; };
+		FB27452A1E5374CA001CE6F3 /* UIColor+Helpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Helpers.m"; sourceTree = "<group>"; };
+		FB2745301E537DE1001CE6F3 /* SLColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLColorArt.h; sourceTree = "<group>"; };
+		FB2745311E537DE1001CE6F3 /* SLColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SLColorArt.m; sourceTree = "<group>"; };
+		FB2745321E537DE1001CE6F3 /* UIImage+ColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+ColorArt.h"; path = "ColorArt/UIImage+ColorArt.h"; sourceTree = "<group>"; };
+		FB2745331E537DE1001CE6F3 /* UIImage+ColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ColorArt.m"; path = "ColorArt/UIImage+ColorArt.m"; sourceTree = "<group>"; };
+		FB2745341E537DE1001CE6F3 /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Scale.h"; path = "ColorArt/UIImage+Scale.h"; sourceTree = "<group>"; };
+		FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "ColorArt/UIImage+Scale.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,21 +132,13 @@
 			name = ConnectivityManager;
 			sourceTree = "<group>";
 		};
-		DA5DFDC81A94C6A500849BA1 /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				DA5DFDC71A94C69100849BA1 /* ConnectivityManager */,
-				DA5DFDC61A94C68600849BA1 /* Player Manager */,
-				FB181CBD1DE61594000BCFA4 /* NetworkPlayerManager */,
-			);
-			name = Helpers;
-			sourceTree = "<group>";
-		};
 		FB10DBE51CA9431F004EC171 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
 				FB10DBE81CA94341004EC171 /* Controllers */,
-				DA5DFDC81A94C6A500849BA1 /* Helpers */,
+				FB27452E1E5374EB001CE6F3 /* Managers */,
+				FB2745391E537E31001CE6F3 /* Classes */,
+				FB27452D1E5374E2001CE6F3 /* Extensions */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -176,6 +183,65 @@
 				FB181CBB1DE61590000BCFA4 /* NetworkPlayerManager.m */,
 			);
 			name = NetworkPlayerManager;
+			sourceTree = "<group>";
+		};
+		FB2745281E53746F001CE6F3 /* UIImage Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FB2745321E537DE1001CE6F3 /* UIImage+ColorArt.h */,
+				FB2745331E537DE1001CE6F3 /* UIImage+ColorArt.m */,
+				FB2745341E537DE1001CE6F3 /* UIImage+Scale.h */,
+				FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */,
+				FB2745251E53746B001CE6F3 /* UIImage+Gradient.h */,
+				FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */,
+			);
+			name = "UIImage Extensions";
+			sourceTree = "<group>";
+		};
+		FB27452C1E5374D3001CE6F3 /* UIColor Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FB2745291E5374CA001CE6F3 /* UIColor+Helpers.h */,
+				FB27452A1E5374CA001CE6F3 /* UIColor+Helpers.m */,
+			);
+			name = "UIColor Extensions";
+			sourceTree = "<group>";
+		};
+		FB27452D1E5374E2001CE6F3 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				FB27452C1E5374D3001CE6F3 /* UIColor Extensions */,
+				FB2745281E53746F001CE6F3 /* UIImage Extensions */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		FB27452E1E5374EB001CE6F3 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				DA5DFDC71A94C69100849BA1 /* ConnectivityManager */,
+				DA5DFDC61A94C68600849BA1 /* Player Manager */,
+				FB181CBD1DE61594000BCFA4 /* NetworkPlayerManager */,
+			);
+			name = Managers;
+			sourceTree = "<group>";
+		};
+		FB27452F1E537DE1001CE6F3 /* SLColorArt */ = {
+			isa = PBXGroup;
+			children = (
+				FB2745301E537DE1001CE6F3 /* SLColorArt.h */,
+				FB2745311E537DE1001CE6F3 /* SLColorArt.m */,
+			);
+			name = SLColorArt;
+			path = ColorArt;
+			sourceTree = "<group>";
+		};
+		FB2745391E537E31001CE6F3 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FB27452F1E537DE1001CE6F3 /* SLColorArt */,
+			);
+			name = Classes;
 			sourceTree = "<group>";
 		};
 		FBC0E61B1CA02ABD004A8852 /* Frameworks */ = {
@@ -266,11 +332,16 @@
 			files = (
 				DA5DFDCB1A95AAA200849BA1 /* PlayerViewController.m in Sources */,
 				DA5DFD9C1A92602500849BA1 /* ViewController.m in Sources */,
+				FB2745381E537DE1001CE6F3 /* UIImage+Scale.m in Sources */,
 				DA5DFDC01A93C4B700849BA1 /* HostViewController.m in Sources */,
+				FB27452B1E5374CA001CE6F3 /* UIColor+Helpers.m in Sources */,
 				DA5DFDC31A94C66500849BA1 /* PlayerManager.m in Sources */,
 				FB181CBC1DE61590000BCFA4 /* NetworkPlayerManager.m in Sources */,
+				FB2745271E53746B001CE6F3 /* UIImage+Gradient.m in Sources */,
+				FB2745371E537DE1001CE6F3 /* UIImage+ColorArt.m in Sources */,
 				DA5DFD991A92602500849BA1 /* AppDelegate.m in Sources */,
 				DA5DFDBB1A92624B00849BA1 /* ConnectivityManager.m in Sources */,
+				FB2745361E537DE1001CE6F3 /* SLColorArt.m in Sources */,
 				DA5DFD961A92602500849BA1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

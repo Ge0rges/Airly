@@ -8,15 +8,20 @@
 
 #import "HostViewController.h"
 
+// Classes
+#import "SLColorArt.h"
+
 // Managers
 #import "ConnectivityManager.h"
 #import "PlayerManager.h"
 #import "NetworkPlayerManager.h"
 
+// Extensions
+#import "UIImage+Gradient.h"
+#import "UIColor+Helpers.h"
+
 @interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate> {
   BOOL presentedInitialWorkflow;
-  __block uint64_t endSongTime;
-  __block MPMediaItem *mediaItemAtCheck;
 }
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
@@ -47,6 +52,11 @@
   self.playerManager = [PlayerManager sharedManager];
   self.playerManager.delegate = self;
   
+  // Notification for song did change
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playingItemDidChange:) name:MPMusicPlayerControllerNowPlayingItemDidChangeNotification object:self.playerManager.musicController];
+  
+  [self.playerManager.musicController beginGeneratingPlaybackNotifications];
+
   // Setup NetworkPlayerManager
   self.networkPlayerManager = [NetworkPlayerManager sharedManager];
   
@@ -64,7 +74,8 @@
     [self.view sendSubviewToBack:self.backgroundImageView];
   }
   
-  [self.backgroundImageView setImage:[self gradientFromColor:[self generateRandomColor] toColor:[self generateRandomColor] withSize:self.backgroundImageView.frame.size]];
+  UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
+  [self.backgroundImageView setImage:gradientBackground];
   
   // Transparent toolbar
   [self.playbackControlsToolbar setBackgroundImage:[UIImage new] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
@@ -102,12 +113,47 @@
 
 #pragma mark - Player
 - (void)updatePlayerUI {
-  [self.albumImageView setImage:[self.playerManager currentSongAlbumArt]];
-  [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
-  [self.songTitleLabel setText:[self.playerManager currentSongName]];
+  // Update thge player UI with song info
+  UIImage *albumImage = [self.playerManager currentSongAlbumArt];
   
-  self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
-  self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
+  if (albumImage) {
+    // Generate a background gradient to match the album art
+    CGSize imageViewSize = self. backgroundImageView.frame.size;
+    [SLColorArt processImage:albumImage scaledToSize:imageViewSize threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt (object of processed UIImage)
+      // Build the gradient
+      UIColor *firstColor = [colorArt.backgroundColor darkerColor];
+      UIColor *secondColor = [colorArt.backgroundColor lighterColor];
+      UIImage *gradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:imageViewSize];
+      
+      // Animate all changes
+      [UIView animateWithDuration:0.3 animations:^{
+        [self.albumImageView setImage:albumImage];
+        [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
+        [self.songTitleLabel setText:[self.playerManager currentSongName]];
+        
+        self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+        self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
+        
+        [self.backgroundImageView setImage:gradientBackground];
+      }];
+    }];
+    
+  } else {
+    // Random gradient
+    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
+
+    // Animate all changes
+    [UIView animateWithDuration:0.3 animations:^{
+      [self.albumImageView setImage:nil];
+      [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
+      [self.songTitleLabel setText:[self.playerManager currentSongName]];
+      
+      self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+      self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
+      
+      [self.backgroundImageView setImage:gradientBackground];
+    }];
+  }
 }
 
 - (IBAction)addSongs:(UIBarButtonItem *)sender {
@@ -131,33 +177,46 @@
   [self.playerManager pause];
   [self pausePlayback];
   
+  // Reset to playback time to 0
+  self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
+  
   // Go to next song
   [self.playerManager skipToPreviousSong];
-  
-  // Notify that the playing item changed
-  [self playingItemDidChange];
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
   [self.playerManager pause];
   [self pausePlayback];
   
+  // Reset to playback time to 0
+  self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
+  
   // Go to next song
   [self.playerManager skipToNextSong];
-  
-  // Notify that the playing item changed
-  [self playingItemDidChange];
 }
 
-- (void)playingItemDidChange {
+- (void)playingItemDidChange:(NSNotification *)notification {
+  // Make sure to pause the music.
+  if (notification && self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed.
+    [self.playerManager pause];
+    [self pausePlayback];
+    
+    // Reset to playback time to 0
+    self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
+  }
+  
   // Disable the play/pause buttons
   dispatch_async(dispatch_get_main_queue(), ^{
     self.playPlaybackButton.enabled = NO;
     self.pausePlaybackButton.enabled = NO;
   });
   
+  // Get some needed avriables
+  __block MPMediaItem *sentMediaItem = [self.playerManager currentMediaItem];
+  __block NSArray *allPeers = [self.connectivityManager allPeers];
+
   // Send song metadata to peers
-  uint64_t updateUITime = [self.networkPlayerManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:[self.connectivityManager allPeers]];
+  uint64_t updateUITime = [self.networkPlayerManager sendSongMetadata:sentMediaItem toPeers:allPeers];
   
   // Update UI at specified date
   [self.networkPlayerManager atExactTime:updateUITime runBlock:^{
@@ -168,18 +227,17 @@
   // Send song to peers
   __block NSInteger peersReceived = 0;
   __block NSInteger peersFailed = 0;
-  __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
-  [self.networkPlayerManager sendSong:currentMediaItem toPeers:[self.connectivityManager allPeers] completion:^(NSError * _Nullable error) {
+  [self.networkPlayerManager sendSong:sentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
     // Increment the peers received number.
     if (!error) {
-      peersReceived +=1;
+      peersReceived++;
       
     } else {
-      peersFailed += 1;
+      peersFailed++;
     }
     
-    if ((peersReceived+peersFailed) == [self.connectivityManager allPeers].count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
-      [self startPlaybackAtTime:(NSTimeInterval)0];
+    if ((peersReceived+peersFailed) >= allPeers.count && [sentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
+      [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
     }
   }];
 }
@@ -200,7 +258,9 @@
   });
   
   // Set the playback time on the current device
-  self.playerManager.musicController.currentPlaybackTime = playbackTime;
+  if (playbackTime != self.playerManager.musicController.currentPlaybackTime) {
+    self.playerManager.musicController.currentPlaybackTime = playbackTime;
+  }
   
   // Order a Synchronize play
   uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
@@ -208,33 +268,6 @@
   // Play at specified date
   [self.networkPlayerManager atExactTime:timeToPlay runBlock:^{
     [self.playerManager play];
-  }];
-  
-  // Set a timer to update at the end of the song
-  NSInteger timeLeft = (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime);
-  
-  endSongTime = self.networkPlayerManager.currentTime + timeLeft*1000000000;// Seconds to Nanoseconds
-  
-  mediaItemAtCheck = [self.playerManager currentMediaItem];
-  
-  [self.networkPlayerManager atExactTime:endSongTime runBlock:^{
-    uint64_t timeAtCheck =  self.networkPlayerManager.currentTime;
-    
-    if (timeAtCheck - endSongTime <= 10000 && (self.playerManager.musicController.nowPlayingItem.playbackDuration - self.playerManager.musicController.currentPlaybackTime) < 2) {// Make sure the endSongTime is still valid
-      if ([mediaItemAtCheck isEqual:[self.playerManager currentMediaItem]] && [self.playerManager nextMediaItem]) {// The song might have a not switched yet
-        [self forwardButtonPressed:nil];// Go to next song
-        
-      } else if ([self.playerManager nextMediaItem]) {
-        [self.playerManager pause];
-        [self pausePlayback];
-        
-        [self playingItemDidChange];// Notify the player of the song change.
-        
-      } else {
-        [self.playerManager.musicController pause];
-        [self pausePlayback];
-      }
-    }
   }];
 }
 
@@ -285,9 +318,6 @@
   [self.playerManager loadMediaCollection:mediaItemCollection];
   [self.playerManager.musicController prepareToPlay];
   
-  // Notify that the playing item changed
-  [self playingItemDidChange];
-  
   // Dismiss the media picker
   [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -311,9 +341,9 @@
         [self.songTitleLabel setText:[NSString stringWithFormat:@"Connected to %@", peerID.displayName]];
       });
       
-      // Already loaded a song, update only the new peer.
+      // Already loaded a song.
       if (self.playerManager.currentMediaItem) {
-        [self playingItemDidChange];
+        [self playingItemDidChange:nil];
       }
     }
       
@@ -330,29 +360,6 @@
     default:
       break;
   }
-}
-
-#pragma mark - Background Color
-// Gradient Generator
-- (UIImage *)gradientFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor withSize:(CGSize)size {
-  CAGradientLayer *layer = [CAGradientLayer layer];
-  layer.frame = CGRectMake(0, 0, size.width, size.height);
-  layer.colors = @[(__bridge id)fromColor.CGColor,
-                   (__bridge id)toColor.CGColor];
-  
-  UIGraphicsBeginImageContext(size);
-  [layer renderInContext:UIGraphicsGetCurrentContext()];
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  
-  return image;
-}
-
-- (UIColor *)generateRandomColor {
-  CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
-  CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
-  CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
-  return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
 }
 
 // White status bar

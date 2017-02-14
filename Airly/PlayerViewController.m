@@ -11,17 +11,22 @@
 // Frameworks
 #import <AVFoundation/AVFoundation.h>
 
+// Classes
+#import "SLColorArt.h"
+
 // Managers
 #import "ConnectivityManager.h"
 #import "NetworkPlayerManager.h"
+
+// Extensions
+#import "UIImage+Gradient.h"
+#import "UIColor+Helpers.h"
 
 @interface PlayerViewController () <ConnectivityManagerDelegate> {
   unsigned long receivingItemMaxCount;
   
   NSString *songTitle;
   NSString *songArtist;
-  
-  NSTimer *offsetCalculationTimer;
   
   UIImage *albumImage;
 }
@@ -67,7 +72,24 @@
     [self.view sendSubviewToBack:self.backgroundImageView];
   }
   
-  [self.backgroundImageView setImage:[self gradientFromColor:[self generateRandomColor] toColor:[self generateRandomColor] withSize:self.backgroundImageView.frame.size]];
+  UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
+  [self.backgroundImageView setImage:gradientBackground];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // Stop playing
+    self.player  = nil;
+    
+    // Stop advertising
+    [self.connectivityManger advertiseSelfInSessions:NO];
+    
+    // Stop the session
+    AVAudioSession *audioSession = [AVAudioSession sharedInstance];
+    [audioSession setActive:NO error:nil];
+  });
 }
 
 #pragma mark - ConnectivityManagerDelegate
@@ -131,42 +153,13 @@
       [self.songTitleLabel setText:[NSString stringWithFormat:@"Connected to %@", peerID.displayName]];
     });
     
-    // Periodicaly resync the offset (latency issues)
-    //offsetCalculationTimer = [NSTimer scheduledTimerWithTimeInterval:5 target:self.networkPlayerManager selector:@selector(calculateTimeOffsetWithHost) userInfo:nil repeats:YES];
-    
-    [self.networkPlayerManager calculateTimeOffsetWithHost];
+    [self.networkPlayerManager calculateTimeOffsetWithHostFromStart:YES];
 
   } else if (state == MCSessionStateNotConnected) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.songTitleLabel setText:[NSString stringWithFormat:@"Disconnected from %@", peerID.displayName]];
     });
-    
-    [offsetCalculationTimer invalidate];
-    offsetCalculationTimer = nil;
   }
-}
-
-#pragma mark - Background Color
-// Gradient Generator
-- (UIImage *)gradientFromColor:(UIColor *)fromColor toColor:(UIColor *)toColor withSize:(CGSize)size {
-  CAGradientLayer *layer = [CAGradientLayer layer];
-  layer.frame = CGRectMake(0, 0, size.width, size.height);
-  layer.colors = @[(__bridge id)fromColor.CGColor,
-                   (__bridge id)toColor.CGColor];
-  
-  UIGraphicsBeginImageContext(size);
-  [layer renderInContext:UIGraphicsGetCurrentContext()];
-  UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  
-  return image;
-}
-
-- (UIColor *)generateRandomColor {
-  CGFloat hue = ( arc4random() % 256 / 256.0 );  //  0.0 to 1.0
-  CGFloat saturation = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from white
-  CGFloat brightness = ( arc4random() % 128 / 256.0 ) + 0.5;  //  0.5 to 1.0, away from black
-  return [UIColor colorWithHue:hue saturation:saturation brightness:brightness alpha:1];
 }
 
 // White status bar
@@ -176,9 +169,40 @@
 
 #pragma mark - Player
 - (void)updatePlayerUI {
-  [self.albumImageView setImage:albumImage];
-  [self.songArtistLabel setText:songArtist];
-  [self.songTitleLabel setText:songTitle];
+  // Update player UI based on received metadata
+  
+  if (albumImage) {
+    // Generate a background gradient to match the album art
+    CGSize imageViewSize = self. backgroundImageView.frame.size;
+    [SLColorArt processImage:albumImage scaledToSize:imageViewSize threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt (object of processed UIImage)
+      // Build the gradient
+      UIColor *firstColor = [colorArt.backgroundColor darkerColor];
+      UIColor *secondColor = [colorArt.backgroundColor lighterColor];
+      UIImage *gradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:imageViewSize];
+      
+      // Animate all changes
+      [UIView animateWithDuration:0.3 animations:^{
+        [self.albumImageView setImage:albumImage];
+        [self.songArtistLabel setText:songArtist];
+        [self.songTitleLabel setText:songTitle];
+        
+        [self.backgroundImageView setImage:gradientBackground];
+      }];
+    }];
+  
+  } else {
+    // Random gradient
+    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
+
+    // Animate all changes
+    [UIView animateWithDuration:0.3 animations:^{
+      [self.albumImageView setImage:nil];
+      [self.songArtistLabel setText:songArtist];
+      [self.songTitleLabel setText:songTitle];
+      
+      [self.backgroundImageView setImage:gradientBackground];
+    }];
+  }
 }
 
 #pragma mark - Navigation

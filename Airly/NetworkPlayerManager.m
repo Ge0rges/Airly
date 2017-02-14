@@ -52,7 +52,7 @@
   
   // Send data
   [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
-  
+    
   return timeToPlay;
 }
 
@@ -115,7 +115,12 @@
 
 #pragma mark - Network Time Sync
 // Meant for speakers.
-- (void)calculateTimeOffsetWithHost {
+- (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools {
+  if (resetBools) {// These bools are used to track the state of calculation. They must be set to no to go through a full calibration.
+    calibrated = NO;
+    secondPing = NO;
+  }
+  
   hostTimeOffset = 0;
   self.connectivityManager.networkPlayerManager = self;// Needed for reply.
   
@@ -188,10 +193,10 @@
       hostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
       // Check that two calculated offsets don't differ by much, do the average.
-      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 10000) {// Error margin in nano seconds
+      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 5000) {// Error margin in nano seconds
         // Offsets are above error margin, restart process.
-        secondPing = NO;
-        [self calculateTimeOffsetWithHost];
+        [self calculateTimeOffsetWithHostFromStart:YES];
+        NSLog(@"margin to big recalibrating: %llu", llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)));
         
       } else {
         // Offsets meet the acceptable error margin.
@@ -203,7 +208,7 @@
       secondPing = YES;
       tempHostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
       
-      [self calculateTimeOffsetWithHost];// We do the average of the two.
+      [self calculateTimeOffsetWithHostFromStart:NO];// We do the average of the two.
     }
   }
 }

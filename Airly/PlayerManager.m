@@ -16,12 +16,16 @@
   dispatch_once(&onceToken, ^{
     sharedManager = [[self alloc] init];
     
-    //create the picker
+    // Create the music picker
     sharedManager.picker = [[MPMediaPickerController alloc] initWithMediaTypes:MPMediaTypeMusic];
     sharedManager.picker.delegate = sharedManager;
     sharedManager.picker.allowsPickingMultipleItems = YES;
     sharedManager.picker.showsCloudItems = NO;
     sharedManager.picker.showsItemsWithProtectedAssets = NO;
+    
+    // Create the player
+    sharedManager.musicController = [MPMusicPlayerController applicationMusicPlayer];
+
   });
   
   return sharedManager;
@@ -74,7 +78,7 @@
 
 #pragma mark - Song Order
 - (MPMediaItem *)nextMediaItem {
-  if (self.mediaCollection.items.count > self.musicController.indexOfNowPlayingItem+1) {
+  if (self.mediaCollection.items.count > self.musicController.indexOfNowPlayingItem+1  && self.musicController.indexOfNowPlayingItem != NSNotFound) {
     return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem+1];
   
   } else {
@@ -86,7 +90,7 @@
 }
 
 - (MPMediaItem * _Nullable)previousMediaItem {
-  if (self.musicController.indexOfNowPlayingItem >= 1) {
+  if (self.musicController.indexOfNowPlayingItem >= 1 && self.musicController.indexOfNowPlayingItem != NSNotFound) {
     return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem-1];
     
   } else {
