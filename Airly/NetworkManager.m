@@ -42,7 +42,6 @@
 
 #pragma mark - Player
 - (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime {
-  
   // Create NSData to send
   uint64_t timeToPlay = [self currentTime] + 1000000000;// Add 1 second
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
