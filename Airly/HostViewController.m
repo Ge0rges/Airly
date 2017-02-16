@@ -14,7 +14,7 @@
 // Managers
 #import "ConnectivityManager.h"
 #import "PlayerManager.h"
-#import "NetworkPlayerManager.h"
+#import "NetworkManager.h"
 
 // Extensions
 #import "UIImage+Gradient.h"
@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
 @property (nonatomic, strong) PlayerManager *playerManager;
-@property (nonatomic, strong) NetworkPlayerManager *networkPlayerManager;
+@property (nonatomic, strong) NetworkManager *networkManager;
 
 @property (strong, nonnull) UIImageView *backgroundImageView;
 
@@ -55,13 +55,13 @@
   
   [self.playerManager.musicController beginGeneratingPlaybackNotifications];
 
-  // Setup NetworkPlayerManager
-  self.networkPlayerManager = [NetworkPlayerManager sharedManager];
+  // Setup networkManager
+  self.networkManager = [NetworkManager sharedManager];
   
   // Setup the Connectivity Manager
   self.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
   self.connectivityManager.delegate = self;
-  self.connectivityManager.networkPlayerManager = self.networkPlayerManager;
+  self.connectivityManager.networkManager = self.networkManager;
   
   [self.connectivityManager setupBrowser];
   
@@ -115,6 +115,16 @@
   [self presentViewController:self.connectivityManager.browser animated:YES completion:nil];
 }
 
+- (IBAction)syncHosts:(UIBarButtonItem *)sender {
+  sender.enabled = NO;
+  
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    sender.enabled = YES;
+  });
+  
+  [self.networkManager askPeersToCalculateOffset];
+}
+
 #pragma mark - Player
 - (void)updatePlayerUI {
   // Update thge player UI with song info
@@ -161,10 +171,14 @@
 }
 
 - (IBAction)addSongs:(UIBarButtonItem *)sender {
+  // Disable the button and show the picker
   sender.enabled = NO;
   [self.playerManager presentMediaPickerOnController:self completion:^{
     sender.enabled = YES;
   }];
+  
+  // Take this opportunity to resync
+  [self.networkManager askPeersToCalculateOffset];
 }
 
 - (IBAction)playbackToggleButtonPressed:(UIBarButtonItem *)sender {
@@ -222,10 +236,10 @@
     __block NSArray *allPeers = [self.connectivityManager allPeers];
     
     // Send song metadata to peers
-    uint64_t updateUITime = [self.networkPlayerManager sendSongMetadata:currentMediaItem toPeers:allPeers];
+    uint64_t updateUITime = [self.networkManager sendSongMetadata:currentMediaItem toPeers:allPeers];
     
     // Update UI at specified date
-    [self.networkPlayerManager atExactTime:updateUITime runBlock:^{
+    [self.networkManager atExactTime:updateUITime runBlock:^{
       [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
     }];
     
@@ -233,7 +247,7 @@
     // Send song to peers
     __block NSInteger peersReceived = 0;
     __block NSInteger peersFailed = 0;
-    [self.networkPlayerManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
+    [self.networkManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
       // Increment the peers received number.
       if (!error) {
         peersReceived++;
@@ -271,10 +285,10 @@
   }
   
   // Order a Synchronize play
-  uint64_t timeToPlay = [self.networkPlayerManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
+  uint64_t timeToPlay = [self.networkManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
   
   // Play at specified date
-  [self.networkPlayerManager atExactTime:timeToPlay runBlock:^{
+  [self.networkManager atExactTime:timeToPlay runBlock:^{
     [self.playerManager play];
   }];
 }
@@ -295,10 +309,10 @@
   });
   
   // Order a synchronized pause
-  uint64_t timeToPause = [self.networkPlayerManager synchronisePause];
+  uint64_t timeToPause = [self.networkManager synchronisePause];
   
   // Pause at specified date
-  [self.networkPlayerManager atExactTime:timeToPause runBlock:^{
+  [self.networkManager atExactTime:timeToPause runBlock:^{
     [self.playerManager pause];
   }];
 }
@@ -353,10 +367,10 @@
       MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
       if (currentMediaItem) {
         // Send song metadata to peers
-        [self.networkPlayerManager sendSongMetadata:currentMediaItem toPeers:@[peerID]];
+        [self.networkManager sendSongMetadata:currentMediaItem toPeers:@[peerID]];
         
         // Send song to peers
-        [self.networkPlayerManager sendSong:currentMediaItem toPeers:@[peerID] completion:nil];
+        [self.networkManager sendSong:currentMediaItem toPeers:@[peerID] completion:nil];
       }
     }
       

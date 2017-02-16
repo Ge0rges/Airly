@@ -105,6 +105,11 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hpH-0U-U4h">
                                 <rect key="frame" x="0.0" y="516" width="375" height="69"/>
                                 <items>
+                                    <barButtonItem systemItem="refresh" id="9il-xQ-wMq">
+                                        <connections>
+                                            <action selector="syncHosts:" destination="IKt-m6-pCZ" id="7Z2-EM-tzs"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="7vv-7L-xCB"/>
                                     <barButtonItem enabled="NO" systemItem="rewind" id="36e-VX-tx1">
                                         <connections>

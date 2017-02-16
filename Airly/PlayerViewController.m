@@ -16,7 +16,7 @@
 
 // Managers
 #import "ConnectivityManager.h"
-#import "NetworkPlayerManager.h"
+#import "NetworkManager.h"
 
 // Extensions
 #import "UIImage+Gradient.h"
@@ -34,7 +34,7 @@
 @property (strong, nonnull) UIImageView *backgroundImageView;
 
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
-@property (strong, nonatomic) NetworkPlayerManager *networkPlayerManager;
+@property (strong, nonatomic) NetworkManager *networkManager;
 @property (strong, nonatomic) AVPlayer *player;
 
 @property (strong, nonatomic) IBOutlet UIImageView *albumImageView;
@@ -55,7 +55,7 @@
   self.connectivityManager.delegate = self;
   
   // Setup the Network Player Manager
-  self.networkPlayerManager = [NetworkPlayerManager sharedManager];
+  self.networkManager = [NetworkManager sharedManager];
   
   // Setup the player
   self.player = [AVPlayer new];
@@ -104,7 +104,7 @@
     albumImage = [UIImage imageWithData:payload[@"songAlbumArt"]];
     
     // Update UI at specified date
-    [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+    [self.networkManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
     }];
     
@@ -113,14 +113,14 @@
     [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 
     // Play at specified date
-    [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+    [self.networkManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       [self.player play];
     }];
     
     
   } else if ([payload[@"command"] isEqualToString:@"pause"]) {
     // Pause at specified date
-    [self.networkPlayerManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+    [self.networkManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       [self.player pause];
     }];
   }
@@ -154,7 +154,7 @@
       [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
     });
     
-    [self.networkPlayerManager calculateTimeOffsetWithHostFromStart:YES];
+    [self.networkManager calculateTimeOffsetWithHostFromStart:YES];
 
   } else if (state == MCSessionStateNotConnected) {
     dispatch_async(dispatch_get_main_queue(), ^{

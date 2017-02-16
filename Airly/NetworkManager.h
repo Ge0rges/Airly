@@ -1,5 +1,5 @@
 //
-//  NetworkPlayerManager.h
+//  NetworkManager.h
 //  Airly
 //
 //  Created by Georges Kanaan on 23/11/2016.
@@ -14,7 +14,7 @@
 // Managers
 #import "ConnectivityManager.h"
 
-@interface NetworkPlayerManager : NSObject <ConnectivityManagerDelegate>
+@interface NetworkManager : NSObject <ConnectivityManagerDelegate>
 
 + (instancetype _Nonnull)sharedManager;
 
@@ -23,11 +23,11 @@
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers;
 - (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
 
-
+- (void)askPeersToCalculateOffset;
 - (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools;
 - (uint64_t)currentTime;
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;
 
-- (void)session:(MCSession * _Nonnull)session didReceiveData:(NSData * _Nonnull)data fromPeer:(MCPeerID * _Nonnull)peerID;
+@property (strong, nonatomic) NSMutableArray <MCPeerID*> * _Nullable calibratedPeers;
 
 @end

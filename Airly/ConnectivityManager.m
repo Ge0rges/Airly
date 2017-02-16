@@ -106,6 +106,10 @@
   if ([self.delegate respondsToSelector:@selector(session:peer:didChangeState:)]) {
     [self.delegate session:session peer:peerID didChangeState:state];
   }
+  
+  if ([self.networkManager respondsToSelector:@selector(session:peer:didChangeState:)]) {
+    [self.networkManager session:session peer:peerID didChangeState:state];
+  }
 }
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {}
@@ -144,11 +148,19 @@
   if ([self.delegate respondsToSelector:@selector(session:didStartReceivingResourceWithName:fromPeer:withProgress:)]) {
     [self.delegate session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
   }
+  
+  if ([self.networkManager respondsToSelector:@selector(session:didStartReceivingResourceWithName:fromPeer:withProgress:)]) {
+    [self.networkManager session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
+  }
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
   if ([self.delegate respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
     [self.delegate session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
+  }
+  
+  if ([self.networkManager respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
+    [self.networkManager session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
   }
 }
 
@@ -157,8 +169,8 @@
     [self.delegate session:session didReceiveData:data fromPeer:peerID];
   }
   
-  if ([self.networkPlayerManager respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
-    [self.networkPlayerManager session:session didReceiveData:data fromPeer:peerID];
+  if ([self.networkManager respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
+    [self.networkManager session:session didReceiveData:data fromPeer:peerID];
   }
 }
 
