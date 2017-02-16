@@ -13,11 +13,10 @@
 #import <mach/mach_time.h>
 
 @interface NetworkPlayerManager () {
-  uint64_t hostTimeOffset;
-  uint64_t tempHostTimeOffset;
+  int64_t hostTimeOffset;
+  int64_t tempHostTimeOffset;
   BOOL secondPing;
   BOOL calibrated;
-  
 }
 
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
@@ -133,7 +132,7 @@
   [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];// Speakers are only connected to the host.
 }
 
-- (uint64_t)currentTime {
+- (uint64_t)currentTime { 
   uint64_t baseTime = mach_absolute_time();
   // Convert from ticks to nanoseconds:
   static mach_timebase_info_data_t s_timebase_info;
@@ -153,13 +152,12 @@
   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
   dispatch_source_set_event_handler(timer, ^{
     dispatch_source_cancel(timer); // one shot timer
-    uint64_t currentTime = [self currentTime];
-    while ((int64_t)(val - currentTime) > 1) {//while ((int64_t)(val - [self getCurrentTime]) > 1) {
+    while ((int64_t)(val - [self currentTime]) > 1) {
       [NSThread sleepForTimeInterval:0];
-      currentTime = [self currentTime];
     }
     block();
   });
+  
   // Now, we employ a dirty trick:
   // Since even with DISPATCH_TIMER_STRICT there can be about 1ms of inaccuracy, we set the timer to
   // fire 1.3ms too early, then we use an until(time) { sleep(); } loop to delay until the exact time
@@ -193,15 +191,18 @@
       hostTimeOffset = (([self currentTime] + ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue)/2) - ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
       // Check that two calculated offsets don't differ by much, do the average.
-      if (llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)) > 5000) {// Error margin in nano seconds
+      if (llabs(tempHostTimeOffset - hostTimeOffset) > 5000) {// Error margin in nano seconds between the two calculated offsets
+        NSLog(@"margin to big recalibrating: %lli", llabs(tempHostTimeOffset - hostTimeOffset));
+
         // Offsets are above error margin, restart process.
         [self calculateTimeOffsetWithHostFromStart:YES];
-        NSLog(@"margin to big recalibrating: %llu", llabs((int64_t)(tempHostTimeOffset - hostTimeOffset)));
         
       } else {
         // Offsets meet the acceptable error margin.
         secondPing = NO; // Reset for next ping
         calibrated = YES; // No calibrating twice.
+        
+        NSLog(@"Accepted margin: %lli", llabs(tempHostTimeOffset - hostTimeOffset));
       }
       
     } else {

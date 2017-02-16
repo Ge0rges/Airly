@@ -22,7 +22,7 @@
 
 @synthesize delegate;
 
-+ (instancetype)sharedManagerWithDisplayName:(NSString *)displayName {
++ (instancetype)sharedManagerWithDisplayName:(NSString * _Nonnull)displayName {
   static ConnectivityManager *sharedManager = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -80,6 +80,12 @@
       [self.advertiser stop];
       self.advertiser = nil;
     }
+  }
+}
+
+- (void)disconnect {
+  for (MCSession *session in self.sessions) {
+    [session disconnect];
   }
 }
 

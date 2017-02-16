@@ -33,7 +33,7 @@
 
 @property (strong, nonnull) UIImageView *backgroundImageView;
 
-@property (strong, nonatomic) ConnectivityManager *connectivityManger;
+@property (strong, nonatomic) ConnectivityManager *connectivityManager;
 @property (strong, nonatomic) NetworkPlayerManager *networkPlayerManager;
 @property (strong, nonatomic) AVPlayer *player;
 
@@ -50,9 +50,9 @@
   // Do any additional setup after loading the view.
   
   // Setup the connectivity manager
-  self.connectivityManger = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
-  [self.connectivityManger advertiseSelfInSessions:YES];
-  self.connectivityManger.delegate = self;
+  self.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
+  [self.connectivityManager advertiseSelfInSessions:YES];
+  self.connectivityManager.delegate = self;
   
   // Setup the Network Player Manager
   self.networkPlayerManager = [NetworkPlayerManager sharedManager];
@@ -76,15 +76,16 @@
   [self.backgroundImageView setImage:gradientBackground];
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [super viewDidDisappear:animated];
+- (void)willMoveToParentViewController:(UIViewController *)parent {
+  [super willMoveToParentViewController:parent];
   
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     // Stop playing
     self.player  = nil;
     
     // Stop advertising
-    [self.connectivityManger advertiseSelfInSessions:NO];
+    [self.connectivityManager advertiseSelfInSessions:NO];
+    [self.connectivityManager disconnect];
     
     // Stop the session
     AVAudioSession *audioSession = [AVAudioSession sharedInstance];
@@ -129,7 +130,7 @@
   // If there is no local URL, then this is not a song.
   if (localURL) {    
     // Fix the path
-    NSString *fixedPath = [[localURL.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resourc.caf"];
+    NSString *fixedPath = [[localURL.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resource.caf"];
     NSURL *fixedURL = [NSURL fileURLWithPath:fixedPath isDirectory:NO];
     
     // Move the file to change its name to the right format
@@ -145,19 +146,19 @@
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {
   if (state == MCSessionStateConnecting) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.songTitleLabel setText:[NSString stringWithFormat:@"Connecting to %@", peerID.displayName]];
+      [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connecting to %@", nil), peerID.displayName]];
     });
     
   } else if (state == MCSessionStateConnected) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.songTitleLabel setText:[NSString stringWithFormat:@"Connected to %@", peerID.displayName]];
+      [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
     });
     
     [self.networkPlayerManager calculateTimeOffsetWithHostFromStart:YES];
 
   } else if (state == MCSessionStateNotConnected) {
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.songTitleLabel setText:[NSString stringWithFormat:@"Disconnected from %@", peerID.displayName]];
+      [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Disconnected from %@", nil), peerID.displayName]];
     });
   }
 }

@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 
+// Managers
+#import "ConnectivityManager.h"
+
 @interface AppDelegate ()
 
 @end
@@ -44,6 +47,10 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
   // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+  
+  // Disconnect all Multipeer sessions
+  ConnectivityManager *connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:@"d"];
+  [connectivityManager disconnect];
 }
 
 @end

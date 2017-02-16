@@ -26,6 +26,7 @@
 		FB2745361E537DE1001CE6F3 /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745311E537DE1001CE6F3 /* SLColorArt.m */; };
 		FB2745371E537DE1001CE6F3 /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745331E537DE1001CE6F3 /* UIImage+ColorArt.m */; };
 		FB2745381E537DE1001CE6F3 /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */; };
+		FB54F8411E5602D200188CBE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB54F83F1E5602D200188CBE /* Localizable.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +63,8 @@
 		FB2745331E537DE1001CE6F3 /* UIImage+ColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ColorArt.m"; path = "ColorArt/UIImage+ColorArt.m"; sourceTree = "<group>"; };
 		FB2745341E537DE1001CE6F3 /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Scale.h"; path = "ColorArt/UIImage+Scale.h"; sourceTree = "<group>"; };
 		FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "ColorArt/UIImage+Scale.m"; sourceTree = "<group>"; };
+		FB54F83E1E56008400188CBE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
+		FB54F8401E5602D200188CBE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +113,7 @@
 			children = (
 				DA5DFD941A92602500849BA1 /* Info.plist */,
 				DA5DFD951A92602500849BA1 /* main.m */,
+				FB54F83F1E5602D200188CBE /* Localizable.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -301,6 +305,7 @@
 			knownRegions = (
 				en,
 				Base,
+				fr,
 			);
 			mainGroup = DA5DFD871A92602500849BA1;
 			productRefGroup = DA5DFD911A92602500849BA1 /* Products */;
@@ -318,6 +323,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA5DFD9F1A92602500849BA1 /* Main.storyboard in Resources */,
+				FB54F8411E5602D200188CBE /* Localizable.strings in Resources */,
 				DA5DFDA41A92602500849BA1 /* LaunchScreen.xib in Resources */,
 				DA5DFDA11A92602500849BA1 /* Images.xcassets in Resources */,
 			);
@@ -353,6 +359,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				DA5DFD9E1A92602500849BA1 /* Base */,
+				FB54F83E1E56008400188CBE /* fr */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -365,6 +372,14 @@
 			name = LaunchScreen.xib;
 			sourceTree = "<group>";
 		};
+		FB54F83F1E5602D200188CBE /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FB54F8401E5602D200188CBE /* fr */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -372,6 +387,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -406,7 +422,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -418,6 +434,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -445,7 +462,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
