@@ -366,6 +366,7 @@
       // Already loaded a song. Send song to this peer only
       MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
       if (currentMediaItem) {
+#warning in the future monitor the calibratedPeers property instead of just a 10 second wait
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// We need to wait for the offset to be calculated
           if (self.playerManager.musicController.playbackState != MPMusicPlaybackStatePlaying) {
             [self playingItemDidChange:nil];
