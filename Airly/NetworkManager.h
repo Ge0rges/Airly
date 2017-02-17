@@ -14,6 +14,8 @@
 // Managers
 #import "ConnectivityManager.h"
 
+typedef void(^ _Nullable completionBlockPeerID)(MCPeerID * _Nullable error);
+
 @interface NetworkManager : NSObject <ConnectivityManagerDelegate>
 
 + (instancetype _Nonnull)sharedManager;
@@ -25,8 +27,9 @@
 
 - (void)askPeersToCalculateOffset;
 - (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools;
-- (uint64_t)currentTime;
+- (uint64_t)currentNetworkTime;
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;
+- (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(completionBlockPeerID)completionBlock;
 
 @property (strong, nonatomic) NSMutableArray <MCPeerID*> * _Nullable calibratedPeers;
 

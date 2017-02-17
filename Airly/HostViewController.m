@@ -363,23 +363,23 @@
         [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
       });
       
-      // Already loaded a song. Send song to this peer only
-      MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
-      if (currentMediaItem) {
-#warning in the future monitor the calibratedPeers property instead of just a 10 second wait
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{// We need to wait for the offset to be calculated
+      // Wait for the peer to calibrate, then update it.
+      [self.networkManager executeBlockWhenPeerCalibrates:peerID block:^(MCPeerID * _Nullable peer) {
+        // Already loaded a song. Send song to this peer only
+        MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
+        if (currentMediaItem) {
           if (self.playerManager.musicController.playbackState != MPMusicPlaybackStatePlaying) {
             [self playingItemDidChange:nil];
             return;
           }
           
           // Send song metadata to peers
-          [self.networkManager sendSongMetadata:currentMediaItem toPeers:@[peerID]];
+          [self.networkManager sendSongMetadata:currentMediaItem toPeers:@[peer]];
           
           // Send song to peers
-          [self.networkManager sendSong:currentMediaItem toPeers:@[peerID] completion:nil];
-        });
-      }
+          [self.networkManager sendSong:currentMediaItem toPeers:@[peer] completion:nil];
+        }
+      }];
     }
       
       break;
