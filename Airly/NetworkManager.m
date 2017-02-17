@@ -113,8 +113,6 @@
 }
 
 #pragma mark - Network Time Sync
-typedef void(^ _Nullable completionBlockPeerID)(MCPeerID * _Nullable error);
-
 // Host
 - (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(completionBlockPeerID)completionBlock {
   [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
