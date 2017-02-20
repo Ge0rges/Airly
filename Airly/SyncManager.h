@@ -1,5 +1,5 @@
 //
-//  NetworkManager.h
+//  SyncManager.h
 //  Airly
 //
 //  Created by Georges Kanaan on 23/11/2016.
@@ -16,7 +16,7 @@
 
 typedef void(^ _Nullable completionBlockPeerID)(MCPeerID * _Nullable error);
 
-@interface NetworkManager : NSObject <ConnectivityManagerDelegate>
+@interface SyncManager : NSObject <ConnectivityManagerDelegate>
 
 + (instancetype _Nonnull)sharedManager;
 
@@ -31,6 +31,6 @@ typedef void(^ _Nullable completionBlockPeerID)(MCPeerID * _Nullable error);
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;
 - (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(completionBlockPeerID)completionBlock;
 
-@property (strong, nonatomic) NSMutableArray <MCPeerID*> * _Nullable calibratedPeers;
+@property (strong, nonatomic) NSMutableSet <MCPeerID*> * _Nullable calibratedPeers;
 
 @end

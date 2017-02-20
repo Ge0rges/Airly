@@ -14,7 +14,7 @@
 // Managers
 #import "ConnectivityManager.h"
 #import "PlayerManager.h"
-#import "NetworkManager.h"
+#import "SyncManager.h"
 
 // Extensions
 #import "UIImage+Gradient.h"
@@ -24,7 +24,7 @@
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
 @property (nonatomic, strong) PlayerManager *playerManager;
-@property (nonatomic, strong) NetworkManager *networkManager;
+@property (nonatomic, strong) SyncManager *syncManager;
 
 @property (strong, nonnull) UIImageView *backgroundImageView;
 
@@ -56,12 +56,12 @@
   [self.playerManager.musicController beginGeneratingPlaybackNotifications];
 
   // Setup networkManager
-  self.networkManager = [NetworkManager sharedManager];
+  self.syncManager = [SyncManager sharedManager];
   
   // Setup the Connectivity Manager
   self.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
   self.connectivityManager.delegate = self;
-  self.connectivityManager.networkManager = self.networkManager;
+  self.connectivityManager.syncManager = self.syncManager;
   
   [self.connectivityManager setupBrowser];
   
@@ -84,7 +84,7 @@
   [super viewDidAppear:animated];
   
   // Guide the user on launch.
-  if (self.isMovingToParentViewController) {
+  if (self.connectivityManager.allPeers.count == 0) {
     
     // Start the initial workflow by inviting players.
     [self invitePlayers:nil];
@@ -122,7 +122,7 @@
     sender.enabled = YES;
   });
   
-  [self.networkManager askPeersToCalculateOffset];
+  [self.syncManager askPeersToCalculateOffset];
 }
 
 #pragma mark - Player
@@ -178,7 +178,7 @@
   }];
   
   // Take this opportunity to resync
-  [self.networkManager askPeersToCalculateOffset];
+  [self.syncManager askPeersToCalculateOffset];
 }
 
 - (IBAction)playbackToggleButtonPressed:(UIBarButtonItem *)sender {
@@ -214,9 +214,11 @@
 }
 
 - (void)playingItemDidChange:(NSNotification *)notification {
+  // Get some needed avriables
+  __block NSArray *allPeers = [self.connectivityManager allPeers];
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
-  if (currentMediaItem) {// Check if end of loop, or if function called by error.
+  if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Check if end of loop, or if function called by error. Also check the peers are calibrated
     // Make sure to pause the music.
     if (notification && self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed.
       [self.playerManager pause];
@@ -232,14 +234,11 @@
       self.pausePlaybackButton.enabled = NO;
     });
     
-    // Get some needed avriables
-    __block NSArray *allPeers = [self.connectivityManager allPeers];
-    
     // Send song metadata to peers
-    uint64_t updateUITime = [self.networkManager sendSongMetadata:currentMediaItem toPeers:allPeers];
+    uint64_t updateUITime = [self.syncManager sendSongMetadata:currentMediaItem toPeers:allPeers];
     
     // Update UI at specified date
-    [self.networkManager atExactTime:updateUITime runBlock:^{
+    [self.syncManager atExactTime:updateUITime runBlock:^{
       [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
     }];
     
@@ -247,13 +246,13 @@
     // Send song to peers
     __block NSInteger peersReceived = 0;
     __block NSInteger peersFailed = 0;
-    [self.networkManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
+    [self.syncManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
       // Increment the peers received number.
-      if (!error) {
-        peersReceived++;
+      if (error) {
+        peersFailed++;
         
       } else {
-        peersFailed++;
+        peersReceived++;
       }
       
       if ((peersReceived+peersFailed) >= allPeers.count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
@@ -285,10 +284,12 @@
   }
   
   // Order a Synchronize play
-  uint64_t timeToPlay = [self.networkManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
+  uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
   
   // Play at specified date
-  [self.networkManager atExactTime:timeToPlay runBlock:^{
+  [self.playerManager.musicController prepareToPlay];
+
+  [self.syncManager atExactTime:timeToPlay runBlock:^{
     [self.playerManager play];
   }];
 }
@@ -309,10 +310,10 @@
   });
   
   // Order a synchronized pause
-  uint64_t timeToPause = [self.networkManager synchronisePause];
+  uint64_t timeToPause = [self.syncManager synchronisePause];
   
   // Pause at specified date
-  [self.networkManager atExactTime:timeToPause runBlock:^{
+  [self.syncManager atExactTime:timeToPause runBlock:^{
     [self.playerManager pause];
   }];
 }
@@ -364,7 +365,7 @@
       });
       
       // Wait for the peer to calibrate, then update it.
-      [self.networkManager executeBlockWhenPeerCalibrates:peerID block:^(MCPeerID * _Nullable peer) {
+      [self.syncManager executeBlockWhenPeerCalibrates:peerID block:^(MCPeerID * _Nullable peer) {
         // Already loaded a song. Send song to this peer only
         MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
         if (currentMediaItem) {
@@ -374,10 +375,10 @@
           }
           
           // Send song metadata to peers
-          [self.networkManager sendSongMetadata:currentMediaItem toPeers:@[peer]];
+          [self.syncManager sendSongMetadata:currentMediaItem toPeers:@[peer]];
           
           // Send song to peers
-          [self.networkManager sendSong:currentMediaItem toPeers:@[peer] completion:nil];
+          [self.syncManager sendSong:currentMediaItem toPeers:@[peer] completion:nil];
         }
       }];
     }

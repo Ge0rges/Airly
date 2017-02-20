@@ -20,7 +20,7 @@
 		DA5DFDC51A94C67400849BA1 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5DFDC41A94C67400849BA1 /* MediaPlayer.framework */; };
 		DA5DFDCB1A95AAA200849BA1 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5DFDCA1A95AAA200849BA1 /* PlayerViewController.m */; };
 		DA5DFDCD1A95F95500849BA1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */; };
-		FB181CBC1DE61590000BCFA4 /* NetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB181CBB1DE61590000BCFA4 /* NetworkManager.m */; };
+		FB181CBC1DE61590000BCFA4 /* SyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB181CBB1DE61590000BCFA4 /* SyncManager.m */; };
 		FB2745271E53746B001CE6F3 /* UIImage+Gradient.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */; };
 		FB27452B1E5374CA001CE6F3 /* UIColor+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = FB27452A1E5374CA001CE6F3 /* UIColor+Helpers.m */; };
 		FB2745361E537DE1001CE6F3 /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745311E537DE1001CE6F3 /* SLColorArt.m */; };
@@ -51,8 +51,8 @@
 		DA5DFDC91A95AAA200849BA1 /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
 		DA5DFDCA1A95AAA200849BA1 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
 		DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		FB181CBA1DE61590000BCFA4 /* NetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkManager.h; sourceTree = "<group>"; };
-		FB181CBB1DE61590000BCFA4 /* NetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkManager.m; sourceTree = "<group>"; };
+		FB181CBA1DE61590000BCFA4 /* SyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncManager.h; sourceTree = "<group>"; };
+		FB181CBB1DE61590000BCFA4 /* SyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncManager.m; sourceTree = "<group>"; };
 		FB2745251E53746B001CE6F3 /* UIImage+Gradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Gradient.h"; sourceTree = "<group>"; };
 		FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Gradient.m"; sourceTree = "<group>"; };
 		FB2745291E5374CA001CE6F3 /* UIColor+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Helpers.h"; sourceTree = "<group>"; };
@@ -180,13 +180,13 @@
 			name = Controllers;
 			sourceTree = "<group>";
 		};
-		FB181CBD1DE61594000BCFA4 /* NetworkManager */ = {
+		FB181CBD1DE61594000BCFA4 /* SyncManager */ = {
 			isa = PBXGroup;
 			children = (
-				FB181CBA1DE61590000BCFA4 /* NetworkManager.h */,
-				FB181CBB1DE61590000BCFA4 /* NetworkManager.m */,
+				FB181CBA1DE61590000BCFA4 /* SyncManager.h */,
+				FB181CBB1DE61590000BCFA4 /* SyncManager.m */,
 			);
-			name = NetworkManager;
+			name = SyncManager;
 			sourceTree = "<group>";
 		};
 		FB2745281E53746F001CE6F3 /* UIImage Extensions */ = {
@@ -225,7 +225,7 @@
 			children = (
 				DA5DFDC71A94C69100849BA1 /* ConnectivityManager */,
 				DA5DFDC61A94C68600849BA1 /* Player Manager */,
-				FB181CBD1DE61594000BCFA4 /* NetworkManager */,
+				FB181CBD1DE61594000BCFA4 /* SyncManager */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -342,7 +342,7 @@
 				DA5DFDC01A93C4B700849BA1 /* HostViewController.m in Sources */,
 				FB27452B1E5374CA001CE6F3 /* UIColor+Helpers.m in Sources */,
 				DA5DFDC31A94C66500849BA1 /* PlayerManager.m in Sources */,
-				FB181CBC1DE61590000BCFA4 /* NetworkManager.m in Sources */,
+				FB181CBC1DE61590000BCFA4 /* SyncManager.m in Sources */,
 				FB2745271E53746B001CE6F3 /* UIImage+Gradient.m in Sources */,
 				FB2745371E537DE1001CE6F3 /* UIImage+ColorArt.m in Sources */,
 				DA5DFD991A92602500849BA1 /* AppDelegate.m in Sources */,

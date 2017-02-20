@@ -27,7 +27,7 @@
 @interface ConnectivityManager : NSObject <MCSessionDelegate, MCAdvertiserAssistantDelegate, MCBrowserViewControllerDelegate>
 
 @property (nonatomic, assign) id<ConnectivityManagerDelegate> _Nullable delegate;
-@property (nonatomic, assign) id<ConnectivityManagerDelegate> _Nullable networkManager;
+@property (nonatomic, assign) id<ConnectivityManagerDelegate> _Nullable syncManager;
 @property (nonatomic, strong) MCBrowserViewController * _Nullable browser;
 @property (nonatomic, strong) NSMutableArray * _Nullable sessions;
 

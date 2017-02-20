@@ -52,7 +52,7 @@
 }
 
 - (MCSession *)newSession {
-  MCSession *session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionNone];
+  MCSession *session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionOptional];
   session.delegate = self;
   
   return session;
@@ -107,8 +107,8 @@
     [self.delegate session:session peer:peerID didChangeState:state];
   }
   
-  if ([self.networkManager respondsToSelector:@selector(session:peer:didChangeState:)]) {
-    [self.networkManager session:session peer:peerID didChangeState:state];
+  if ([self.syncManager respondsToSelector:@selector(session:peer:didChangeState:)]) {
+    [self.syncManager session:session peer:peerID didChangeState:state];
   }
 }
 
@@ -149,8 +149,8 @@
     [self.delegate session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
   }
   
-  if ([self.networkManager respondsToSelector:@selector(session:didStartReceivingResourceWithName:fromPeer:withProgress:)]) {
-    [self.networkManager session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
+  if ([self.syncManager respondsToSelector:@selector(session:didStartReceivingResourceWithName:fromPeer:withProgress:)]) {
+    [self.syncManager session:session didStartReceivingResourceWithName:resourceName fromPeer:peerID withProgress:progress];
   }
 }
 
@@ -159,8 +159,8 @@
     [self.delegate session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
   }
   
-  if ([self.networkManager respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
-    [self.networkManager session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
+  if ([self.syncManager respondsToSelector:@selector(session:didFinishReceivingResourceWithName:fromPeer:atURL:withError:)]) {
+    [self.syncManager session:session didFinishReceivingResourceWithName:resourceName fromPeer:peerID atURL:localURL withError:error];
   }
 }
 
@@ -169,8 +169,8 @@
     [self.delegate session:session didReceiveData:data fromPeer:peerID];
   }
   
-  if ([self.networkManager respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
-    [self.networkManager session:session didReceiveData:data fromPeer:peerID];
+  if ([self.syncManager respondsToSelector:@selector(session:didReceiveData:fromPeer:)]) {
+    [self.syncManager session:session didReceiveData:data fromPeer:peerID];
   }
 }
 
