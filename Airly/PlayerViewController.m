@@ -154,7 +154,7 @@
       [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
     });
     
-    [self.syncManager calculateTimeOffsetWithHostFromStart:YES];
+    [self.syncManager calculateTimeOffsetWithHost];
 
   } else if (state == MCSessionStateNotConnected) {
     dispatch_async(dispatch_get_main_queue(), ^{

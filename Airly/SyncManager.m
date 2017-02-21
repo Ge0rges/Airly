@@ -14,7 +14,6 @@
 
 @interface SyncManager () {
   NSMutableArray *calculatedOffsets;
-  BOOL calibrated;
 }
 
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
@@ -36,7 +35,6 @@
     sharedManager.hostTimeOffset = 0;
     sharedManager.numberOfCalibrations = 1;
     sharedManager.calibratedPeers = [NSMutableSet new];
-    sharedManager->calibrated = NO;
     sharedManager->calculatedOffsets = [NSMutableArray new];
     
   });
@@ -141,10 +139,7 @@
 }
 
 // Meant for speakers.
-- (void)calculateTimeOffsetWithHostFromStart:(BOOL)resetBools {
-  if (resetBools) {// These bools are used to track the state of calculation. They must be set to no to go through a full calibration.
-    calibrated = NO;
-  }
+- (void)calculateTimeOffsetWithHost {
   
   for (int i=0; i<self.numberOfCalibrations; i++) {
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
@@ -201,7 +196,7 @@
   
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
-    [self calculateTimeOffsetWithHostFromStart:YES];
+    [self calculateTimeOffsetWithHost];
     
     return;
     
@@ -244,8 +239,6 @@
       }
       
       self.hostTimeOffset = numeratorForAverage/(int64_t)self.numberOfCalibrations;
-      
-      calibrated = YES; // No calibrating twice.
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
