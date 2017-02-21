@@ -221,11 +221,14 @@
   __block NSArray *allPeers = [self.connectivityManager allPeers];
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
+  
   if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Check if end of loop, or if function called by error. Also check the peers are calibrated
-    // Make sure to pause the music.
-    if (notification && self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed.
-      [self.playerManager pause];
-      [self pausePlayback];
+
+    if (notification) {// Check if the song changed
+      if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed so pause the music
+        [self.playerManager pause];
+        [self pausePlayback];
+      }
       
       // Reset to playback time to 0
       self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
@@ -262,7 +265,8 @@
         [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
       }
     }];
-  
+  } else if (!currentMediaItem){
+    [self pausePlayback];// This will update the UI for a end of song.
   }
 }
 
