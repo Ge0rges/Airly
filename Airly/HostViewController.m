@@ -293,9 +293,6 @@
   [self.syncManager atExactTime:timeToPlay runBlock:^{
     [self.playerManager play];
   }];
-  
-  // Take this opportunity to resync
-  [self.syncManager askPeersToCalculateOffset];
 }
 
 - (void)pausePlayback {
