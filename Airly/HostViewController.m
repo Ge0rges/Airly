@@ -20,7 +20,9 @@
 #import "UIImage+Gradient.h"
 #import "UIColor+Helpers.h"
 
-@interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate, UINavigationBarDelegate>
+@interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate, UINavigationBarDelegate> {
+  BOOL didInitialSetup;
+}
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
 @property (nonatomic, strong) PlayerManager *playerManager;
@@ -83,15 +85,16 @@
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   
-  // Guide the user on launch.
-  if (self.connectivityManager.allPeers.count == 0) {
+  NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+
+  // Guide the user on launch (both play and pause will be present)
+  if (!didInitialSetup) {
     
     // Start the initial workflow by inviting players.
     [self invitePlayers:nil];
+    didInitialSetup = YES;
     
     // Remove pause button (initial)
-    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
-    
     if ([toolbarButtons containsObject:self.pausePlaybackButton]) {
       [toolbarButtons removeObject:self.pausePlaybackButton];
     }
@@ -287,8 +290,6 @@
   uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
   
   // Play at specified date
-  [self.playerManager.musicController prepareToPlay];
-
   [self.syncManager atExactTime:timeToPlay runBlock:^{
     [self.playerManager play];
   }];

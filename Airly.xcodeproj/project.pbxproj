@@ -21,6 +21,7 @@
 		DA5DFDCB1A95AAA200849BA1 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA5DFDCA1A95AAA200849BA1 /* PlayerViewController.m */; };
 		DA5DFDCD1A95F95500849BA1 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */; };
 		FB181CBC1DE61590000BCFA4 /* SyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB181CBB1DE61590000BCFA4 /* SyncManager.m */; };
+		FB25802D1E5B477100605951 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB25802C1E5B477100605951 /* MobileCoreServices.framework */; };
 		FB2745271E53746B001CE6F3 /* UIImage+Gradient.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */; };
 		FB27452B1E5374CA001CE6F3 /* UIColor+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = FB27452A1E5374CA001CE6F3 /* UIColor+Helpers.m */; };
 		FB2745361E537DE1001CE6F3 /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745311E537DE1001CE6F3 /* SLColorArt.m */; };
@@ -53,6 +54,7 @@
 		DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FB181CBA1DE61590000BCFA4 /* SyncManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncManager.h; sourceTree = "<group>"; };
 		FB181CBB1DE61590000BCFA4 /* SyncManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncManager.m; sourceTree = "<group>"; };
+		FB25802C1E5B477100605951 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		FB2745251E53746B001CE6F3 /* UIImage+Gradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Gradient.h"; sourceTree = "<group>"; };
 		FB2745261E53746B001CE6F3 /* UIImage+Gradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Gradient.m"; sourceTree = "<group>"; };
 		FB2745291E5374CA001CE6F3 /* UIColor+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Helpers.h"; sourceTree = "<group>"; };
@@ -72,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB25802D1E5B477100605951 /* MobileCoreServices.framework in Frameworks */,
 				DA5DFDCD1A95F95500849BA1 /* AVFoundation.framework in Frameworks */,
 				DA5DFDC51A94C67400849BA1 /* MediaPlayer.framework in Frameworks */,
 				DA5DFDBD1A9264C000849BA1 /* MultipeerConnectivity.framework in Frameworks */,
@@ -251,6 +254,7 @@
 		FBC0E61B1CA02ABD004A8852 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB25802C1E5B477100605951 /* MobileCoreServices.framework */,
 				DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */,
 				DA5DFDC41A94C67400849BA1 /* MediaPlayer.framework */,
 				DA5DFDBC1A9264C000849BA1 /* MultipeerConnectivity.framework */,
