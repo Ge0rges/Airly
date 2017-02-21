@@ -74,7 +74,7 @@
 
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers {
   // Send the song metadata
-  uint64_t timeToUpdateUI = [self currentNetworkTime] + 500000000;
+  uint64_t timeToUpdateUI = [self currentNetworkTime] + 1000000000;
   NSMutableDictionary *metadataDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"metadata",
                                                                                        @"songName": (mediaItem.title) ?: @"Unknown Song Name",
                                                                                        @"songArtist": (mediaItem.artist) ?: @"Unknown Artist",
@@ -181,7 +181,6 @@
     while (val > [self currentNetworkTime]) {
       [NSThread sleepForTimeInterval:0];
     }
-    NSLog(@"executed block that request time: %llu at time: %llu", val, [self currentNetworkTime]);
     block();
   });
   
@@ -245,7 +244,6 @@
       }
       
       self.hostTimeOffset = numeratorForAverage/(int64_t)self.numberOfCalibrations;
-      NSLog(@"calculated hostTimeOffset: %lli from %llu offsets: %@", self.hostTimeOffset, self.numberOfCalibrations, calculatedOffsets);
       
       calibrated = YES; // No calibrating twice.
       
