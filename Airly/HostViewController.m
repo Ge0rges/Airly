@@ -244,7 +244,6 @@
       // Increment the peers received number.
       if (error) {
         peersFailed++;
-        NSLog(@"Error sending file: %@", error);
         
       } else {
         peersReceived++;

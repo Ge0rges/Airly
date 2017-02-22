@@ -11,6 +11,7 @@
 // Frameworks
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach_time.h>
+#import <unistd.h>
 
 @interface SyncManager () {
   NSMutableArray *calculatedOffsets;
@@ -167,7 +168,7 @@
   }
   
   uint64_t timeNanoSeconds = baseTime * sTimebaseInfo.numer / sTimebaseInfo.denom;
-  return timeNanoSeconds - self.hostTimeOffset;
+  return (int64_t)timeNanoSeconds - self.hostTimeOffset;
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
@@ -179,8 +180,8 @@
   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
   dispatch_source_set_event_handler(timer, ^{
     dispatch_source_cancel(timer); // one shot timer
-    while (val > [self currentNetworkTime]) {
-      [NSThread sleepForTimeInterval:0];
+    while (val > [self currentNetworkTime]+(uint64_t)1) {
+      sleep(0);
     }
     block();
   });
@@ -233,8 +234,8 @@
     //uint64_t latencyWithHost = ([self currentNetworkTime] - timePingSent)/2;// Calculates the estimated latency for one way travel
     
     int64_t calculatedOffset = ((int64_t)[self currentNetworkTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
-    //calculatedOffset2 = latencyWithHost - timeHostReceivedPing + timePingSent;// WAY 2
-    //calculatedOffset3 = -latencyWithHost - timeHostReceivedPing + [self currentNetworkTime];// WAY 3
+    //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2
+    //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentNetworkTime];// WAY 3
     
     [calculatedOffsets addObject:[NSNumber numberWithLongLong:calculatedOffset]];
     
