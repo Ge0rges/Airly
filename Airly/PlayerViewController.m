@@ -29,6 +29,8 @@
   NSString *songArtist;
   
   UIImage *albumImage;
+  
+  NSURL *songURL;
 }
 
 @property (strong, nonnull) UIImageView *backgroundImageView;
@@ -127,19 +129,20 @@
 }
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
+  
   // If there is no local URL, then this is not a song.
   if (localURL) {    
     // Fix the path
-    NSString *fixedPath = [[localURL.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resource.caf"];
-    NSURL *fixedURL = [NSURL fileURLWithPath:fixedPath isDirectory:NO];
+    NSString *songPath = [[localURL.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resource.caf"];
+    songURL = [NSURL fileURLWithPath:songPath isDirectory:NO];
     
     // Move the file to change its name to the right format
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    [fileManager removeItemAtURL:fixedURL error:&error];//delete current song (old)
-    [fileManager moveItemAtURL:localURL toURL:fixedURL error:nil];//move the new song file
+    [fileManager removeItemAtURL:songURL error:&error];// Delete previous song file
+    [fileManager moveItemAtURL:localURL toURL:songURL error:&error];// Move the new song file
 
     // Load the song
-    [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:fixedURL]];
+    [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:songURL]];
   }
 }
 
@@ -154,18 +157,13 @@
       [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
     });
     
-    [self.syncManager calculateTimeOffsetWithHost];
-
   } else if (state == MCSessionStateNotConnected) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Disconnected from %@", nil), peerID.displayName]];
     });
+    
+    [[NSFileManager defaultManager] removeItemAtURL:songURL error:nil];// Delete previous song file
   }
-}
-
-// White status bar
-- (UIStatusBarStyle)preferredStatusBarStyle {
-  return UIStatusBarStyleLightContent;
 }
 
 #pragma mark - Player
@@ -206,9 +204,9 @@
   }
 }
 
-#pragma mark - Navigation
-- (IBAction)dismissView:(id)sender {
-  [self.navigationController popToRootViewControllerAnimated:YES];
+#pragma mark - Other
+// White status bar
+- (UIStatusBarStyle)preferredStatusBarStyle {
+  return UIStatusBarStyleLightContent;
 }
-
 @end

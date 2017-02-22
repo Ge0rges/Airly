@@ -56,7 +56,7 @@
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playingItemDidChange:) name:MPMusicPlayerControllerNowPlayingItemDidChangeNotification object:self.playerManager.musicController];
   
   [self.playerManager.musicController beginGeneratingPlaybackNotifications];
-
+  
   // Setup networkManager
   self.syncManager = [SyncManager sharedManager];
   
@@ -86,7 +86,7 @@
   [super viewDidAppear:animated];
   
   NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
-
+  
   // Guide the user on launch (both play and pause will be present)
   if (!didInitialSetup) {
     
@@ -118,15 +118,6 @@
   [self presentViewController:self.connectivityManager.browser animated:YES completion:nil];
 }
 
-- (IBAction)syncHosts:(UIBarButtonItem *)sender {
-  sender.enabled = NO;
-  
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(10 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-    sender.enabled = YES;
-  });
-  
-  [self.syncManager askPeersToCalculateOffset];
-}
 
 #pragma mark - Player
 - (void)updatePlayerUI {
@@ -158,7 +149,7 @@
   } else {
     // Random gradient
     UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
-
+    
     // Animate all changes
     [UIView animateWithDuration:0.3 animations:^{
       [self.albumImageView setImage:nil];
@@ -179,9 +170,6 @@
   [self.playerManager presentMediaPickerOnController:self completion:^{
     sender.enabled = YES;
   }];
-  
-  // Take this opportunity to resync
-  [self.syncManager askPeersToCalculateOffset];
 }
 
 - (IBAction)playbackToggleButtonPressed:(UIBarButtonItem *)sender {
@@ -222,8 +210,8 @@
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
   
-  if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Check if end of loop, or if function called by error. Also check the peers are calibrated
-
+  if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Make sure peers are calibrated and song is loaded
+    
     if (notification) {// Check if the song changed
       if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed so pause the music
         [self.playerManager pause];
@@ -256,6 +244,7 @@
       // Increment the peers received number.
       if (error) {
         peersFailed++;
+        NSLog(@"Error sending file: %@", error);
         
       } else {
         peersReceived++;
@@ -265,8 +254,9 @@
         [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
       }
     }];
+    
   } else if (!currentMediaItem){
-    [self pausePlayback];// This will update the UI for a end of song.
+    [self pausePlayback];// This will update the UI for a end of song and resync.
   }
 }
 
@@ -279,10 +269,11 @@
       [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.playPlaybackButton] withObject:self.pausePlaybackButton];
     }
     
-    self.playPlaybackButton.enabled = NO;
+    self.pausePlaybackButton.enabled = YES;
     
     [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-    self.pausePlaybackButton.enabled = YES;
+    self.playPlaybackButton.enabled = NO;
+    
   });
   
   // Set the playback time on the current device
@@ -308,10 +299,11 @@
       [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
     }
     
-    self.pausePlaybackButton.enabled = NO;
+    self.playPlaybackButton.enabled = YES;
     
     [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-    self.playPlaybackButton.enabled = YES;
+    self.pausePlaybackButton.enabled = NO;
+    
   });
   
   // Order a synchronized pause
@@ -323,7 +315,7 @@
   }];
   
   // Take this opportunity to resync
-  [self.syncManager askPeersToCalculateOffset];
+  [self.syncManager askPeersToCalculateOffset:self.connectivityManager.allPeers];
 }
 
 #pragma mark - ConnectivityManagerDelegate & PlayerManagerDelegate
@@ -372,7 +364,10 @@
         [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
       });
       
-      // Wait for the peer to calibrate, then update it.
+      // Ask peer to calculate offset.
+      [self.syncManager askPeersToCalculateOffset:@[peerID]];
+      
+      // Wait for peer to calibrate then send the appropriate data.
       [self.syncManager executeBlockWhenPeerCalibrates:peerID block:^(MCPeerID * _Nullable peer) {
         // Already loaded a song. Send song to this peer only
         MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];

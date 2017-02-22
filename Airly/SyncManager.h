@@ -25,7 +25,7 @@ typedef void(^ _Nullable calibrationBlock)(MCPeerID * _Nullable peer);
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers;
 - (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
 
-- (void)askPeersToCalculateOffset;
+- (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers;
 - (void)calculateTimeOffsetWithHost;
 - (uint64_t)currentNetworkTime;
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;

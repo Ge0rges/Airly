@@ -288,47 +288,37 @@ typedef struct RGBAPixel
 }
 
 
-- (void)_findTextColors:(NSCountedSet*)colors primaryColor:(UIColor**)primaryColor secondaryColor:(UIColor**)secondaryColor detailColor:(UIColor**)detailColor backgroundColor:(UIColor*)backgroundColor
-{
+- (void)_findTextColors:(NSCountedSet*)colors primaryColor:(UIColor**)primaryColor secondaryColor:(UIColor**)secondaryColor detailColor:(UIColor**)detailColor backgroundColor:(UIColor*)backgroundColor {
 	NSEnumerator *enumerator = [colors objectEnumerator];
 	UIColor *curColor = nil;
 	NSMutableArray *sortedColors = [NSMutableArray arrayWithCapacity:[colors count]];
 	BOOL findDarkTextColor = ![backgroundColor pc_isDarkColor];
 
-	while ( (curColor = [enumerator nextObject]) != nil )
-	{
+	while ( (curColor = [enumerator nextObject]) != nil ) {
         NSUInteger colorCount = [colors countForObject:curColor];
         
         if ( colorCount <= realThreshold ) // prevent using random colors
             continue;
 		curColor = [curColor pc_colorWithMinimumSaturation:MINIMUM_SATURATION_THRESHOLD];
 
-		if ( [curColor pc_isDarkColor] == findDarkTextColor )
-		{
+		if ( [curColor pc_isDarkColor] == findDarkTextColor ) {
 			[sortedColors addObject:[[PCCountedColor alloc] initWithColor:curColor count:colorCount]];
 		}
 	}
 
 	[sortedColors sortUsingSelector:@selector(compare:)];
 
-	for ( PCCountedColor *curContainer in sortedColors )
-	{
+	for ( PCCountedColor *curContainer in sortedColors ) {
 		curColor = curContainer.color;
-//        NSLog(@"%@, %d", [TiUtils colorHexString:curColor], curContainer.count)
-		if ( *primaryColor == nil )
-		{
+		if ( *primaryColor == nil ) {
 			if ( [curColor pc_isContrastingColor:backgroundColor] )
 				*primaryColor = curColor;
-		}
-		else if ( *secondaryColor == nil )
-		{
+		} else if ( *secondaryColor == nil ) {
 			if ( ![*primaryColor pc_isDistinct:curColor] || ![curColor pc_isContrastingColor:backgroundColor] )
 				continue;
 
 			*secondaryColor = curColor;
-		}
-		else if ( *detailColor == nil )
-		{
+		} else if ( *detailColor == nil ) {
 			if ( ![*secondaryColor pc_isDistinct:curColor] || ![*primaryColor pc_isDistinct:curColor] || ![curColor pc_isContrastingColor:backgroundColor] )
 				continue;
             
