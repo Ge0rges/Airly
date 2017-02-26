@@ -52,7 +52,7 @@
 }
 
 - (MCSession *)newSession {
-  MCSession *session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionOptional];
+  MCSession *session = [[MCSession alloc] initWithPeer:self.peerID securityIdentity:nil encryptionPreference:MCEncryptionNone];
   session.delegate = self;
   
   return session;

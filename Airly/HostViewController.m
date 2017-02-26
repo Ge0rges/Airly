@@ -214,8 +214,8 @@
     
     if (notification) {// Check if the song changed
       if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed so pause the music
-        [self.playerManager pause];
-        [self pausePlayback];
+        [self performSelectorInBackground:@selector(pausePlayback) withObject:nil];
+        [NSThread sleepForTimeInterval:1.2];
       }
       
       // Reset to playback time to 0

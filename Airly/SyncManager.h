@@ -32,5 +32,6 @@ typedef void(^ _Nullable calibrationBlock)(MCPeerID * _Nullable peer);
 - (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(calibrationBlock)completionBlock;// Once peer calibrates this will execute completionBlock
 
 @property (strong, nonatomic) NSMutableSet <MCPeerID*> * _Nullable calibratedPeers;// Array of all peers that have already calibrated
+@property (nonatomic) uint64_t numberOfCalibrations;// The number of calibrations to be used to calculate the avergae offset
 
 @end

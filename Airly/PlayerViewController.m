@@ -169,7 +169,6 @@
 #pragma mark - Player
 - (void)updatePlayerUI {
   // Update player UI based on received metadata
-  
   if (albumImage) {
     // Generate a background gradient to match the album art
     CGSize imageViewSize = self. backgroundImageView.frame.size;

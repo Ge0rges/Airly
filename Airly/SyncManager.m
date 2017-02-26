@@ -21,7 +21,6 @@
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
 
 @property (nonatomic) int64_t hostTimeOffset;
-@property (nonatomic) uint64_t numberOfCalibrations;
 
 @end
 
@@ -55,7 +54,7 @@
   
   // Send data
   [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
-    
+
   return timeToPlay;
 }
 
@@ -74,17 +73,20 @@
 
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers {
   // Send the song metadata
-  uint64_t timeToUpdateUI = [self currentNetworkTime] + 1000000000;
   NSMutableDictionary *metadataDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"metadata",
                                                                                        @"songName": (mediaItem.title) ?: @"Unknown Song Name",
-                                                                                       @"songArtist": (mediaItem.artist) ?: @"Unknown Artist",
-                                                                                       @"date": [NSNumber numberWithUnsignedLongLong:timeToUpdateUI]
+                                                                                       @"songArtist": (mediaItem.artist) ?: @"Unknown Artist"
                                                                                        }];
   
-  UIImage *albumArtwork = [mediaItem.artwork imageWithSize:CGSizeMake(320, 290)];
+  
   if (mediaItem.artwork) {
+    UIImage *albumArtwork = [mediaItem.artwork imageWithSize:CGSizeMake(320, 290)];
     [metadataDic addEntriesFromDictionary:@{@"songAlbumArt": UIImagePNGRepresentation(albumArtwork)}];
   }
+  
+  // Add the time to update last.
+  uint64_t timeToUpdateUI = [self currentNetworkTime] + 500000000;
+  [metadataDic addEntriesFromDictionary:@{@"date": [NSNumber numberWithUnsignedLongLong:timeToUpdateUI]}];
   
   NSData *metadata = [NSKeyedArchiver archivedDataWithRootObject:metadataDic];
   
@@ -94,7 +96,7 @@
 }
 
 - (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers completion:(void(^ _Nullable)(NSError * _Nullable error))handler {
-  if (peers.count == 0) return;
+  if (peers.count == 0) handler(nil);
   
   // Send the song file
   // Get resource path
@@ -145,12 +147,26 @@
   if (!isCalibrating) {
     isCalibrating = YES;// Used to track the calibration
     [calculatedOffsets removeAllObjects];// Remove all previously calculated offsets
-    
+    self.hostTimeOffset = 0;// Reset the host offset so we can calibrate properly
+
     // Send a ping per calibration required (the average will be done later)
     for (int i=0; i<self.numberOfCalibrations; i++) {
+      
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentNetworkTime]],
+                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentNetworkTime]]
                                                                                           }];
+      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
+      
+      [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+    }
+    
+    // Handle 0 calibrations
+    if (self.numberOfCalibrations == 0) {
+      isCalibrating = NO;
+      self.hostTimeOffset = 0;
+      
+      // Let the host know we calibrated
+      NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
       [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
@@ -172,6 +188,10 @@
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
+  if (val < [self currentNetworkTime]) {// The value has already passed execute immediately.
+    block();
+    return;
+  }
   
   // Use the most accurate timing possible to trigger an event at the specified DTime.
   // This is much more accurate than dispatch_after(...), which has a 10% "leeway" by default.
@@ -180,7 +200,7 @@
   dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, DISPATCH_TIMER_STRICT, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
   dispatch_source_set_event_handler(timer, ^{
     dispatch_source_cancel(timer); // one shot timer
-    while (val > [self currentNetworkTime]+(uint64_t)1) {
+    while (val > [self currentNetworkTime]) {
       sleep(0);
     }
     block();
@@ -192,7 +212,7 @@
   // that we wanted. This takes us from an accuracy of ~1ms to an accuracy of ~0.01ms, i.e. two orders
   // of magnitude improvement. However, of course the downside is that this will block the main thread
   // for 1.3ms.
-  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, val - [self currentNetworkTime] - 1300000);
+  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)val + self.hostTimeOffset - (int64_t)[self currentNetworkTime] - 1300000);
   dispatch_source_set_timer(timer, at_time, DISPATCH_TIME_FOREVER /*one shot*/, 0 /* minimal leeway */);
   dispatch_resume(timer);
 }
@@ -265,6 +285,8 @@
   // Remove the disconnected peer from the calibratde peer list if it's there.
   if (state == MCSessionStateNotConnected) {
     [self.calibratedPeers removeObject:peerID];
+    isCalibrating = NO;
+    self.hostTimeOffset = 0;
   }
 }
 
