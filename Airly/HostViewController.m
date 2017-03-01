@@ -22,6 +22,7 @@
 
 @interface HostViewController () <ConnectivityManagerDelegate, PlayerManagerDelegate, UINavigationBarDelegate> {
   BOOL didInitialSetup;
+  MPMediaItem *lastSentMediaItem;
 }
 
 @property (nonatomic, strong) ConnectivityManager *connectivityManager;
@@ -101,6 +102,8 @@
     
     self.pausePlaybackButton.enabled = NO;
     self.playPlaybackButton.enabled = NO;
+    self.forwardPlaybackButton.enabled = NO;
+    self.rewindPlaybackButton.enabled = NO;
     
     [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
   }
@@ -139,9 +142,6 @@
         [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
         [self.songTitleLabel setText:[self.playerManager currentSongName]];
         
-        self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
-        self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
-        
         [self.backgroundImageView setImage:gradientBackground];
       }];
     }];
@@ -155,9 +155,6 @@
       [self.albumImageView setImage:nil];
       [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
       [self.songTitleLabel setText:[self.playerManager currentSongName]];
-      
-      self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
-      self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
       
       [self.backgroundImageView setImage:gradientBackground];
     }];
@@ -183,9 +180,13 @@
 }
 
 - (IBAction)rewindButtonPressed:(id)sender {
-  [self.playerManager pause];
-  [self pausePlayback];
-  
+  // Update Controls
+  self.forwardPlaybackButton.enabled = NO;
+  self.rewindPlaybackButton.enabled = NO;
+  self.playPlaybackButton.enabled = NO;
+  self.pausePlaybackButton.enabled = NO;
+
+
   // Reset to playback time to 0
   self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
   
@@ -194,9 +195,13 @@
 }
 
 - (IBAction)forwardButtonPressed:(id)sender {
-  [self.playerManager pause];
-  [self pausePlayback];
-  
+  // Update Controls
+  self.forwardPlaybackButton.enabled = NO;
+  self.rewindPlaybackButton.enabled = NO;
+  self.playPlaybackButton.enabled = NO;
+  self.pausePlaybackButton.enabled = NO;
+
+
   // Reset to playback time to 0
   self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
   
@@ -205,27 +210,36 @@
 }
 
 - (void)playingItemDidChange:(NSNotification *)notification {
-  // Get some needed avriables
+  // Get some needed variables
   __block NSArray *allPeers = [self.connectivityManager allPeers];
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
   
   if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Make sure peers are calibrated and song is loaded
+    // Before anything else, check if this is just the same song restarting, if it is just play.
+    if ([lastSentMediaItem isEqual:currentMediaItem]) {
+      [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+      return;
+    }
+    
+    
+    if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song still palying so pause the music
+      [self.playerManager pause];
+      [self performSelectorInBackground:@selector(pausePlayback) withObject:nil];
+      [NSThread sleepForTimeInterval:1.2];// For some reason this avoids issues on peers, probably a queue thing.
+    }
     
     if (notification) {// Check if the song changed
-      if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song ended, then changed so pause the music
-        [self performSelectorInBackground:@selector(pausePlayback) withObject:nil];
-        [NSThread sleepForTimeInterval:1.2];
-      }
-      
       // Reset to playback time to 0
       self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
     }
     
-    // Disable the play/pause buttons
+    // Disable the control buttons
     dispatch_async(dispatch_get_main_queue(), ^{
       self.playPlaybackButton.enabled = NO;
       self.pausePlaybackButton.enabled = NO;
+      self.forwardPlaybackButton.enabled = NO;
+      self.rewindPlaybackButton.enabled = NO;
     });
     
     // Send song metadata to peers
@@ -237,7 +251,6 @@
     }];
     
     
-    // Send song to peers
     __block NSInteger peersReceived = 0;
     __block NSInteger peersFailed = 0;
     [self.syncManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
@@ -252,9 +265,12 @@
       
       if ((peersReceived+peersFailed) >= allPeers.count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
         [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+        lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
         
         dispatch_async(dispatch_get_main_queue(), ^{
           if (peersFailed > 0) {// Show an error
+            lastSentMediaItem = nil;// If this song replays it will be sent to all peers
+            
             UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Failed to Send" message:@"Sorry but Airly failed to send the current song to one or more listeners." preferredStyle:UIAlertControllerStyleAlert];
             
             [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
@@ -270,7 +286,21 @@
 }
 
 - (void)startPlaybackAtTime:(NSTimeInterval)playbackTime {
-  // Hide play button. Show pause button.
+  // Order a Synchronize play
+  uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
+  
+  // Play at specified date
+  [self.syncManager atExactTime:timeToPlay runBlock:^{
+    // Set the playback time on the current device
+    if (playbackTime != self.playerManager.musicController.currentPlaybackTime) {
+      self.playerManager.musicController.currentPlaybackTime = playbackTime;
+    }
+    
+    // Play
+    [self.playerManager play];
+  }];
+  
+  // Update control buttons.
   dispatch_async(dispatch_get_main_queue(), ^{
     NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
     
@@ -278,43 +308,19 @@
       [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.playPlaybackButton] withObject:self.pausePlaybackButton];
     }
     
+    // Remove the play button, enable the pause button.
     self.pausePlaybackButton.enabled = YES;
     
     [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
     self.playPlaybackButton.enabled = NO;
     
+    // Update forward & next buttons
+    self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+    self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
   });
-  
-  // Set the playback time on the current device
-  if (playbackTime != self.playerManager.musicController.currentPlaybackTime) {
-    self.playerManager.musicController.currentPlaybackTime = playbackTime;
-  }
-  
-  // Order a Synchronize play
-  uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
-  
-  // Play at specified date
-  [self.syncManager atExactTime:timeToPlay runBlock:^{
-    [self.playerManager play];
-  }];
 }
 
 - (void)pausePlayback {
-  // Hide pause button. Show play button.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
-    
-    if (![toolbarButtons containsObject:self.playPlaybackButton]) {
-      [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
-    }
-    
-    self.playPlaybackButton.enabled = YES;
-    
-    [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-    self.pausePlaybackButton.enabled = NO;
-    
-  });
-  
   // Order a synchronized pause
   uint64_t timeToPause = [self.syncManager synchronisePause];
   
@@ -325,6 +331,25 @@
   
   // Take this opportunity to resync
   [self.syncManager askPeersToCalculateOffset:self.connectivityManager.allPeers];
+  
+  // Update control buttons
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+    
+    if (![toolbarButtons containsObject:self.playPlaybackButton]) {
+      [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
+    }
+    
+    // Add the play button, disable the pause button
+    self.playPlaybackButton.enabled = YES;
+    
+    [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+    self.pausePlaybackButton.enabled = NO;
+    
+    // Update forward & next buttons
+    self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+    self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
+  });
 }
 
 #pragma mark - ConnectivityManagerDelegate & PlayerManagerDelegate
@@ -342,13 +367,20 @@
 }
 
 - (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection {
-  // Disable the play button
-  UIBarButtonItem *playButton = (UIBarButtonItem *)[self.view viewWithTag:1];
-  [playButton setEnabled:NO];
+  // Disable the play forward and next buttons
+  // Pause won't cause any issues and will be replaced by a disabled play anyway.
+  self.playPlaybackButton.enabled = NO;
+  self.forwardPlaybackButton.enabled = NO;
+  self.rewindPlaybackButton.enabled = NO;
   
   // Load the media collection
   [self.playerManager loadMediaCollection:mediaItemCollection];
   [self.playerManager.musicController prepareToPlay];
+  
+  // Update the next button if the current song won't change and is playing
+  if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying && [mediaItemCollection.items[0] isEqual:[self.playerManager currentMediaItem]]) {
+    self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+  }
   
   // Dismiss the media picker
   [self dismissViewControllerAnimated:YES completion:nil];
