@@ -244,6 +244,7 @@
       // Increment the peers received number.
       if (error) {
         peersFailed++;
+        NSLog(@"Airly failed sending song with error: %@", error);
         
       } else {
         peersReceived++;
@@ -251,6 +252,15 @@
       
       if ((peersReceived+peersFailed) >= allPeers.count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
         [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (peersFailed > 0) {// Show an error
+            UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Failed to Send" message:@"Sorry but Airly failed to send the current song to one or more listeners." preferredStyle:UIAlertControllerStyleAlert];
+            
+            [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
+            [self presentViewController:failedPeerAlert animated:YES completion:nil];
+          }
+        });
       }
     }];
     

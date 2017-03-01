@@ -101,6 +101,8 @@
   NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:data];
 
   if ([payload[@"command"] isEqualToString:@"metadata"]) {
+    NSLog(@"Peer received song metadata.");
+    
     songTitle = [payload[@"songName"] stringByReplacingOccurrencesOfString:@"title " withString:@""];
     songArtist = [payload[@"songArtist"] stringByReplacingOccurrencesOfString:@"artist " withString:@""];
     albumImage = [UIImage imageWithData:payload[@"songAlbumArt"]];
@@ -111,6 +113,8 @@
     }];
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
+    NSLog(@"Peer received 'play' command.");
+
     // Set the playback time
     [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 
@@ -121,6 +125,8 @@
     
     
   } else if ([payload[@"command"] isEqualToString:@"pause"]) {
+    NSLog(@"Peer received 'pause' command.");
+
     // Pause at specified date
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       [self.player pause];
@@ -130,8 +136,12 @@
 
 - (void)session:(MCSession *)session didFinishReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID atURL:(NSURL *)localURL withError:(NSError *)error {
   
+  if (error) {
+    NSLog(@"Peer got an error when receiving the song: %@", error);
+  }
+  
   // If there is no local URL, then this is not a song.
-  if (localURL) {    
+  if (localURL) {
     // Fix the path
     NSString *songPath = [[localURL.path stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"resource.caf"];
     songURL = [NSURL fileURLWithPath:songPath isDirectory:NO];
@@ -139,10 +149,20 @@
     // Move the file to change its name to the right format
     NSFileManager *fileManager = [NSFileManager defaultManager];
     [fileManager removeItemAtURL:songURL error:&error];// Delete previous song file
+    
+    if (error) {
+      NSLog(@"Peer got an error when deleting the old song: %@", error);
+    }
+
     [fileManager moveItemAtURL:localURL toURL:songURL error:&error];// Move the new song file
 
+    if (error) {
+      NSLog(@"Peer got an error when moving the new song: %@", error);
+    }
+    
     // Load the song
     [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:songURL]];
+  
   }
 }
 

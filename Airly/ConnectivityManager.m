@@ -112,7 +112,9 @@
   }
 }
 
-- (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {}
+- (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {
+#warning implement
+}
 
 #pragma mark - Sending & Receiving Data
 #pragma mark Sending

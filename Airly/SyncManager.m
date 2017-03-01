@@ -188,8 +188,11 @@
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
+  NSLog(@"Syncmanager queing up to execute block at time with offset: %lli Value: %llu", self.hostTimeOffset, val);
+  
   if (val < [self currentNetworkTime]) {// The value has already passed execute immediately.
     block();
+    NSLog(@"SyncManager executed block Immed.");
     return;
   }
   
@@ -204,6 +207,7 @@
       sleep(0);
     }
     block();
+    NSLog(@"SyncManager executed block.");
   });
   
   // Now, we employ a dirty trick:
@@ -212,9 +216,11 @@
   // that we wanted. This takes us from an accuracy of ~1ms to an accuracy of ~0.01ms, i.e. two orders
   // of magnitude improvement. However, of course the downside is that this will block the main thread
   // for 1.3ms.
-  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)val + self.hostTimeOffset - (int64_t)[self currentNetworkTime] - 1300000);
+  dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, val - [self currentNetworkTime] - 1300000);
   dispatch_source_set_timer(timer, at_time, DISPATCH_TIME_FOREVER /*one shot*/, 0 /* minimal leeway */);
   dispatch_resume(timer);
+  
+  NSLog(@"Syncmanager queued up to execute block at time with offset: %lli Value: %llu Trigger time: %llu Current Time: %llu", self.hostTimeOffset, val, ((int64_t)val + self.hostTimeOffset - (int64_t)[self currentNetworkTime] - 1300000), [self currentNetworkTime]);
 }
 
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
