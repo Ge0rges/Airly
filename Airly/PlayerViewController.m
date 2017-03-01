@@ -114,7 +114,10 @@
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
     NSLog(@"Peer received 'play' command.");
-
+    
+    // Pause the player to reset the time.
+    [self.player pause];
+    
     // Set the playback time
     [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
 
