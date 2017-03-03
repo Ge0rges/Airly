@@ -113,7 +113,13 @@
 }
 
 - (void)session:(MCSession *)session didReceiveStream:(NSInputStream *)stream withName:(NSString *)streamName fromPeer:(MCPeerID *)peerID {
-#warning implement
+  if ([self.delegate respondsToSelector:@selector(session:didReceiveStream:withName:fromPeer:)]) {
+    [self.delegate session:session didReceiveStream:stream withName:streamName fromPeer:peerID];
+  }
+  
+  if ([self.syncManager respondsToSelector:@selector(session:didReceiveStream:withName:fromPeer:)]) {
+    [self.syncManager session:session didReceiveStream:stream withName:streamName fromPeer:peerID];
+  }
 }
 
 #pragma mark - Sending & Receiving Data

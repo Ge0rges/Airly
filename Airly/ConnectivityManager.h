@@ -13,10 +13,11 @@
 @protocol ConnectivityManagerDelegate <NSObject>
 
 @optional
-- (void)session:(MCSession* _Nonnull)session didFinishReceivingResourceWithName:(NSString* _Nonnull)resourceName fromPeer:(MCPeerID* _Nonnull)peerID atURL:(NSURL* _Nonnull)localURL withError:(NSError* _Nullable)error;
-- (void)session:(MCSession* _Nonnull)session didStartReceivingResourceWithName:(NSString* _Nonnull)resourceName fromPeer:(MCPeerID* _Nonnull)peerID withProgress:(NSProgress* _Nonnull)progress;
+- (void)session:(MCSession * _Nonnull)session didFinishReceivingResourceWithName:(NSString* _Nonnull)resourceName fromPeer:(MCPeerID* _Nonnull)peerID atURL:(NSURL * _Nonnull)localURL withError:(NSError* _Nullable)error;
+- (void)session:(MCSession * _Nonnull)session didStartReceivingResourceWithName:(NSString* _Nonnull)resourceName fromPeer:(MCPeerID* _Nonnull)peerID withProgress:(NSProgress* _Nonnull)progress;
 - (void)session:(MCSession * _Nonnull)session didReceiveData:(NSData * _Nonnull)data fromPeer:(MCPeerID * _Nonnull)peerID;
-- (void)session:(MCSession* _Nonnull)session peer:(MCPeerID* _Nonnull)peerID didChangeState:(MCSessionState)state;
+- (void)session:(MCSession * _Nonnull)session peer:(MCPeerID* _Nonnull)peerID didChangeState:(MCSessionState)state;
+- (void)session:(MCSession * _Nonnull)session didReceiveStream:(nonnull NSInputStream *)stream withName:(nonnull NSString *)streamName fromPeer:(nonnull MCPeerID *)peerID;
 
 - (void)browserViewControllerWasCancelled:(MCBrowserViewController * _Nonnull)browserViewController;
 - (void)browserViewControllerDidFinish:(MCBrowserViewController * _Nonnull)browserViewController;
