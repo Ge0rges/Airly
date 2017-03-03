@@ -8,6 +8,9 @@
 
 #import "HostViewController.h"
 
+// Frameworks
+#import <AVFoundation/AVFoundation.h>
+
 // Classes
 #import "SLColorArt.h"
 
@@ -80,7 +83,7 @@
   
   // Transparent toolbar
   [self.playbackControlsToolbar setBackgroundImage:[UIImage new] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
-  [self.playbackControlsToolbar setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];
+  [self.playbackControlsToolbar setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];  
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -121,8 +124,6 @@
   [self presentViewController:self.connectivityManager.browser animated:YES completion:nil];
 }
 
-
-#pragma mark - Player
 - (void)updatePlayerUI {
   // Update thge player UI with song info
   UIImage *albumImage = [self.playerManager currentSongAlbumArt];
@@ -216,7 +217,7 @@
   
   if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Make sure peers are calibrated and song is loaded
     // Before anything else, check if this is just the same song restarting, if it is just play.
-    if ([lastSentMediaItem isEqual:currentMediaItem]) {
+    if ([lastSentMediaItem isEqual:currentMediaItem] && !notification) {// If the song didn't change
       [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
       return;
     }

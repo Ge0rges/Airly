@@ -35,10 +35,11 @@
   ConnectivityManager *connectivityManger = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
   [connectivityManger advertiseSelfInSessions:NO];
   
-  // Stop all music
+  // Stop all music. Configure the AVAudioSession
   AVAudioSession *audioSession = [AVAudioSession sharedInstance];
   [audioSession setActive:YES error:nil];
-  
+  [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
+
   [[PlayerManager sharedManager].musicController stop];
   
   // Hide the nav bar

@@ -62,11 +62,6 @@
   // Setup the player
   self.player = [AVPlayer new];
   
-  // Configure the AVAudioSession
-  AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-  [audioSession setActive:YES error:nil];
-  [audioSession setCategory:AVAudioSessionCategoryPlayback error:nil];
-  
   // Set a gradient as the background image
   if (!self.backgroundImageView) {
     self.backgroundImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
@@ -76,6 +71,9 @@
   
   UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
   [self.backgroundImageView setImage:gradientBackground];
+  
+  // Continue playing when earphones are unplugged
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioHardwareRouteChanged:) name:AVAudioSessionRouteChangeNotification object:nil];
 }
 
 - (void)willMoveToParentViewController:(UIViewController *)parent {
@@ -191,6 +189,14 @@
 }
 
 #pragma mark - Player
+- (void)audioHardwareRouteChanged:(NSNotification *)notification {
+  NSInteger routeChangeReason = [notification.userInfo[AVAudioSessionRouteChangeReasonKey] integerValue];
+  if (routeChangeReason == AVAudioSessionRouteChangeReasonOldDeviceUnavailable) {
+    // If we're here, the player has been stopped, so play again!
+    [self.player play];
+  }
+}
+
 - (void)updatePlayerUI {
   // Update player UI based on received metadata
   if (albumImage) {
