@@ -60,6 +60,8 @@
   
   // Setup networkManager
   self.syncManager = [SyncManager sharedManager];
+#warning test accuracy
+  self.syncManager.numberOfCalibrations = 5000;
   
   // Setup the Connectivity Manager
   self.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
@@ -247,12 +249,12 @@
     
     // Update UI at specified date
     [self.syncManager atExactTime:updateUITime runBlock:^{
-      [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
+      [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:YES];
     }];
     
     
-    __block NSInteger peersReceived = 0;
-    __block NSInteger peersFailed = 0;
+    __block NSUInteger peersReceived = 0;
+    __block NSUInteger peersFailed = 0;
     [self.syncManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
       // Increment the peers received number.
       if (error) {
@@ -263,23 +265,34 @@
         peersReceived++;
       }
       
-      if ((peersReceived+peersFailed) >= allPeers.count && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
+      // If we got a response from everyone, and at least one peer received.
+      if ((peersReceived+peersFailed) >= allPeers.count && peersReceived > 0 && [currentMediaItem isEqual:[self.playerManager currentMediaItem]]) {
         [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
         lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
+      
+      }
+      
+      // If a peer failed
+      if (peersFailed > 0) {
+        // If this song replays it will be sent to all peers since at least one failed.
+        lastSentMediaItem = nil;
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-          if (peersFailed > 0) {// Show an error
-            lastSentMediaItem = nil;// If this song replays it will be sent to all peers
-            
-            UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Failed to Send" message:@"Sorry but Airly failed to send the current song to one or more listeners." preferredStyle:UIAlertControllerStyleAlert];
-            
-            [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
-            [self presentViewController:failedPeerAlert animated:YES completion:nil];
-          }
-        });
+        if (peersReceived == 0) {// Nobody received the song retry
+          [self playingItemDidChange:notification];
+          return;
+        }
+        
+        // Show an error informing the user that some listeners won't be able to play
+        NSString *message = [NSString stringWithFormat:@"Sorry but Airly failed to send the song to %lu listeners. %@", peersFailed, error.localizedDescription];
+        UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Error Sending" message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:failedPeerAlert animated:YES completion:nil];
+
       }
     }];
     
+  // Not the same song
   } else if (!currentMediaItem){
     [self pausePlayback];// This will update the UI for a end of song and resync.
   }

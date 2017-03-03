@@ -109,7 +109,7 @@
     
     // Update UI at specified date
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
-      [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:NO];
+      [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:YES];
     }];
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
@@ -118,11 +118,12 @@
     // Pause the player to reset the time.
     [self.player pause];
     
-    // Set the playback time
-    [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-
     // Play at specified date
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+      // Set the playback time
+      [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+
+      // Play
       [self.player play];
     }];
     

@@ -190,7 +190,7 @@
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
   NSLog(@"Syncmanager queing up to execute block at time with offset: %lli Value: %llu", self.hostTimeOffset, val);
   
-  if (val < [self currentNetworkTime]) {// The value has already passed execute immediately.
+  if (val <= [self currentNetworkTime]) {// The value has already passed execute immediately.
     block();
     NSLog(@"SyncManager executed block Immed.");
     return;
