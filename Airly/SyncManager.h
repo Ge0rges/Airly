@@ -14,7 +14,7 @@
 // Managers
 #import "ConnectivityManager.h"
 
-typedef void(^ _Nullable calibrationBlock)(MCPeerID * _Nullable peer);
+typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peers);
 
 @interface SyncManager : NSObject <ConnectivityManagerDelegate>
 
@@ -29,9 +29,9 @@ typedef void(^ _Nullable calibrationBlock)(MCPeerID * _Nullable peer);
 - (void)calculateTimeOffsetWithHost;// Calculate the time difference in nanoseconds between us and the host device.
 - (uint64_t)currentNetworkTime;// The current host time adjusted for offset (offset = 0 if host)
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block;// Run block at the exact host adjusted time val adjusted
-- (void)executeBlockWhenPeerCalibrates:(MCPeerID * _Nonnull)peer block:(calibrationBlock)completionBlock;// Once peer calibrates this will execute completionBlock
+- (void)executeBlockWhenPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peer block:(calibrationBlock)completionBlock;// Once peer calibrates this will execute completionBlock
 
 @property (strong, nonatomic) NSMutableSet <MCPeerID*> * _Nullable calibratedPeers;// Array of all peers that have already calibrated
-@property (nonatomic) uint64_t numberOfCalibrations;// The number of calibrations to be used to calculate the avergae offset
+@property (nonatomic) uint64_t numberOfCalibrations;// The number of calibrations to be used to calculate the average offset. only makes sense on peer.
 
 @end

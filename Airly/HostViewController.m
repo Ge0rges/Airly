@@ -60,8 +60,6 @@
   
   // Setup networkManager
   self.syncManager = [SyncManager sharedManager];
-#warning test accuracy
-  self.syncManager.numberOfCalibrations = 5000;
   
   // Setup the Connectivity Manager
   self.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
@@ -216,7 +214,6 @@
   __block NSArray *allPeers = [self.connectivityManager allPeers];
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
-  
   if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Make sure peers are calibrated and song is loaded
     // Before anything else, check if this is just the same song restarting, if it is just play.
     if ([lastSentMediaItem isEqual:currentMediaItem]) {
@@ -224,14 +221,15 @@
       return;
     }
     
-    
-    if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {// Song still palying so pause the music
+    // Check if the song is still playing so pause the music
+    if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying) {
       [self.playerManager pause];
       [self performSelectorInBackground:@selector(pausePlayback) withObject:nil];
       [NSThread sleepForTimeInterval:1.2];// For some reason this avoids issues on peers, probably a queue thing.
     }
     
-    if (notification) {// Check if the song changed
+    // Check if the song changed
+    if (notification) {
       // Reset to playback time to 0
       self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
     }
@@ -246,15 +244,17 @@
     
     // Send song metadata to peers
     uint64_t updateUITime = [self.syncManager sendSongMetadata:currentMediaItem toPeers:allPeers];
-    
-    // Update UI at specified date
+
+    // Update UI at specified date after asking to sync.
     [self.syncManager atExactTime:updateUITime runBlock:^{
       [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:YES];
     }];
     
-    
+    // Track how many peers received and failed
     __block NSUInteger peersReceived = 0;
     __block NSUInteger peersFailed = 0;
+    
+    // Send the song to all peers
     [self.syncManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
       // Increment the peers received number.
       if (error) {
@@ -283,7 +283,7 @@
         }
         
         // Show an error informing the user that some listeners won't be able to play
-        NSString *message = [NSString stringWithFormat:@"Sorry but Airly failed to send the song to %lu listeners. %@", peersFailed, error.localizedDescription];
+        NSString *message = [NSString stringWithFormat:@"Sorry but Airly failed to send the song to %lu listeners. %@", (unsigned long)peersFailed, error.localizedDescription];
         UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Error Sending" message:message preferredStyle:UIAlertControllerStyleAlert];
         
         [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
@@ -299,18 +299,26 @@
 }
 
 - (void)startPlaybackAtTime:(NSTimeInterval)playbackTime {
-  // Order a Synchronize play
-  uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
-  
-  // Play at specified date
-  [self.syncManager atExactTime:timeToPlay runBlock:^{
-    // Set the playback time on the current device
-    if (playbackTime != self.playerManager.musicController.currentPlaybackTime) {
-      self.playerManager.musicController.currentPlaybackTime = playbackTime;
-    }
+  // Ask peers to calibrate first.
+  [self.syncManager askPeersToCalculateOffset:self.connectivityManager.allPeers];
+  [self.syncManager executeBlockWhenPeersCalibrate:self.connectivityManager.allPeers block:^(NSArray <MCPeerID *> * _Nullable peers) {
+    // Order a Synchronize play
+    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
     
-    // Play
-    [self.playerManager play];
+    // Play at specified date
+    [self.syncManager atExactTime:timeToPlay runBlock:^{
+      // Set the playback time on the current device
+      if (playbackTime != self.playerManager.musicController.currentPlaybackTime) {
+        self.playerManager.musicController.currentPlaybackTime = playbackTime;
+      }
+      
+      // Play
+      [self.playerManager play];
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+        self.pausePlaybackButton.enabled = YES;
+      });
+    }];
   }];
   
   // Update control buttons.
@@ -322,7 +330,7 @@
     }
     
     // Remove the play button, enable the pause button.
-    self.pausePlaybackButton.enabled = YES;
+    self.pausePlaybackButton.enabled = NO;
     
     [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
     self.playPlaybackButton.enabled = NO;
@@ -341,9 +349,6 @@
   [self.syncManager atExactTime:timeToPause runBlock:^{
     [self.playerManager pause];
   }];
-  
-  // Take this opportunity to resync
-  [self.syncManager askPeersToCalculateOffset:self.connectivityManager.allPeers];
   
   // Update control buttons
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -422,7 +427,7 @@
       [self.syncManager askPeersToCalculateOffset:@[peerID]];
       
       // Wait for peer to calibrate then send the appropriate data.
-      [self.syncManager executeBlockWhenPeerCalibrates:peerID block:^(MCPeerID * _Nullable peer) {
+      [self.syncManager executeBlockWhenPeersCalibrate:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
         // Already loaded a song. Send song to this peer only
         MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
         if (currentMediaItem) {
@@ -432,10 +437,10 @@
           }
           
           // Send song metadata to peers
-          [self.syncManager sendSongMetadata:currentMediaItem toPeers:@[peer]];
+          [self.syncManager sendSongMetadata:currentMediaItem toPeers:peers];
           
           // Send song to peers
-          [self.syncManager sendSong:currentMediaItem toPeers:@[peer] completion:nil];
+          [self.syncManager sendSong:currentMediaItem toPeers:peers completion:nil];
         }
       }];
     }
