@@ -8,6 +8,15 @@
 
 #import "PlayerManager.h"
 
+// Managers
+#import "SyncManager.h"
+
+@interface PlayerManager ()
+
+@property (strong, nonatomic) SyncManager *syncManager;
+
+@end
+
 @implementation PlayerManager
 
 + (instancetype)sharedManager {
@@ -25,7 +34,9 @@
     
     // Create the player
     sharedManager.musicController = [MPMusicPlayerController applicationMusicPlayer];
-
+    
+    // Get the sync manager
+    sharedManager.syncManager = [SyncManager sharedManager];
   });
   
   return sharedManager;
@@ -61,18 +72,65 @@
 }
 
 #pragma mark - Player Control
-- (void)play {
-  [self.musicController play];
+- (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray<MCPeerID *> * _Nonnull)peers completion:(completionBlock)block {
+  // Ask peers to calibrate first.
+  [self.syncManager askPeersToCalculateOffset:peers];
+  [self.syncManager executeBlockWhenAllPeersCalibrate:peers block:^(NSArray <MCPeerID *> * _Nullable sentPeers) {
+    // Order a Synchronize play
+    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
+    
+    // Play at specified date
+    [self.syncManager atExactTime:timeToPlay runBlock:^{
+      // Set the playback time on the current device
+      if (playbackTime != self.musicController.currentPlaybackTime) {
+        self.musicController.currentPlaybackTime = playbackTime;
+      }
+      
+      // Play
+      [self.musicController play];
+      
+      // Execute the block
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (block) {
+          block();
+        }
+      });
+    }];
+  }];
 }
 
-- (void)pause {
-  [self.musicController pause];
+- (void)pauseLocallyAndOnHosts:(NSArray<MCPeerID *> *)peers completion:(completionBlock)block {
+  // Order a synchronized pause
+  uint64_t timeToPause = [self.syncManager synchronisePause];
+  
+  // Pause at specified date
+  [self.syncManager atExactTime:timeToPause runBlock:^{
+    
+    //Pause
+    [self.musicController pause];
+    
+    // Execute the block
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (block) {
+        block();
+      }
+    });
+  }];
 }
 
 - (void)skipToNextSong {
+  // Reset to playback time to 0
+  self.musicController.currentPlaybackTime = (NSTimeInterval)0;
+  
+  // Go to next song
   [self.musicController skipToNextItem];
 }
+
 - (void)skipToPreviousSong {
+  // Reset to playback time to 0
+  self.musicController.currentPlaybackTime = (NSTimeInterval)0;
+  
+  // Go to next song
   [self.musicController skipToPreviousItem];
 }
 
@@ -80,7 +138,7 @@
 - (MPMediaItem *)nextMediaItem {
   if (self.mediaCollection.items.count > self.musicController.indexOfNowPlayingItem+1  && self.musicController.indexOfNowPlayingItem != NSNotFound) {
     return [self.mediaCollection.items objectAtIndex:self.musicController.indexOfNowPlayingItem+1];
-  
+    
   } else {
     return nil;
   }

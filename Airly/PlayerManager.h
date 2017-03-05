@@ -9,12 +9,16 @@
 // Frameworks
 #import <Foundation/Foundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <MultipeerConnectivity/MultipeerConnectivity.h>
+
+typedef void(^ _Nullable completionBlock)();
 
 @protocol PlayerManagerDelegate <NSObject>
 @optional
 - (void)mediaPicker:(MPMediaPickerController * _Nonnull)mediaPicker didPickMediaItems:(MPMediaItemCollection * _Nullable)mediaItemCollection;
 - (void)mediaPickerDidCancel:(MPMediaPickerController * _Nonnull)mediaPicker;
 @end
+
 
 @interface PlayerManager : NSObject <MPMediaPickerControllerDelegate>
 
@@ -29,10 +33,10 @@
 - (void)loadMediaCollection:(MPMediaItemCollection * _Nonnull)mediaCollection;
 
 // Commands
-- (void)play;
-- (void)pause;
-- (void)skipToNextSong;
-- (void)skipToPreviousSong;
+- (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray <MCPeerID *> * _Nonnull)peers completion:(completionBlock)block;// Block is called when played
+- (void)pauseLocallyAndOnHosts:(NSArray <MCPeerID*> * _Nonnull)peers completion:(completionBlock)block;// Block is called when pause
+- (void)skipToNextSong;// Resets the playback time to 0
+- (void)skipToPreviousSong;// Resets the playback time to 0
 
 - (MPMediaItem * _Nullable)previousMediaItem;
 - (MPMediaItem * _Nullable)currentMediaItem;
