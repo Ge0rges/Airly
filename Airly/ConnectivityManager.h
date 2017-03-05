@@ -41,6 +41,6 @@
 - (void)disconnect;
 
 - (void)sendData:(NSData * _Nonnull)data toPeers:(NSArray * _Nonnull)peerIDs reliable:(BOOL)reliable;
-- (void)sendResourceAtURL:(NSURL * _Nonnull)assetUrl withName:(NSString * _Nonnull)name toPeers:(NSArray * _Nonnull)peerIDs withCompletionHandler:(void(^ _Nullable)(NSError* _Nullable __strong))handler;
+- (nullable NSArray <NSProgress *> *)sendResourceAtURL:(NSURL * _Nonnull)assetUrl withName:(NSString * _Nonnull)name toPeers:(NSArray * _Nonnull)peerIDs withCompletionHandler:(void(^ _Nullable)(NSError* _Nullable __strong))handler;
 
 @end

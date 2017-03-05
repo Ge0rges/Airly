@@ -138,17 +138,25 @@
   }
 }
 
-- (void)sendResourceAtURL:(NSURL *)assetUrl withName:(NSString *)name toPeers:(NSArray *)peerIDs withCompletionHandler:(void(^)(NSError *error))handler {
-  if ([peerIDs count] == 0) return;
+- (nullable NSArray <NSProgress *> *)sendResourceAtURL:(NSURL *)assetUrl withName:(NSString *)name toPeers:(NSArray *)peerIDs withCompletionHandler:(void(^)(NSError *error))handler {
+  if ([peerIDs count] == 0) return nil;
   
   NSPredicate *peerNamePred = [NSPredicate predicateWithFormat:@"displayName in %@", [peerIDs valueForKey:@"displayName"]];
+  
+  // Store the NSProgress
+  NSMutableArray *progressArray = [NSMutableArray new];
   
   //Need to match up peers to their session
   for (MCSession *session in self.sessions){
     NSArray *filteredPeerIDs = [session.connectedPeers filteredArrayUsingPredicate:peerNamePred];
     
-    for (MCPeerID *filteredPeerID in filteredPeerIDs) [session sendResourceAtURL:assetUrl withName:name toPeer:filteredPeerID withCompletionHandler:handler];
+    for (MCPeerID *filteredPeerID in filteredPeerIDs) {
+      NSProgress *progress = [session sendResourceAtURL:assetUrl withName:name toPeer:filteredPeerID withCompletionHandler:handler];
+      [progressArray addObject:progress];
+    }
   }
+  
+  return progressArray;
 }
 
 #pragma mark Receiving
