@@ -302,7 +302,7 @@
 - (void)startPlaybackAtTime:(NSTimeInterval)playbackTime {
   // Ask peers to calibrate first.
   [self.syncManager askPeersToCalculateOffset:self.connectivityManager.allPeers];
-  [self.syncManager executeBlockWhenPeersCalibrate:self.connectivityManager.allPeers block:^(NSArray <MCPeerID *> * _Nullable peers) {
+  [self.syncManager executeBlockWhenAllPeersCalibrate:self.connectivityManager.allPeers block:^(NSArray <MCPeerID *> * _Nullable peers) {
     // Order a Synchronize play
     uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
     
@@ -428,7 +428,7 @@
       [self.syncManager askPeersToCalculateOffset:@[peerID]];
       
       // Wait for peer to calibrate then send the appropriate data.
-      [self.syncManager executeBlockWhenPeersCalibrate:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
+      [self.syncManager executeBlockWhenAllPeersCalibrate:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
         // Already loaded a song. Send song to this peer only
         MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
         if (currentMediaItem) {
