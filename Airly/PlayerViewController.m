@@ -43,6 +43,8 @@
 @property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
 
+@property (strong, nonatomic) IBOutlet UIProgressView *progressBar;
+
 @end
 
 @implementation PlayerViewController
@@ -166,6 +168,10 @@
     [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:songURL]];
   
   }
+}
+
+- (void)session:(MCSession *)session didStartReceivingResourceWithName:(NSString *)resourceName fromPeer:(MCPeerID *)peerID withProgress:(NSProgress *)progress {
+  self.progressBar.observedProgress = progress;
 }
 
 - (void)session:(MCSession *)session peer:(MCPeerID *)peerID didChangeState:(MCSessionState)state {

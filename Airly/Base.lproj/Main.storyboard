@@ -206,9 +206,15 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XC9-PG-QhB">
                                 <rect key="frame" x="0.0" y="64" width="375" height="400"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="XC9-PG-QhB" secondAttribute="height" multiplier="15:16" id="Daz-qL-fJq"/>
+                                </constraints>
                             </imageView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3dE-Yb-ELA">
+                                <rect key="frame" x="0.0" y="464" width="375" height="2"/>
+                            </progressView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Wait for a broadcaster to invite you..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="s9r-b3-soG">
-                                <rect key="frame" x="16" y="477" width="343" height="21"/>
+                                <rect key="frame" x="16" y="479" width="343" height="21"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="amo-XL-x0T"/>
@@ -218,7 +224,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="8" translatesAutoresizingMaskIntoConstraints="NO" id="hgP-UY-IGp">
-                                <rect key="frame" x="16" y="506" width="343" height="21"/>
+                                <rect key="frame" x="16" y="508" width="343" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="21" id="H1t-nR-AHk"/>
                                 </constraints>
@@ -227,23 +233,26 @@
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="hgP-UY-IGp" firstAttribute="top" secondItem="s9r-b3-soG" secondAttribute="bottom" constant="8" symbolic="YES" id="3AM-yY-Yp9"/>
+                            <constraint firstItem="3dE-Yb-ELA" firstAttribute="centerX" secondItem="XC9-PG-QhB" secondAttribute="centerX" id="JrT-Ee-uOp"/>
+                            <constraint firstItem="3dE-Yb-ELA" firstAttribute="top" secondItem="XC9-PG-QhB" secondAttribute="bottom" id="L3H-6e-yiT"/>
                             <constraint firstItem="s9r-b3-soG" firstAttribute="centerX" secondItem="XC9-PG-QhB" secondAttribute="centerX" id="PsU-Xa-yxl"/>
                             <constraint firstItem="s9r-b3-soG" firstAttribute="leading" secondItem="lMt-4j-deh" secondAttribute="leadingMargin" id="WSi-OD-UfH"/>
-                            <constraint firstItem="Ea0-Md-6KT" firstAttribute="top" secondItem="hgP-UY-IGp" secondAttribute="bottom" constant="140" id="YE6-cW-B3G"/>
+                            <constraint firstItem="Ea0-Md-6KT" firstAttribute="top" relation="greaterThanOrEqual" secondItem="hgP-UY-IGp" secondAttribute="bottom" constant="10" id="YE6-cW-B3G"/>
                             <constraint firstItem="s9r-b3-soG" firstAttribute="leading" secondItem="hgP-UY-IGp" secondAttribute="leading" id="beH-xx-pds"/>
                             <constraint firstAttribute="trailing" secondItem="XC9-PG-QhB" secondAttribute="trailing" id="err-Fh-2p2"/>
+                            <constraint firstItem="s9r-b3-soG" firstAttribute="top" secondItem="3dE-Yb-ELA" secondAttribute="bottom" constant="13" id="hvU-Y6-bqd"/>
                             <constraint firstItem="XC9-PG-QhB" firstAttribute="top" secondItem="5zD-bn-ZqM" secondAttribute="bottom" id="lvm-Ji-uL8"/>
+                            <constraint firstItem="3dE-Yb-ELA" firstAttribute="width" secondItem="XC9-PG-QhB" secondAttribute="width" id="moB-Dt-FrR"/>
                             <constraint firstItem="s9r-b3-soG" firstAttribute="trailing" secondItem="hgP-UY-IGp" secondAttribute="trailing" id="pbe-h0-hVZ"/>
-                            <constraint firstItem="s9r-b3-soG" firstAttribute="top" secondItem="XC9-PG-QhB" secondAttribute="bottom" constant="13" id="prT-6t-L2b"/>
                             <constraint firstItem="XC9-PG-QhB" firstAttribute="leading" secondItem="lMt-4j-deh" secondAttribute="leading" id="tRe-67-zVx"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="GMv-y9-b6C"/>
                     <connections>
                         <outlet property="albumImageView" destination="XC9-PG-QhB" id="3P9-e2-k1R"/>
+                        <outlet property="progressBar" destination="3dE-Yb-ELA" id="3PQ-DL-Q8c"/>
                         <outlet property="songArtistLabel" destination="hgP-UY-IGp" id="9kw-TC-5Qr"/>
                         <outlet property="songTitleLabel" destination="s9r-b3-soG" id="hiG-NX-WqK"/>
                     </connections>

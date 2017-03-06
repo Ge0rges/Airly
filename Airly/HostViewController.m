@@ -112,7 +112,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   [super willMoveToParentViewController:parent];
   
   // Disconnect from sessions
-  [self.playerManager.musicController pause];
+  [self.playerManager.musicController stop];
+  self.playerManager = nil;
   [self.connectivityManager disconnect];
 }
 

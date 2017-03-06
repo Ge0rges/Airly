@@ -18,7 +18,6 @@
 - (void)session:(MCSession * _Nonnull)session didReceiveData:(NSData * _Nonnull)data fromPeer:(MCPeerID * _Nonnull)peerID;
 - (void)session:(MCSession * _Nonnull)session peer:(MCPeerID* _Nonnull)peerID didChangeState:(MCSessionState)state;
 - (void)session:(MCSession * _Nonnull)session didReceiveStream:(nonnull NSInputStream *)stream withName:(nonnull NSString *)streamName fromPeer:(nonnull MCPeerID *)peerID;
-
 - (void)browserViewControllerWasCancelled:(MCBrowserViewController * _Nonnull)browserViewController;
 - (void)browserViewControllerDidFinish:(MCBrowserViewController * _Nonnull)browserViewController;
 
