@@ -23,7 +23,7 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 - (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime;
 - (uint64_t)synchronisePause;
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers;
-- (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers progress:(NSArray <NSProgress *> * _Nullable * _Nullable)progress completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
+- (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers progress:(void(^ _Nullable)(NSArray <NSProgress *>* _Nullable progressArray))progressHandler completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
 
 - (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers;// Asks the peers to call -calculateTimeOffsetWithHost, when completed the block of -executeBlockWhenPeerCalibrates will be called on host.
 - (void)calculateTimeOffsetWithHost;// Calculate the time difference in nanoseconds between us and the host device.

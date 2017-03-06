@@ -94,7 +94,7 @@
   return timeToUpdateUI;
 }
 
-- (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers progress:(NSArray <NSProgress *> **)progress completion:(void(^ _Nullable)(NSError * _Nullable error))handler {
+- (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers progress:(void(^ _Nullable)(NSArray <NSProgress *>* _Nullable progressArray))progressHandler completion:(void(^ _Nullable)(NSError * _Nullable error))handler {
   if (peers.count == 0) handler(nil);
   
   // Send the song file
@@ -113,7 +113,8 @@
   
   [exporter exportAsynchronouslyWithCompletionHandler:^{
     // Send resource file
-    *progress = [self.connectivityManager sendResourceAtURL:exporter.outputURL withName:mediaItem.title toPeers:peers withCompletionHandler:handler];
+    NSArray *progress = [self.connectivityManager sendResourceAtURL:exporter.outputURL withName:mediaItem.title toPeers:peers withCompletionHandler:handler];
+    progressHandler(progress);
   }];
 }
 

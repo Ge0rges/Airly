@@ -198,8 +198,10 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     __block uint peersFailed = 0;
     
     // Send the song to all peers
-    NSArray *progressArray;
-    [self.syncManager sendSong:currentMediaItem toPeers:allPeers progress:&progressArray completion:^(NSError * _Nullable error) {
+    [self.syncManager sendSong:currentMediaItem toPeers:allPeers progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
+      [self updateProgressBarWithProgressArray:progressArray];
+      
+    } completion:^(NSError * _Nullable error) {
       // Increment the peers received number.
       if (error) {
         peersFailed++;
@@ -207,6 +209,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         
       } else {
         peersReceived++;
+        NSLog(@"Airly sent song.");
       }
       
       // If we got a response from everyone, and at least one peer received: play.
@@ -232,8 +235,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [self presentViewController:failedPeerAlert animated:YES completion:nil];
       }
     }];
-    
-    [self updateProgressBarWithProgressArray:progressArray];
   }
 }
 
@@ -323,7 +324,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [toolbarButtons removeObject:self.pausePlaybackButton];
         
         if (![toolbarButtons containsObject:self.playPlaybackButton]) {
-          [toolbarButtons insertObject:self.playPlaybackButton atIndex:2];
+          [toolbarButtons insertObject:self.playPlaybackButton atIndex:3];
         }
         
         // Remove the pause button, enable the play button.
@@ -339,7 +340,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [toolbarButtons removeObject:self.playPlaybackButton];
         
         if (![toolbarButtons containsObject:self.pausePlaybackButton]) {
-          [toolbarButtons insertObject:self.pausePlaybackButton atIndex:2];
+          [toolbarButtons insertObject:self.pausePlaybackButton atIndex:3];
         }
         
         // Remove the play button, enable the pause button.
@@ -361,7 +362,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [toolbarButtons removeObject:self.pausePlaybackButton];
         
         if (![toolbarButtons containsObject:self.playPlaybackButton]) {
-          [toolbarButtons insertObject:self.playPlaybackButton atIndex:2];
+          [toolbarButtons insertObject:self.playPlaybackButton atIndex:3];
         }
         
         [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
@@ -417,6 +418,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 }
 
 - (void)updateProgressBarWithProgressArray:(NSArray <NSProgress *> *)progressArray {
+  NSLog(@"Progress view is tracking: %@", progressArray);
+  
   NSProgress *parentProgress = [NSProgress progressWithTotalUnitCount:progressArray.count];
   
   for (NSProgress *progress in progressArray) {
