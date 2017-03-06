@@ -173,8 +173,11 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   __block NSArray *allPeers = [self.connectivityManager allPeers];
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
+  // Reset to playback time to 0
+  self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
+
   // Before anything else, check if this is just the same song restarting, if it is just play.
-  if ([lastSentMediaItem isEqual:currentMediaItem] && !notification) {// If the song didn't change
+  if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
     [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
     return;
   }
@@ -183,11 +186,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:nil];
   
   if (currentMediaItem && self.syncManager.calibratedPeers.count >= allPeers.count) {// Make sure peers are calibrated and song is loaded
-    if (notification) {// Song changed
-      // Reset to playback time to 0
-      self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
-    }
-    
     // Send song metadata to peers, and update Player Song Info.
     uint64_t updateUITime = [self.syncManager sendSongMetadata:currentMediaItem toPeers:allPeers];
     [self.syncManager atExactTime:updateUITime runBlock:^{
@@ -295,6 +293,9 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       
     case MCSessionStateConnected: {
       [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Connected to %@", nil), peerID.displayName]];
+      
+      // Ask peers to calibrate
+      [self.syncManager askPeersToCalculateOffset:@[peerID]];
     }
       
       break;
@@ -313,59 +314,68 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 
 #pragma mark - UI Handling
 - (void)updateControlsForState:(AIHostState)hostState {
-  // Update player controls based on state
-  switch (hostState) {
-    case AIHostStatePaused: {
-      NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
-      
-      if (![toolbarButtons containsObject:self.playerManager] && [toolbarButtons containsObject:self.pausePlaybackButton]) {
-        [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.pausePlaybackButton] withObject:self.playPlaybackButton];
+  dispatch_async(dispatch_get_main_queue(), ^{// Everything on the main thread
+    // Update player controls based on state
+    NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
+    
+    switch (hostState) {
+      case AIHostStatePaused: {
+        [toolbarButtons removeObject:self.pausePlaybackButton];
+        
+        if (![toolbarButtons containsObject:self.playPlaybackButton]) {
+          [toolbarButtons insertObject:self.playPlaybackButton atIndex:2];
+        }
+        
+        // Remove the pause button, enable the play button.
+        self.playPlaybackButton.enabled = YES;
+        
+        [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+        self.pausePlaybackButton.enabled = NO;
+        
+        break;
       }
-      
-      // Remove the pause button, enable the play button.
-      self.playPlaybackButton.enabled = YES;
-      
-      [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-      self.pausePlaybackButton.enabled = NO;
-      
-      break;
-    }
-      
-    case AIHostStatePlaying: {
-      NSMutableArray *toolbarButtons = [self.playbackControlsToolbar.items mutableCopy];
-      
-      if (![toolbarButtons containsObject:self.pausePlaybackButton] && [toolbarButtons containsObject:self.playPlaybackButton]) {
-        [toolbarButtons replaceObjectAtIndex:[toolbarButtons indexOfObject:self.playPlaybackButton] withObject:self.pausePlaybackButton];
+        
+      case AIHostStatePlaying: {
+        [toolbarButtons removeObject:self.playPlaybackButton];
+        
+        if (![toolbarButtons containsObject:self.pausePlaybackButton]) {
+          [toolbarButtons insertObject:self.pausePlaybackButton atIndex:2];
+        }
+        
+        // Remove the play button, enable the pause button.
+        self.pausePlaybackButton.enabled = YES;
+        
+        [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+        self.playPlaybackButton.enabled = NO;
+        
+        // Update forward & next buttons
+        self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
+        self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
+        
+        break;
       }
-      
-      // Remove the play button, enable the pause button.
-      self.pausePlaybackButton.enabled = YES;
-      
-      [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
-      self.playPlaybackButton.enabled = NO;
-      
-      break;
+        
+      case AIHostStateSkipping:
+      case AIHostStateDisconnected: {
+        // Show play button
+        [toolbarButtons removeObject:self.pausePlaybackButton];
+        
+        if (![toolbarButtons containsObject:self.playPlaybackButton]) {
+          [toolbarButtons insertObject:self.playPlaybackButton atIndex:2];
+        }
+      }
+        
+      case AIHostStateUpdatingPeers:
+        
+      default:
+        self.pausePlaybackButton.enabled = NO;
+        self.playPlaybackButton.enabled = NO;
+        self.forwardPlaybackButton.enabled = NO;
+        self.rewindPlaybackButton.enabled = NO;
+        
+        break;
     }
-      
-    case AIHostStateSkipping:
-      // Update forward & next buttons
-      self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
-      self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
-
-      break;
-      
-    case AIHostStateDisconnected:
-      
-    case AIHostStateUpdatingPeers:
-      
-    default:
-      self.pausePlaybackButton.enabled = NO;
-      self.playPlaybackButton.enabled = NO;
-      self.forwardPlaybackButton.enabled = NO;
-      self.rewindPlaybackButton.enabled = NO;
-      
-      break;
-  }
+  });
 }
 
 - (void)updatePlayerSongInfo {
