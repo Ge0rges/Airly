@@ -363,6 +363,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         if (![toolbarButtons containsObject:self.playPlaybackButton]) {
           [toolbarButtons insertObject:self.playPlaybackButton atIndex:2];
         }
+        
+        [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
       }
         
       case AIHostStateUpdatingPeers:
