@@ -62,15 +62,15 @@
   // Setup the player
   self.player = [AVPlayer new];
   
-  // Set a gradient as the background image
+  // Setup the background image view
   if (!self.backgroundImageView) {
     self.backgroundImageView = [[UIImageView alloc] initWithFrame:self.view.frame];
     [self.view addSubview:self.backgroundImageView];
     [self.view sendSubviewToBack:self.backgroundImageView];
   }
   
-  UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
-  [self.backgroundImageView setImage:gradientBackground];
+  // Update UI
+  [self updatePlayerSongInfo];
   
   // Continue playing when earphones are unplugged
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(audioHardwareRouteChanged:) name:AVAudioSessionRouteChangeNotification object:nil];
@@ -79,7 +79,7 @@
 - (void)willMoveToParentViewController:(UIViewController *)parent {
   [super willMoveToParentViewController:parent];
   
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{// Asyncly handle session end
     // Stop playing
     self.player  = nil;
     
@@ -107,7 +107,7 @@
     
     // Update UI at specified date
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
-      [self performSelectorOnMainThread:@selector(updatePlayerUI) withObject:nil waitUntilDone:YES];
+      [self performSelectorOnMainThread:@selector(updatePlayerSongInfo) withObject:nil waitUntilDone:YES];
     }];
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
@@ -197,38 +197,37 @@
   }
 }
 
-- (void)updatePlayerUI {
-  // Update player UI based on received metadata
+- (void)updatePlayerSongInfo {
+  // Update thge player UI with song info
+  UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
+  
+  // Animate all changes
+  [UIView animateWithDuration:0.3 animations:^{
+    if (songTitle) {
+      [self.songTitleLabel setText:songTitle];
+    }
+    
+    if (songArtist) {
+      [self.songArtistLabel setText:songArtist];
+    }
+    
+    [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
+  }];
+  
+  // If there's an album image generate a suitable gradient background
   if (albumImage) {
     // Generate a background gradient to match the album art
-    CGSize imageViewSize = self. backgroundImageView.frame.size;
-    [SLColorArt processImage:albumImage scaledToSize:imageViewSize threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt (object of processed UIImage)
+    [SLColorArt processImage:albumImage scaledToSize:self.backgroundImageView.frame.size threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt
       // Build the gradient
       UIColor *firstColor = [colorArt.backgroundColor darkerColor];
       UIColor *secondColor = [colorArt.backgroundColor lighterColor];
-      UIImage *gradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:imageViewSize];
+      UIImage *albumGradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:self.backgroundImageView.frame.size];
       
-      // Animate all changes
+      // update the gradient
       [UIView animateWithDuration:0.3 animations:^{
         [self.albumImageView setImage:albumImage];
-        [self.songArtistLabel setText:songArtist];
-        [self.songTitleLabel setText:songTitle];
-        
-        [self.backgroundImageView setImage:gradientBackground];
+        [self.backgroundImageView setImage:albumGradientBackground];
       }];
-    }];
-  
-  } else {
-    // Random gradient
-    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
-
-    // Animate all changes
-    [UIView animateWithDuration:0.3 animations:^{
-      [self.albumImageView setImage:nil];
-      [self.songArtistLabel setText:songArtist];
-      [self.songTitleLabel setText:songTitle];
-      
-      [self.backgroundImageView setImage:gradientBackground];
     }];
   }
 }

@@ -128,7 +128,7 @@
     return;
   }
   
-  // They didn't. Register to receive notifications. Execute when all are calibrated.
+  // They didn't calibrate. Register to receive notifications. Execute when all are calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
     
     __block BOOL executeBlock = YES;
@@ -172,6 +172,7 @@
   }];
   
   // Unsubscribe when every one calibrates.
+#warning what could happen is that one will fail to calibrate. This block will never get called.
   [self executeBlockWhenAllPeersCalibrate:peers block:^(NSArray<MCPeerID *> * _Nullable peers) {
     [[NSNotificationCenter defaultCenter] removeObserver:observer];
   }];

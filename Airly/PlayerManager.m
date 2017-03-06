@@ -73,6 +73,7 @@
 
 #pragma mark - Player Control
 - (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray<MCPeerID *> * _Nonnull)peers completion:(completionBlock)block {
+#warning what could happen is that one will fail to calibrate. This block will never get called.
   // Ask peers to calibrate first.
   [self.syncManager askPeersToCalculateOffset:peers];
   [self.syncManager executeBlockWhenAllPeersCalibrate:peers block:^(NSArray <MCPeerID *> * _Nullable sentPeers) {
@@ -118,7 +119,7 @@
   }];
 }
 
-- (void)skipToNextSong {
+- (void)skipToNextSongLocally {
   // Reset to playback time to 0
   self.musicController.currentPlaybackTime = (NSTimeInterval)0;
   
@@ -126,7 +127,7 @@
   [self.musicController skipToNextItem];
 }
 
-- (void)skipToPreviousSong {
+- (void)skipToPreviousSongLocally {
   // Reset to playback time to 0
   self.musicController.currentPlaybackTime = (NSTimeInterval)0;
   

@@ -35,8 +35,8 @@ typedef void(^ _Nullable completionBlock)();
 // Commands
 - (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray <MCPeerID *> * _Nonnull)peers completion:(completionBlock)block;// Block is called when played
 - (void)pauseLocallyAndOnHosts:(NSArray <MCPeerID*> * _Nonnull)peers completion:(completionBlock)block;// Block is called when pause
-- (void)skipToNextSong;// Resets the playback time to 0
-- (void)skipToPreviousSong;// Resets the playback time to 0
+- (void)skipToNextSongLocally;// Resets the playback time to 0
+- (void)skipToPreviousSongLocally;// Resets the playback time to 0
 
 - (MPMediaItem * _Nullable)previousMediaItem;
 - (MPMediaItem * _Nullable)currentMediaItem;
