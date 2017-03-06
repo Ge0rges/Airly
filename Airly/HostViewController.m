@@ -46,6 +46,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 @property (strong, nonatomic) IBOutlet UILabel *songTitleLabel;
 @property (strong, nonatomic) IBOutlet UILabel *songArtistLabel;
 
+@property (strong, nonatomic) IBOutlet UIProgressView *progressBar;
+
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *pausePlaybackButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *playPlaybackButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *forwardPlaybackButton;
@@ -198,7 +200,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     __block uint peersFailed = 0;
     
     // Send the song to all peers
-    [self.syncManager sendSong:currentMediaItem toPeers:allPeers completion:^(NSError * _Nullable error) {
+    NSArray *progressArray;
+    [self.syncManager sendSong:currentMediaItem toPeers:allPeers progress:&progressArray completion:^(NSError * _Nullable error) {
       // Increment the peers received number.
       if (error) {
         peersFailed++;
@@ -231,6 +234,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [self presentViewController:failedPeerAlert animated:YES completion:nil];
       }
     }];
+    
+    [self updateProgressBarWithProgressArray:progressArray];
   }
 }
 
@@ -397,6 +402,16 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       }];
     }];
   }
+}
+
+- (void)updateProgressBarWithProgressArray:(NSArray <NSProgress *> *)progressArray {
+  NSProgress *parentProgress = [NSProgress progressWithTotalUnitCount:progressArray.count];
+  
+  for (NSProgress *progress in progressArray) {
+    [parentProgress addChild:progress withPendingUnitCount:1];
+  }
+  
+  self.progressBar.observedProgress = parentProgress;
 }
 
 // White status bar

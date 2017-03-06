@@ -144,6 +144,9 @@
                                     <constraint firstAttribute="width" secondItem="9Zg-9p-btY" secondAttribute="height" multiplier="1:1" id="xt6-6h-b4N"/>
                                 </constraints>
                             </imageView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zcw-Zv-wK5">
+                                <rect key="frame" x="0.0" y="583" width="375" height="2"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -152,11 +155,14 @@
                             <constraint firstItem="9Zg-9p-btY" firstAttribute="trailing" secondItem="hpH-0U-U4h" secondAttribute="trailing" id="HGY-zI-Xzt"/>
                             <constraint firstAttribute="trailing" secondItem="9Zg-9p-btY" secondAttribute="trailing" id="NaC-ui-wW9"/>
                             <constraint firstItem="UrD-fK-BZt" firstAttribute="centerX" secondItem="hpH-0U-U4h" secondAttribute="centerX" id="O9I-2j-y4h"/>
+                            <constraint firstItem="Zcw-Zv-wK5" firstAttribute="width" secondItem="hpH-0U-U4h" secondAttribute="width" id="cp2-PT-bEO"/>
                             <constraint firstItem="TEl-Yx-v4S" firstAttribute="trailing" secondItem="UrD-fK-BZt" secondAttribute="trailing" id="e1g-74-By1"/>
                             <constraint firstItem="9Zg-9p-btY" firstAttribute="top" secondItem="JAj-oQ-DSi" secondAttribute="bottom" id="fdb-FM-xMi"/>
                             <constraint firstItem="9Zg-9p-btY" firstAttribute="leading" secondItem="hpH-0U-U4h" secondAttribute="leading" id="nEa-KA-whb"/>
                             <constraint firstItem="hpH-0U-U4h" firstAttribute="top" secondItem="UrD-fK-BZt" secondAttribute="bottom" constant="14" id="nK8-kS-pzv"/>
                             <constraint firstItem="TEl-Yx-v4S" firstAttribute="leading" secondItem="5kJ-D9-OyW" secondAttribute="leadingMargin" id="npg-gQ-sYe"/>
+                            <constraint firstItem="Zcw-Zv-wK5" firstAttribute="bottom" secondItem="hpH-0U-U4h" secondAttribute="bottom" id="pUg-3c-EN2"/>
+                            <constraint firstItem="Zcw-Zv-wK5" firstAttribute="centerX" secondItem="hpH-0U-U4h" secondAttribute="centerX" id="rsJ-w0-lBL"/>
                             <constraint firstItem="TEl-Yx-v4S" firstAttribute="leading" secondItem="UrD-fK-BZt" secondAttribute="leading" id="ulf-fK-sMP"/>
                             <constraint firstItem="UrD-fK-BZt" firstAttribute="top" secondItem="TEl-Yx-v4S" secondAttribute="bottom" constant="8" symbolic="YES" id="wtd-uK-bUq"/>
                             <constraint firstItem="9Zg-9p-btY" firstAttribute="leading" secondItem="5kJ-D9-OyW" secondAttribute="leading" id="xkn-9i-RDn"/>
@@ -175,6 +181,7 @@
                         <outlet property="pausePlaybackButton" destination="iDR-hF-s4o" id="NOS-HL-QUy"/>
                         <outlet property="playPlaybackButton" destination="4VV-Vv-Uau" id="MNk-XL-prh"/>
                         <outlet property="playbackControlsToolbar" destination="hpH-0U-U4h" id="3rM-oj-gEK"/>
+                        <outlet property="progressBar" destination="Zcw-Zv-wK5" id="kMw-De-n17"/>
                         <outlet property="rewindPlaybackButton" destination="36e-VX-tx1" id="w2e-U2-48h"/>
                         <outlet property="songArtistLabel" destination="UrD-fK-BZt" id="jc7-dU-t60"/>
                         <outlet property="songTitleLabel" destination="TEl-Yx-v4S" id="zMl-iA-pt1"/>
@@ -182,7 +189,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="wb3-lO-pbW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3052.5" y="39.08450704225352"/>
+            <point key="canvasLocation" x="3052" y="38.23088455772114"/>
         </scene>
         <!--Player VC-->
         <scene sceneID="e2a-Rv-54U">
