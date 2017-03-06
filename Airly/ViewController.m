@@ -66,4 +66,8 @@
   return UIStatusBarStyleLightContent;
 }
 
+- (BOOL)prefersStatusBarHidden {
+  return YES;
+}
+
 @end

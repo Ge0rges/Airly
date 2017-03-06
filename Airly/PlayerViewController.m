@@ -99,7 +99,7 @@
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
   // We received data from host either
   NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-
+  
   if ([payload[@"command"] isEqualToString:@"metadata"]) {
     NSLog(@"Peer received song metadata.");
     
@@ -109,7 +109,7 @@
     
     // Update UI at specified date
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
-      [self performSelectorOnMainThread:@selector(updatePlayerSongInfo) withObject:nil waitUntilDone:YES];
+      [self updatePlayerSongInfo];
     }];
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
@@ -122,7 +122,7 @@
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       // Set the playback time
       [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-
+      
       // Play
       [self.player play];
     }];
@@ -130,7 +130,7 @@
     
   } else if ([payload[@"command"] isEqualToString:@"pause"]) {
     NSLog(@"Peer received 'pause' command.");
-
+    
     // Pause at specified date
     [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
       [self.player pause];
@@ -157,16 +157,16 @@
     if (error) {
       NSLog(@"Peer got an error when deleting the old song: %@", error);
     }
-
+    
     [fileManager moveItemAtURL:localURL toURL:songURL error:&error];// Move the new song file
-
+    
     if (error) {
       NSLog(@"Peer got an error when moving the new song: %@", error);
     }
     
     // Load the song
     [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:songURL]];
-  
+    
   }
 }
 
@@ -204,38 +204,40 @@
 }
 
 - (void)updatePlayerSongInfo {
-  // Update thge player UI with song info
-  UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
-  
-  // Animate all changes
-  [UIView animateWithDuration:0.3 animations:^{
-    if (songTitle) {
-      [self.songTitleLabel setText:songTitle];
-    }
+  dispatch_async(dispatch_get_main_queue(), ^{// Everything on the main thread
+    // Update thge player UI with song info
+    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
     
-    if (songArtist) {
-      [self.songArtistLabel setText:songArtist];
-    }
-    
-    [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
-  }];
-  
-  // If there's an album image generate a suitable gradient background
-  if (albumImage) {
-    // Generate a background gradient to match the album art
-    [SLColorArt processImage:albumImage scaledToSize:self.backgroundImageView.frame.size threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt
-      // Build the gradient
-      UIColor *firstColor = [colorArt.backgroundColor darkerColor];
-      UIColor *secondColor = [colorArt.backgroundColor lighterColor];
-      UIImage *albumGradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:self.backgroundImageView.frame.size];
+    // Animate all changes
+    [UIView animateWithDuration:0.3 animations:^{
+      if (songTitle) {
+        [self.songTitleLabel setText:songTitle];
+      }
       
-      // update the gradient
-      [UIView animateWithDuration:0.3 animations:^{
-        [self.albumImageView setImage:albumImage];
-        [self.backgroundImageView setImage:albumGradientBackground];
-      }];
+      if (songArtist) {
+        [self.songArtistLabel setText:songArtist];
+      }
+      
+      [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
     }];
-  }
+    
+    // If there's an album image generate a suitable gradient background
+    if (albumImage) {
+      // Generate a background gradient to match the album art
+      [SLColorArt processImage:albumImage scaledToSize:self.backgroundImageView.frame.size threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt
+        // Build the gradient
+        UIColor *firstColor = [colorArt.backgroundColor darkerColor];
+        UIColor *secondColor = [colorArt.backgroundColor lighterColor];
+        UIImage *albumGradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:self.backgroundImageView.frame.size];
+        
+        // update the gradient
+        [UIView animateWithDuration:0.3 animations:^{
+          [self.albumImageView setImage:albumImage];
+          [self.backgroundImageView setImage:albumGradientBackground];
+        }];
+      }];
+    }
+  });
 }
 
 #pragma mark - Other

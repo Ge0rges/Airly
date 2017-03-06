@@ -190,7 +190,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     // Send song metadata to peers, and update Player Song Info.
     uint64_t updateUITime = [self.syncManager sendSongMetadata:currentMediaItem toPeers:allPeers];
     [self.syncManager atExactTime:updateUITime runBlock:^{
-      [self performSelectorOnMainThread:@selector(updatePlayerSongInfo) withObject:nil waitUntilDone:YES];
+      [self updatePlayerSongInfo];
     }];
     
     
@@ -298,6 +298,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       
       // Ask peers to calibrate
       [self.syncManager askPeersToCalculateOffset:@[peerID]];
+      
+#warning handle mid-session connection
     }
       
       break;
@@ -383,39 +385,41 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 }
 
 - (void)updatePlayerSongInfo {
-  // Update thge player UI with song info
-  UIImage *albumImage = [self.playerManager currentSongAlbumArt];
-  UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
-  
-  // Animate all changes
-  [UIView animateWithDuration:0.3 animations:^{
-    if ([self.playerManager currentSongName]) {
-      [self.songTitleLabel setText:[self.playerManager currentSongName]];
-    }
+  dispatch_async(dispatch_get_main_queue(), ^{// Everything on the main thread
+    // Update thge player UI with song info
+    UIImage *albumImage = [self.playerManager currentSongAlbumArt];
+    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
     
-    if ([self.playerManager currentSongArtist]) {
-      [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
-    }
-    
-    [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
-  }];
-  
-  // If there's an album image generate a suitable gradient background
-  if (albumImage) {
-    // Generate a background gradient to match the album art
-    [SLColorArt processImage:albumImage scaledToSize:self.backgroundImageView.frame.size threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt
-      // Build the gradient
-      UIColor *firstColor = [colorArt.backgroundColor darkerColor];
-      UIColor *secondColor = [colorArt.backgroundColor lighterColor];
-      UIImage *albumGradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:self.backgroundImageView.frame.size];
+    // Animate all changes
+    [UIView animateWithDuration:0.3 animations:^{
+      if ([self.playerManager currentSongName]) {
+        [self.songTitleLabel setText:[self.playerManager currentSongName]];
+      }
       
-      // update the gradient
-      [UIView animateWithDuration:0.3 animations:^{
-        [self.albumImageView setImage:albumImage];
-        [self.backgroundImageView setImage:albumGradientBackground];
-      }];
+      if ([self.playerManager currentSongArtist]) {
+        [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
+      }
+      
+      [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
     }];
-  }
+    
+    // If there's an album image generate a suitable gradient background
+    if (albumImage) {
+      // Generate a background gradient to match the album art
+      [SLColorArt processImage:albumImage scaledToSize:self.backgroundImageView.frame.size threshold:0.01 onComplete:^(SLColorArt *colorArt) {// Get the SLColorArt
+        // Build the gradient
+        UIColor *firstColor = [colorArt.backgroundColor darkerColor];
+        UIColor *secondColor = [colorArt.backgroundColor lighterColor];
+        UIImage *albumGradientBackground = [UIImage gradientFromColor:firstColor toColor:secondColor withSize:self.backgroundImageView.frame.size];
+        
+        // update the gradient
+        [UIView animateWithDuration:0.3 animations:^{
+          [self.albumImageView setImage:albumImage];
+          [self.backgroundImageView setImage:albumGradientBackground];
+        }];
+      }];
+    }
+  });
 }
 
 - (void)updateProgressBarWithProgressArray:(NSArray <NSProgress *> *)progressArray {
