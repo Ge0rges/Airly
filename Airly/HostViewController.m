@@ -52,6 +52,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *playPlaybackButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *forwardPlaybackButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *rewindPlaybackButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *addSongsButton;
 @property (strong, nonatomic) IBOutlet UIToolbar *playbackControlsToolbar;
 
 @end
@@ -124,10 +125,10 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 
 - (IBAction)addSongs:(UIBarButtonItem *)sender {
   // Disable the button and show the picker
-  sender.enabled = NO;
+  self.addSongsButton.enabled = NO;
   
   [self.playerManager presentMediaPickerOnController:self completion:^{
-    sender.enabled = YES;
+    self.addSongsButton.enabled = YES;
   }];
 }
 
@@ -146,7 +147,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)rewindButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
-    
+  
   // Go to next song
   [self.playerManager skipToPreviousSongLocally];
 }
@@ -354,6 +355,9 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
         self.pausePlaybackButton.enabled = NO;
         
+        // Allow song changing
+        self.addSongsButton.enabled = YES;
+
         break;
       }
         
@@ -374,12 +378,15 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         self.forwardPlaybackButton.enabled = ([self.playerManager nextMediaItem]) ? YES : NO;
         self.rewindPlaybackButton.enabled = ([self.playerManager previousMediaItem]) ? YES : NO;
         
+        // Allow song changing
+        self.addSongsButton.enabled = YES;
+        
         break;
       }
         
       case AIHostStateSkipping:
       case AIHostStateDisconnected: {
-        // Show play button
+        // Show a disabled play button
         [toolbarButtons removeObject:self.pausePlaybackButton];
         
         if (![toolbarButtons containsObject:self.playPlaybackButton]) {
@@ -396,6 +403,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         self.playPlaybackButton.enabled = NO;
         self.forwardPlaybackButton.enabled = NO;
         self.rewindPlaybackButton.enabled = NO;
+        self.addSongsButton.enabled = NO;
         
         break;
     }

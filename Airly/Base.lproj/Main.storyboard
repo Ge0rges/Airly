@@ -176,6 +176,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="addSongsButton" destination="mlg-zj-J24" id="iFM-2u-Gat"/>
                         <outlet property="albumImageView" destination="9Zg-9p-btY" id="3Xa-1Z-dDp"/>
                         <outlet property="forwardPlaybackButton" destination="sv4-1E-83L" id="EmD-Uk-gcT"/>
                         <outlet property="pausePlaybackButton" destination="iDR-hF-s4o" id="NOS-HL-QUy"/>
