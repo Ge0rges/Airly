@@ -214,17 +214,17 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       }
       
       // If we got a response from everyone, and at least one peer received: play.
-      if ((peersReceived+peersFailed) >= allPeers.count && peersReceived > 0) {
+      if ((peersReceived+peersFailed) >= self.connectivityManager.allPeers.count && peersReceived > 0) {
         [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
         lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
       
-      } else if (peersReceived == 0) {// Retry, nobody received.
+      } else if (peersReceived == 0 && self.connectivityManager.allPeers.count > 0) {// Retry, nobody received.
         lastSentMediaItem = nil;
         [self playingItemDidChange:notification];
       }
       
       // If a peer failed
-      if (peersFailed > 0) {
+      if (peersFailed > 0 && self.connectivityManager.allPeers.count > 0) {
         // If this song replays it will be sent to all peers since at least one failed.
         lastSentMediaItem = nil;
         
@@ -270,12 +270,17 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 }
 
 - (void)mediaPicker:(MPMediaPickerController *)mediaPicker didPickMediaItems:(MPMediaItemCollection *)mediaItemCollection {
+  // Update the control buttons
+  if ([mediaItemCollection.items[0] isEqual:[self.playerManager currentMediaItem]]) {// Song didn't change
+    [self updateControlsForState:AIHostStatePlaying];
+
+  } else {// Song changed
+    [self updateControlsForState:AIHostStateUpdatingPeers];
+  }
+  
   // Load the media collection
   [self.playerManager loadMediaCollection:mediaItemCollection];
   [self.playerManager.musicController prepareToPlay];
-  
-  // Update the control buttons
-  [self updateControlsForState:AIHostStateUpdatingPeers];
 
   // Dismiss the media picker
   [self dismissViewControllerAnimated:YES completion:nil];
@@ -306,7 +311,13 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
           [self.syncManager sendSong:[self.playerManager currentMediaItem] toPeers:@[peerID] progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
             [self updateProgressBarWithProgressArray:progressArray];
           
-          } completion:nil];
+          } completion:^(NSError * _Nullable error) {
+            // If music is playing, send the command to have the peer sync in.
+            if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying && !error) {
+#warning disable until the latency calculation is accurate enough
+              //[self.syncManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime whileHostPlaying:YES];
+            }
+          }];
           
         }];
       }
@@ -433,8 +444,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 }
 
 - (void)updateProgressBarWithProgressArray:(NSArray <NSProgress *> *)progressArray {
-  NSLog(@"Progress view is tracking: %@", progressArray);
-  
   NSProgress *parentProgress = [NSProgress progressWithTotalUnitCount:progressArray.count];
   
   for (NSProgress *progress in progressArray) {

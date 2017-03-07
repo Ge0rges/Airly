@@ -20,7 +20,7 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 
 + (instancetype _Nonnull)sharedManager;// Use this to get an instance of Synaction
 
-- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime;
+- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying;
 - (uint64_t)synchronisePause;
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers;
 - (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers progress:(void(^ _Nullable)(NSArray <NSProgress *>* _Nullable progressArray))progressHandler completion:(void(^ _Nullable)(NSError * _Nullable error))handler;
@@ -35,5 +35,7 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 
 @property (strong, nonatomic) NSMutableSet <MCPeerID*> * _Nullable calibratedPeers;// Array of all peers that have already calibrated
 @property (nonatomic) uint64_t numberOfCalibrations;// The number of calibrations to be used to calculate the average offset. only makes sense on peer.
+@property (readonly, nonatomic) int64_t offsetWithHost;// Offset between this device and the host, in nanoseconds. 0 on host.
+@property (readonly, nonatomic) int64_t latencyWithHost;// Calculated latency with host for one ping (one-way) based on offsetWithHost
 
 @end

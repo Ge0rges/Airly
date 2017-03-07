@@ -108,7 +108,7 @@
     albumImage = [UIImage imageWithData:payload[@"songAlbumArt"]];
     
     // Update UI at specified date
-    [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+    [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
       [self updatePlayerSongInfo];
     }];
     
@@ -119,9 +119,14 @@
     [self.player pause];
     
     // Play at specified date
-    [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+    [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
       // Set the playback time
-      [self.player seekToTime:CMTimeMakeWithSeconds(((NSNumber*)payload[@"commandTime"]).doubleValue, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+      NSTimeInterval songPlaybackTime = [payload[@"commandTime"] doubleValue];
+      if ([payload[@"continuousPlay"] boolValue]) {// The host was playing during transmission. Adjust playback time.
+        songPlaybackTime = songPlaybackTime + (self.syncManager.latencyWithHost/1000000000.0);// Nanoseconds to seconds
+      }
+      
+      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
       
       // Play
       [self.player play];
@@ -132,7 +137,7 @@
     NSLog(@"Peer received 'pause' command.");
     
     // Pause at specified date
-    [self.syncManager atExactTime:((NSNumber *)payload[@"date"]).unsignedLongLongValue runBlock:^{
+    [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
       [self.player pause];
     }];
   }

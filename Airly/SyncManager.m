@@ -19,10 +19,11 @@
 }
 
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
-
-@property (nonatomic) int64_t hostTimeOffset;
+@property (nonatomic) int64_t offsetWithHost;// Offset between this device and the host, in nanoseconds. 0 on host.
+@property (nonatomic) int64_t latencyWithHost;// Calculated latency with host for one ping (one-way) based on offsetWithHost, in nanoseconds.
 
 @end
+
 
 @implementation SyncManager
 
@@ -33,7 +34,7 @@
     sharedManager = [[self alloc] init];
     sharedManager.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
     sharedManager.connectivityManager.syncManager = sharedManager;
-    sharedManager.hostTimeOffset = 0;
+    sharedManager.offsetWithHost = 0;
     sharedManager.numberOfCalibrations = 1;
     sharedManager.calibratedPeers = [NSMutableSet new];
     sharedManager->calculatedOffsets = [NSMutableArray new];
@@ -43,12 +44,14 @@
 }
 
 #pragma mark - Player
-- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime {
+- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying {
   // Create NSData to send
   uint64_t timeToPlay = [self currentNetworkTime] + 500000000;
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPlay],
-                                                                  @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime]
+                                                                  @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime],
+                                                                  //If yes, the playback time will be adjusted on peer to take into account transfer time (eg the song was playing on host)
+                                                                  @"continuousPlay": [NSNumber numberWithBool:hostIsPlaying]
                                                                   }];
   
   // Send data
@@ -195,7 +198,7 @@
   if (!isCalibrating) {
     isCalibrating = YES;// Used to track the calibration
     [calculatedOffsets removeAllObjects];// Remove all previously calculated offsets
-    self.hostTimeOffset = 0;// Reset the host offset so we can calibrate properly
+    self.offsetWithHost = 0;// Reset the host offset so we can calibrate properly
 
     // Send a ping per calibration required (the average will be done later)
     for (int i=0; i<self.numberOfCalibrations; i++) {
@@ -211,7 +214,7 @@
     // Handle 0 calibrations
     if (self.numberOfCalibrations == 0) {
       isCalibrating = NO;
-      self.hostTimeOffset = 0;
+      self.offsetWithHost = 0;
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
@@ -232,11 +235,11 @@
   }
   
   uint64_t timeNanoSeconds = baseTime * sTimebaseInfo.numer / sTimebaseInfo.denom;
-  return (int64_t)timeNanoSeconds - self.hostTimeOffset;
+  return (int64_t)timeNanoSeconds - self.offsetWithHost;
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
-  NSLog(@"Syncmanager queing up to execute block at time with offset: %lli Value: %llu", self.hostTimeOffset, val);
+  NSLog(@"Syncmanager queing up to execute block at time with offset: %lli Value: %llu", self.offsetWithHost, val);
   
   if (val <= [self currentNetworkTime]) {// The value has already passed execute immediately.
     block();
@@ -268,7 +271,7 @@
   dispatch_source_set_timer(timer, at_time, DISPATCH_TIME_FOREVER /*one shot*/, 0 /* minimal leeway */);
   dispatch_resume(timer);
   
-  NSLog(@"Syncmanager queued up to execute block at time with offset: %lli Value: %llu Trigger time: %llu Current Time: %llu", self.hostTimeOffset, val, ((int64_t)val + self.hostTimeOffset - (int64_t)[self currentNetworkTime] - 1300000), [self currentNetworkTime]);
+  NSLog(@"Syncmanager queued up to execute block at time with offset: %lli Value: %llu Trigger time: %llu Current Time: %llu", self.offsetWithHost, val, ((int64_t)val + self.offsetWithHost - (int64_t)[self currentNetworkTime] - 1300000), [self currentNetworkTime]);
 }
 
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
@@ -306,11 +309,16 @@
     uint64_t timePingSent = ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue;
     uint64_t timeHostReceivedPing = ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
-    //uint64_t latencyWithHost = ([self currentNetworkTime] - timePingSent)/2;// Calculates the estimated latency for one way travel
+    int64_t calculatedOffset = ((int64_t)[self currentNetworkTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it cancels the latency out
+    //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2. Imprecise, uses latency.
+    //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentNetworkTime];// WAY 3. Imprecise, uses latency.
     
-    int64_t calculatedOffset = ((int64_t)[self currentNetworkTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
-    //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2
-    //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentNetworkTime];// WAY 3
+    // Basic latency calculation (all one way)
+    //self.latencyWithHost = ([self currentNetworkTime] - timePingSent)/2;// Calculates the estimated latency for one way travel based on basic math. Very Imprecise.
+    
+    // More interesting latency calculation based on the acurate calculated offset
+    //self.latencyWithHost = (int64_t)timeHostReceivedPing - (int64_t)timePingSent + calculatedOffset;// Not precise enough
+    //self.latencyWithHost = (int64_t)[self currentNetworkTime] - (int64_t)timeHostReceivedPing - calculatedOffset;// Tiny bit more precise, but still not enough.
     
     [calculatedOffsets addObject:[NSNumber numberWithLongLong:calculatedOffset]];
     
@@ -320,7 +328,7 @@
         numeratorForAverage += calculatedOffset.longLongValue;
       }
       
-      self.hostTimeOffset = numeratorForAverage/(int64_t)self.numberOfCalibrations;
+      self.offsetWithHost = numeratorForAverage/(int64_t)self.numberOfCalibrations;
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
@@ -341,7 +349,7 @@
   if (state == MCSessionStateNotConnected) {
     [self.calibratedPeers removeObject:peerID];
     isCalibrating = NO;
-    self.hostTimeOffset = 0;
+    self.offsetWithHost = 0;
   }
 }
 

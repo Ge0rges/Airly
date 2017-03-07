@@ -78,7 +78,7 @@
   [self.syncManager askPeersToCalculateOffset:peers];
   [self.syncManager executeBlockWhenAllPeersCalibrate:peers block:^(NSArray <MCPeerID *> * _Nullable sentPeers) {
     // Order a Synchronize play
-    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime];
+    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO];
     
     // Play at specified date
     [self.syncManager atExactTime:timeToPlay runBlock:^{
