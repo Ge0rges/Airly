@@ -299,7 +299,17 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       // Ask peers to calibrate
       [self.syncManager askPeersToCalculateOffset:@[peerID]];
       
-#warning handle mid-session connection
+      // If a song is loaded whent he peer calibrates, send it over.
+      if ([self.playerManager currentMediaItem]) {
+        [self.syncManager executeBlockWhenEachPeerCalibrates:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
+          [self.syncManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:@[peerID]];
+          [self.syncManager sendSong:[self.playerManager currentMediaItem] toPeers:@[peerID] progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
+            [self updateProgressBarWithProgressArray:progressArray];
+          
+          } completion:nil];
+          
+        }];
+      }
     }
       
       break;
