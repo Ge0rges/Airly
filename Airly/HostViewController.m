@@ -147,6 +147,10 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)rewindButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
+#warning sync issues here
+  
+  // Pause
+  [self.playerManager.musicController pause];
   
   // Go to next song
   [self.playerManager skipToPreviousSongLocally];
@@ -155,6 +159,10 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)forwardButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
+#warning sync issues here
+  
+  // Pause
+  [self.playerManager.musicController pause];
   
   // Go to next song
   [self.playerManager skipToNextSongLocally];
