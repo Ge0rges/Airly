@@ -146,10 +146,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)rewindButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
-  
-  // Pause
-  [self.playerManager.musicController pause];
-  
+    
   // Go to next song
   [self.playerManager skipToPreviousSongLocally];
 }
@@ -157,9 +154,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)forwardButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
-  
-  // Pause
-  [self.playerManager.musicController pause];
   
   // Go to next song
   [self.playerManager skipToNextSongLocally];
@@ -173,7 +167,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   // Get some needed variables
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
-  // Reset to playback time to 0
+  // Reset playback time to 0
   self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
 
   // Before anything else, check if this is just the same song restarting, if it is just play.
