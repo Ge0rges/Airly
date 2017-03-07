@@ -182,6 +182,9 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     return;
   }
   
+  // Prepare to play
+  [self.playerManager.musicController prepareToPlay];
+  
   // Pause the music
   [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{
     if (currentMediaItem && self.syncManager.calibratedPeers.count >= self.connectivityManager.allPeers.count) {// Make sure peers are calibrated and song is loaded
