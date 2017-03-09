@@ -31,10 +31,9 @@
     sharedManager.picker.allowsPickingMultipleItems = YES;
     sharedManager.picker.showsCloudItems = NO;
     sharedManager.picker.showsItemsWithProtectedAssets = NO;
-    sharedManager.picker.prompt = NSLocalizedString(@"Add Songs",);
     
     // Create the player
-    sharedManager.musicController = [MPMusicPlayerController systemMusicPlayer];
+    sharedManager.musicController = [MPMusicPlayerController applicationMusicPlayer];
     sharedManager.musicController.repeatMode = MPMusicRepeatModeNone;
     sharedManager.musicController.shuffleMode = MPMusicShuffleModeOff;
     

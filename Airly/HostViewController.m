@@ -69,6 +69,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   
   // Subscribe to notifications
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playingItemDidChange:) name:MPMusicPlayerControllerNowPlayingItemDidChangeNotification object:self.playerManager.musicController];
+  //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackStateDidChange:) name:MPMusicPlayerControllerPlaybackStateDidChangeNotification object:self.playerManager.musicController];
 
   [self.playerManager.musicController beginGeneratingPlaybackNotifications];
   
@@ -167,6 +168,10 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 }
 
 #pragma mark - Playing State Changers
+//- (void)playbackStateDidChange:(NSNotification *)notification {
+//    // In the future this will be used when we use the system music player.
+//}
+
 - (void)playingItemDidChange:(NSNotification *)notification {// Notification isn't nil when the song has changed
   // Update controls
   [self updateControlsForState:AIHostStateUpdatingPeers];
@@ -182,6 +187,12 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   
   // Pause the music
   [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{
+    // Check if the player is just looping
+    if (self.playerManager.musicController.indexOfNowPlayingItem == 0 && [self.playerManager.mediaCollection.items indexOfObject:lastSentMediaItem] == self.playerManager.mediaCollection.items.count-1) {
+      [self updateControlsForState:AIHostStatePaused];
+      return;
+    }
+    
     // Before anything else, check if this is just the same song restarting, if it is just play.
     if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
       [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
