@@ -76,8 +76,8 @@
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers {
   // Send the song metadata
   NSMutableDictionary *metadataDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"metadata",
-                                                                                       @"songName": (mediaItem.title) ?: @"Unknown Song Name",
-                                                                                       @"songArtist": (mediaItem.artist) ?: @"Unknown Artist"
+                                                                                       @"songName": (mediaItem.title) ?: @"",
+                                                                                       @"songArtist": (mediaItem.artist) ?: @""
                                                                                        }];
   
   

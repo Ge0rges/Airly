@@ -118,19 +118,24 @@
     // Pause the player to reset the time.
     [self.player pause];
     
-    // Play at specified date
+    // Set the playback time
+    __block NSTimeInterval songPlaybackTime = [payload[@"commandTime"] doubleValue];
+    
+    // Schedule play at specified date
     [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
-      // Set the playback time
-      NSTimeInterval songPlaybackTime = [payload[@"commandTime"] doubleValue];
-      if ([payload[@"continuousPlay"] boolValue]) {// The host was playing during transmission. Adjust playback time.
-        songPlaybackTime = songPlaybackTime + (self.syncManager.latencyWithHost/1000000000.0);// Nanoseconds to seconds
+      // The host was playing during transmission. Adjust playback time.
+      if ([payload[@"continuousPlay"] boolValue]) {
+        songPlaybackTime += (self.syncManager.latencyWithHost/(double)1000000000.0) + (double)0.50;// Nanoseconds to seconds
       }
       
-      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
       
       // Play
       [self.player play];
     }];
+    
+    
+    [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
     
     
   } else if ([payload[@"command"] isEqualToString:@"pause"]) {

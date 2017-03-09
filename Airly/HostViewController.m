@@ -147,7 +147,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)rewindButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
-#warning sync issues here
   
   // Pause
   [self.playerManager.musicController pause];
@@ -159,7 +158,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (IBAction)forwardButtonPressed:(id)sender {
   // Update Controls
   [self updateControlsForState:AIHostStateSkipping];
-#warning sync issues here
   
   // Pause
   [self.playerManager.musicController pause];
@@ -179,17 +177,17 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   // Reset playback time to 0
   self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
 
-  // Before anything else, check if this is just the same song restarting, if it is just play.
-  if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
-    [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
-    return;
-  }
-  
   // Prepare to play
   [self.playerManager.musicController prepareToPlay];
   
   // Pause the music
   [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{
+    // Before anything else, check if this is just the same song restarting, if it is just play.
+    if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
+      [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+      return;
+    }
+    
     if (currentMediaItem && self.syncManager.calibratedPeers.count >= self.connectivityManager.allPeers.count) {// Make sure peers are calibrated and song is loaded
       // Send song metadata to peers, and update Player Song Info.
       uint64_t updateUITime = [self.syncManager sendSongMetadata:currentMediaItem toPeers:self.connectivityManager.allPeers];
@@ -313,6 +311,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       // If a song is loaded whent he peer calibrates, send it over.
       if ([self.playerManager currentMediaItem]) {
         [self.syncManager executeBlockWhenEachPeerCalibrates:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
+          // Send the song info
           [self.syncManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:@[peerID]];
           [self.syncManager sendSong:[self.playerManager currentMediaItem] toPeers:@[peerID] progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
             [self updateProgressBarWithProgressArray:progressArray];
@@ -320,8 +319,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
           } completion:^(NSError * _Nullable error) {
             // If music is playing, send the command to have the peer sync in.
             if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying && !error) {
-#warning disable until the latency calculation is accurate enough
-              //[self.syncManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime whileHostPlaying:YES];
+#warning not good enough sync
+              // [self.syncManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime whileHostPlaying:YES];
             }
           }];
           
@@ -333,7 +332,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       
     case MCSessionStateNotConnected: {
       [self.songTitleLabel setText:[NSString stringWithFormat:NSLocalizedString(@"Disconnected from %@", nil), peerID.displayName]];
-      [self updateControlsForState:AIHostStateDisconnected];
       
       break;
     }
@@ -391,8 +389,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         
         break;
       }
-        
-      case AIHostStateSkipping:
+
       case AIHostStateDisconnected: {
         // Show a disabled play button
         [toolbarButtons removeObject:self.pausePlaybackButton];
@@ -402,16 +399,29 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         }
         
         [self.playbackControlsToolbar setItems:toolbarButtons animated:YES];
+        
+        // Enable adding songs
+        self.addSongsButton.enabled = YES;
+        
+        // Disable all control buttons
+        self.pausePlaybackButton.enabled = NO;
+        self.playPlaybackButton.enabled = NO;
+        self.forwardPlaybackButton.enabled = NO;
+        self.rewindPlaybackButton.enabled = NO;
+        
+        break;
       }
         
-      case AIHostStateUpdatingPeers:
+      case AIHostStateSkipping:
         
+      case AIHostStateUpdatingPeers:
+        self.addSongsButton.enabled = NO;
+
       default:
         self.pausePlaybackButton.enabled = NO;
         self.playPlaybackButton.enabled = NO;
         self.forwardPlaybackButton.enabled = NO;
         self.rewindPlaybackButton.enabled = NO;
-        self.addSongsButton.enabled = NO;
         
         break;
     }
