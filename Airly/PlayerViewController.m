@@ -107,10 +107,8 @@
     songArtist = [payload[@"songArtist"] stringByReplacingOccurrencesOfString:@"artist " withString:@""];
     albumImage = [UIImage imageWithData:payload[@"songAlbumArt"]];
     
-    // Update UI at specified date
-    [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
-      [self updatePlayerSongInfo];
-    }];
+    // Update UI
+    [self updatePlayerSongInfo];
     
   } else if ([payload[@"command"] isEqualToString:@"play"]) {
     NSLog(@"Peer received 'play' command.");

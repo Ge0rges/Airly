@@ -201,11 +201,8 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     
     if (currentMediaItem && self.syncManager.calibratedPeers.count >= self.connectivityManager.allPeers.count) {// Make sure peers are calibrated and song is loaded
       // Send song metadata to peers, and update Player Song Info.
-      uint64_t updateUITime = [self.syncManager sendSongMetadata:currentMediaItem toPeers:self.connectivityManager.allPeers];
-      [self.syncManager atExactTime:updateUITime runBlock:^{
-        [self updatePlayerSongInfo];
-      }];
-      
+      [self.syncManager sendSongMetadata:currentMediaItem toPeers:self.connectivityManager.allPeers];
+      [self updatePlayerSongInfo];      
       
       // Track how many peers received and failed
       __block uint peersReceived = 0;
