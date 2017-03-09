@@ -13,53 +13,5 @@
             stopOnStyle = "0">
          </BreakpointContent>
       </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Airly/HostViewController.m"
-            timestampString = "510766411.174742"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "184"
-            endingLineNumber = "184"
-            landmarkName = "-playingItemDidChange:"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[HostViewController playingItemDidChange:]"
-                  moduleName = "Airly"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/HostViewController.m"
-                  timestampString = "510766986.828383"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "184"
-                  endingLineNumber = "184"
-                  offsetFromSymbolStart = "468">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "__43-[HostViewController playingItemDidChange:]_block_invoke"
-                  moduleName = "Airly"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/HostViewController.m"
-                  timestampString = "510766986.8307"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "184"
-                  endingLineNumber = "184"
-                  offsetFromSymbolStart = "40">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

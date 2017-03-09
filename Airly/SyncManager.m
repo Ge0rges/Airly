@@ -239,11 +239,9 @@
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
-  NSLog(@"Syncmanager queing up to execute block at time with offset: %lli Value: %llu", self.offsetWithHost, val);
-  
   if (val <= [self currentNetworkTime]) {// The value has already passed execute immediately.
     block();
-    NSLog(@"SyncManager executed block Immed.");
+    NSLog(@"SyncManager executed block Immediately.");
     return;
   }
   
@@ -258,7 +256,7 @@
       sleep(0);
     }
     block();
-    NSLog(@"SyncManager executed block.");
+    NSLog(@"SyncManager executed block with difference: %llu", val - [self currentNetworkTime]);
   });
   
   // Now, we employ a dirty trick:
@@ -269,9 +267,7 @@
   // for 1.3ms.
   dispatch_time_t at_time = dispatch_time(DISPATCH_TIME_NOW, val - [self currentNetworkTime] - 1300000);
   dispatch_source_set_timer(timer, at_time, DISPATCH_TIME_FOREVER /*one shot*/, 0 /* minimal leeway */);
-  dispatch_resume(timer);
-  
-  NSLog(@"Syncmanager queued up to execute block at time with offset: %lli Value: %llu Trigger time: %llu Current Time: %llu", self.offsetWithHost, val, ((int64_t)val + self.offsetWithHost - (int64_t)[self currentNetworkTime] - 1300000), [self currentNetworkTime]);
+  dispatch_resume(timer);  
 }
 
 - (void)session:(MCSession *)session didReceiveData:(NSData *)data fromPeer:(MCPeerID *)peerID {
