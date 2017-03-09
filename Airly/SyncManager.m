@@ -125,10 +125,7 @@
 // Host
 - (void)executeBlockWhenAllPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
-  NSSet *peersSet = [NSSet setWithArray:peers];
-
-  if ([peersSet isEqualToSet:self.calibratedPeers]) {// Already calibrated
-    NSLog(@"All peers already calibrated executing block.");
+  if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allPeers.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
     completionBlock(peers);
     return;
   }
@@ -136,26 +133,21 @@
   // They didn't calibrate. Register to receive notifications. Execute when all are calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
     
-    NSLog(@"executeBlockWhenAllPeersCalibrate got peerCalibrated notification.");
-    
     __block BOOL executeBlock = YES;
     
     // Check that every object in peers is contained in calibratedPeers
     [peers enumerateObjectsUsingBlock:^(MCPeerID * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-      NSLog(@"Enumerating and checking obj: %@", obj);
       if (executeBlock) {// Make sure a NO doesn't get switched to a YES.
-        NSLog(@"executeBlock is YES checking if object is contained.");
-        executeBlock = [self.calibratedPeers containsObject:obj];
-        NSLog(@"Obj is contained: %i", [self.calibratedPeers containsObject:obj]);
+        if ([self.connectivityManager.allPeers containsObject:obj]) {// Make sure this peer is still connected
+          executeBlock = [self.calibratedPeers containsObject:obj];
+        }
       }
       
       *stop = !executeBlock;// Stop if executeBlock is NO.
-      NSLog(@"A Peer calibrated, execute block is: %i", executeBlock);
     }];
     
     // Check if we should execute the block
     if (executeBlock) {
-      NSLog(@"All peers calibrated calling block and unregistering.");
       completionBlock(peers);
       [[NSNotificationCenter defaultCenter] removeObserver:observer];
     }
