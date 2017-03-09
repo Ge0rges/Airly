@@ -145,7 +145,7 @@
                                 </constraints>
                             </imageView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zcw-Zv-wK5">
-                                <rect key="frame" x="0.0" y="437" width="375" height="2"/>
+                                <rect key="frame" x="0.0" y="439" width="375" height="2"/>
                             </progressView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -155,7 +155,7 @@
                             <constraint firstItem="9Zg-9p-btY" firstAttribute="trailing" secondItem="hpH-0U-U4h" secondAttribute="trailing" id="HGY-zI-Xzt"/>
                             <constraint firstAttribute="trailing" secondItem="9Zg-9p-btY" secondAttribute="trailing" id="NaC-ui-wW9"/>
                             <constraint firstItem="UrD-fK-BZt" firstAttribute="centerX" secondItem="hpH-0U-U4h" secondAttribute="centerX" id="O9I-2j-y4h"/>
-                            <constraint firstItem="Zcw-Zv-wK5" firstAttribute="bottom" secondItem="9Zg-9p-btY" secondAttribute="bottom" id="Vzj-rZ-7yk"/>
+                            <constraint firstItem="Zcw-Zv-wK5" firstAttribute="bottom" secondItem="9Zg-9p-btY" secondAttribute="bottom" constant="2" id="Vzj-rZ-7yk"/>
                             <constraint firstItem="Zcw-Zv-wK5" firstAttribute="width" secondItem="hpH-0U-U4h" secondAttribute="width" id="cp2-PT-bEO"/>
                             <constraint firstItem="TEl-Yx-v4S" firstAttribute="trailing" secondItem="UrD-fK-BZt" secondAttribute="trailing" id="e1g-74-By1"/>
                             <constraint firstItem="9Zg-9p-btY" firstAttribute="top" secondItem="JAj-oQ-DSi" secondAttribute="bottom" id="fdb-FM-xMi"/>
