@@ -186,7 +186,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   [self.playerManager.musicController prepareToPlay];
   
   // Pause the music
-  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{
+  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{    
     // Check if the player is just looping
     if (self.playerManager.musicController.indexOfNowPlayingItem == 0 && [self.playerManager.mediaCollection.items indexOfObject:lastSentMediaItem] == self.playerManager.mediaCollection.items.count-1) {
       [self updateControlsForState:AIHostStatePaused];

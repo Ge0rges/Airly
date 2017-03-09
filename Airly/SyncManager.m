@@ -46,7 +46,7 @@
 #pragma mark - Player
 - (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying {
   // Create NSData to send
-  uint64_t timeToPlay = [self currentNetworkTime] + 500000000;
+  uint64_t timeToPlay = [self currentNetworkTime] + 1000000000;
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPlay],
                                                                   @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime],
@@ -62,7 +62,7 @@
 
 - (uint64_t)synchronisePause {
   // Create NSData to send
-  uint64_t timeToPause = [self currentNetworkTime] + 500000000;
+  uint64_t timeToPause = [self currentNetworkTime] + 1000000000;
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"pause",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPause],
                                                                   }];
@@ -87,7 +87,7 @@
   }
   
   // Add the time to update last.
-  uint64_t timeToUpdateUI = [self currentNetworkTime] + 500000000;
+  uint64_t timeToUpdateUI = [self currentNetworkTime] + 1000000000;
   [metadataDic addEntriesFromDictionary:@{@"date": [NSNumber numberWithUnsignedLongLong:timeToUpdateUI]}];
   
   NSData *metadata = [NSKeyedArchiver archivedDataWithRootObject:metadataDic];
@@ -256,7 +256,7 @@
       sleep(0);
     }
     block();
-    NSLog(@"SyncManager executed block with difference: %llu", val - [self currentNetworkTime]);
+    NSLog(@"SyncManager executed block with difference: %llu", [self currentNetworkTime] - val);
   });
   
   // Now, we employ a dirty trick:

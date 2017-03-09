@@ -125,7 +125,7 @@
     [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
       // The host was playing during transmission. Adjust playback time.
       if ([payload[@"continuousPlay"] boolValue]) {
-        songPlaybackTime += (self.syncManager.latencyWithHost/(double)1000000000.0) + (double)0.50;// Nanoseconds to seconds
+        songPlaybackTime += (self.syncManager.latencyWithHost/(double)1000000000.0) + (double)1.0;// Nanoseconds to seconds
       }
       
       [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
