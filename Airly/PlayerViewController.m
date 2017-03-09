@@ -213,9 +213,7 @@
 
 - (void)updatePlayerSongInfo {
   dispatch_async(dispatch_get_main_queue(), ^{// Everything on the main thread
-    // Update thge player UI with song info
-    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
-    
+    // Update thge player UI with song info    
     // Animate all changes
     [UIView animateWithDuration:0.3 animations:^{
       if (songTitle) {
@@ -226,7 +224,9 @@
         [self.songArtistLabel setText:songArtist];
       }
       
-      [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
+      if (!albumImage) {
+        [self.backgroundImageView setImage:[UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size]];
+      }
     }];
     
     // If there's an album image generate a suitable gradient background

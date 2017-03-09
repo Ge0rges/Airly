@@ -202,7 +202,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     if (currentMediaItem && self.syncManager.calibratedPeers.count >= self.connectivityManager.allPeers.count) {// Make sure peers are calibrated and song is loaded
       // Send song metadata to peers, and update Player Song Info.
       [self.syncManager sendSongMetadata:currentMediaItem toPeers:self.connectivityManager.allPeers];
-      [self updatePlayerSongInfo];      
+      [self updatePlayerSongInfo];
       
       // Track how many peers received and failed
       __block uint peersReceived = 0;
@@ -440,7 +440,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   dispatch_async(dispatch_get_main_queue(), ^{// Everything on the main thread
     // Update thge player UI with song info
     UIImage *albumImage = [self.playerManager currentSongAlbumArt];
-    UIImage *gradientBackground = [UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size];
     
     // Animate all changes
     [UIView animateWithDuration:0.3 animations:^{
@@ -452,7 +451,9 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [self.songArtistLabel setText:[self.playerManager currentSongArtist]];
       }
       
-      [self.backgroundImageView setImage:(albumImage) ? self.backgroundImageView.image : gradientBackground];
+      if (!albumImage) {
+        [self.backgroundImageView setImage:[UIImage gradientFromColor:[UIColor generateRandomColor] toColor:[UIColor generateRandomColor] withSize:self.backgroundImageView.frame.size]];
+      }
     }];
     
     // If there's an album image generate a suitable gradient background
