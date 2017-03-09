@@ -77,8 +77,12 @@
 - (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray<MCPeerID *> * _Nonnull)peers completion:(completionBlock)block {  
 #warning what could happen is that one will fail to calibrate. This block will never get called.
   // Ask peers to calibrate first.
+  NSLog(@"Asking all peers to calibrate for play.");
   [self.syncManager askPeersToCalculateOffset:peers];
+
   [self.syncManager executeBlockWhenAllPeersCalibrate:peers block:^(NSArray <MCPeerID *> * _Nullable sentPeers) {
+    NSLog(@"All peers calibrated for play.");
+    
     // Order a Synchronize play
     uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO];
     

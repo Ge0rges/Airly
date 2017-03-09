@@ -315,6 +315,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       
       // Ask peers to calibrate
       [self.syncManager askPeersToCalculateOffset:@[peerID]];
+      NSLog(@"Asked peer: %@ to calibrate.", peerID);
       
       // If a song is loaded whent he peer calibrates, send it over.
       if ([self.playerManager currentMediaItem]) {

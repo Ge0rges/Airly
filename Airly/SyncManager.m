@@ -128,6 +128,7 @@
   NSSet *peersSet = [NSSet setWithArray:peers];
 
   if ([peersSet isEqualToSet:self.calibratedPeers]) {// Already calibrated
+    NSLog(@"All peers already calibrated executing block.");
     completionBlock(peers);
     return;
   }
@@ -135,19 +136,26 @@
   // They didn't calibrate. Register to receive notifications. Execute when all are calibrated.
   __block id observer = [[NSNotificationCenter defaultCenter] addObserverForName:@"peerCalibrated" object:self.calibratedPeers queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
     
+    NSLog(@"executeBlockWhenAllPeersCalibrate got peerCalibrated notification.");
+    
     __block BOOL executeBlock = YES;
     
     // Check that every object in peers is contained in calibratedPeers
     [peers enumerateObjectsUsingBlock:^(MCPeerID * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+      NSLog(@"Enumerating and checking obj: %@", obj);
       if (executeBlock) {// Make sure a NO doesn't get switched to a YES.
+        NSLog(@"executeBlock is YES checking if object is contained.");
         executeBlock = [self.calibratedPeers containsObject:obj];
+        NSLog(@"Obj is contained: %i", [self.calibratedPeers containsObject:obj]);
       }
       
       *stop = !executeBlock;// Stop if executeBlock is NO.
+      NSLog(@"A Peer calibrated, execute block is: %i", executeBlock);
     }];
     
     // Check if we should execute the block
     if (executeBlock) {
+      NSLog(@"All peers calibrated calling block and unregistering.");
       completionBlock(peers);
       [[NSNotificationCenter defaultCenter] removeObserver:observer];
     }
@@ -183,8 +191,10 @@
 }
 
 - (void)askPeersToCalculateOffset:(NSArray <MCPeerID*>* _Nonnull)peers {
-  // Clear the calibrated array
-  [self.calibratedPeers removeAllObjects];
+  // Clear the calibrated array of this peer
+  for (MCPeerID *peer in peers) {
+    [self.calibratedPeers removeObject:peer];
+  }
   
   // Send the "sync" command to peers to trigger their offset calculations.
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"sync"}];
@@ -194,7 +204,7 @@
 }
 
 // Meant for speakers.
-- (void)calculateTimeOffsetWithHost {
+- (void)calculateTimeOffsetWithHost:(MCPeerID *)hostPeer {
   if (!isCalibrating) {
     isCalibrating = YES;// Used to track the calibration
     [calculatedOffsets removeAllObjects];// Remove all previously calculated offsets
@@ -208,7 +218,7 @@
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+      [self.connectivityManager sendData:payload toPeers:@[hostPeer] reliable:YES];
     }
     
     // Handle 0 calibrations
@@ -220,8 +230,11 @@
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      [self.connectivityManager sendData:payload toPeers:self.connectivityManager.allPeers reliable:YES];
+      [self.connectivityManager sendData:payload toPeers:@[hostPeer] reliable:YES];
     }
+  
+  } else {
+    NSLog(@"Peer is calibrating already.");
   }
 }
 
@@ -276,7 +289,7 @@
   
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
-    [self calculateTimeOffsetWithHost];
+    [self calculateTimeOffsetWithHost:peerID];
     
     return;
     

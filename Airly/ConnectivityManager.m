@@ -125,7 +125,7 @@
 #pragma mark - Sending & Receiving Data
 #pragma mark Sending
 - (void)sendData:(NSData *)data toPeers:(NSArray *)peerIDs reliable:(BOOL)reliable {
-  if ([peerIDs count] == 0) return;
+  if (peerIDs.count == 0) return;
   
   NSPredicate *peerNamePred = [NSPredicate predicateWithFormat:@"displayName in %@", [peerIDs valueForKey:@"displayName"]];
   
