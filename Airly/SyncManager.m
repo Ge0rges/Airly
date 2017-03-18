@@ -124,6 +124,7 @@
 #pragma mark - Network Time Sync
 // Host
 - (void)executeBlockWhenAllPeersCalibrate:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
+#warning implement a timeout
   // Check if these peers already had the time to calibrate
   if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allPeers.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
     completionBlock(peers);
@@ -260,8 +261,8 @@
     while (val > [self currentNetworkTime]) {
       sleep(0);
     }
-    block();
     NSLog(@"SyncManager executed block with difference: %llu", [self currentNetworkTime] - val);
+    block();
   });
   
   // Now, we employ a dirty trick:
@@ -311,6 +312,9 @@
     uint64_t timeHostReceivedPing = ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
     int64_t calculatedOffset = ((int64_t)[self currentNetworkTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it cancels the latency out
+    
+    //calculatedOffset = (int64_t)timeHostReceivedPing - (int64_t)timePingSent - ((int64_t)[self currentNetworkTime] -  (int64_t)timePingSent)/2; D'apres Raja Baz.
+    
     //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2. Imprecise, uses latency.
     //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentNetworkTime];// WAY 3. Imprecise, uses latency.
     
