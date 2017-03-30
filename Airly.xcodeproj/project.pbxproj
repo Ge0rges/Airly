@@ -28,6 +28,7 @@
 		FB2745371E537DE1001CE6F3 /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745331E537DE1001CE6F3 /* UIImage+ColorArt.m */; };
 		FB2745381E537DE1001CE6F3 /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */; };
 		FB54F8411E5602D200188CBE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = FB54F83F1E5602D200188CBE /* Localizable.strings */; };
+		FBAA9E251E8D1DAB00F35245 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBAA9E241E8D1DAB00F35245 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,6 +68,7 @@
 		FB2745351E537DE1001CE6F3 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Scale.m"; path = "ColorArt/UIImage+Scale.m"; sourceTree = "<group>"; };
 		FB54F83E1E56008400188CBE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Main.strings; sourceTree = "<group>"; };
 		FB54F8401E5602D200188CBE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		FBAA9E241E8D1DAB00F35245 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBAA9E251E8D1DAB00F35245 /* StoreKit.framework in Frameworks */,
 				FB25802D1E5B477100605951 /* MobileCoreServices.framework in Frameworks */,
 				DA5DFDCD1A95F95500849BA1 /* AVFoundation.framework in Frameworks */,
 				DA5DFDC51A94C67400849BA1 /* MediaPlayer.framework in Frameworks */,
@@ -254,6 +257,7 @@
 		FBC0E61B1CA02ABD004A8852 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FBAA9E241E8D1DAB00F35245 /* StoreKit.framework */,
 				FB25802C1E5B477100605951 /* MobileCoreServices.framework */,
 				DA5DFDCC1A95F95500849BA1 /* AVFoundation.framework */,
 				DA5DFDC41A94C67400849BA1 /* MediaPlayer.framework */,

@@ -8,6 +8,9 @@
 
 #import "AppDelegate.h"
 
+// Frameworks
+#import <StoreKit/StoreKit.h>
+
 // Managers
 #import "ConnectivityManager.h"
 
@@ -23,6 +26,15 @@
   self.connectivityManager = [ConnectivityManager new];
   
   [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
+  
+  // Ask for review every 5 launches.
+  NSInteger launches = [[NSUserDefaults standardUserDefaults] integerForKey:@"launches"];
+  if (launches%5 == 0) {
+    [SKStoreReviewController requestReview];
+  
+  } else {
+    [[NSUserDefaults standardUserDefaults] setInteger:launches++ forKey:@"launches"];
+  }
   
   return YES;
 }
