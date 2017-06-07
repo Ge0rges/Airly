@@ -34,7 +34,7 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 - (void)executeBlockWhenEachPeerCalibrates:(NSArray <MCPeerID *> * _Nonnull)peers block:(calibrationBlock)completionBlock;// FOR EACH peer in the array that calibrates this will be called
 
 @property (strong, nonatomic) NSMutableSet <MCPeerID*> * _Nullable calibratedPeers;// Array of all peers that have already calibrated
-@property (nonatomic, readonly) uint64_t numberOfCalibrations;// The number of calibrations to be used to calculate the averaga offset offset
+@property (nonatomic, readonly) uint64_t maxNumberOfCalibrations;// The number of calibrations to be used to calculate the averaga offset offset
 @property (nonatomic, readonly) uint64_t latencyWithHost;// The calculated latency between the peer and host. Only on peer.
 @property (nonatomic, readonly) int64_t hostTimeOffset;// The calculated offset between the peer and the host. Only on peer.
 

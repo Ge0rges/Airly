@@ -22,7 +22,7 @@
 @property (strong, nonatomic) ConnectivityManager *connectivityManager;
 @property (nonatomic) int64_t hostTimeOffset;// Offset between this device and the host, in nanoseconds. 0 on host.
 @property (nonatomic) uint64_t latencyWithHost;// Calculated latency with host for one ping (one-way) based on offsetWithHost, in nanoseconds.
-@property (nonatomic) uint64_t numberOfCalibrations;
+@property (nonatomic) uint64_t maxNumberOfCalibrations;
 
 @end
 
@@ -37,7 +37,7 @@
     sharedManager.connectivityManager = [ConnectivityManager sharedManagerWithDisplayName:[[UIDevice currentDevice] name]];
     sharedManager.connectivityManager.syncManager = sharedManager;
     sharedManager.hostTimeOffset = 0;
-    sharedManager.numberOfCalibrations = 50000;
+    sharedManager.maxNumberOfCalibrations = 50000;
     sharedManager.calibratedPeers = [NSMutableSet new];
     sharedManager->calculatedOffsets = 0;
     sharedManager->totalCalculatedOffsets = 0;
@@ -334,14 +334,15 @@
     double newOffset = totalCalculatedOffsets/calculatedOffsets;
     
     if (fabs(newOffset-self.hostTimeOffset) < 5000) {
-      self.numberOfCalibrations = calculatedOffsets;
+      self.maxNumberOfCalibrations = calculatedOffsets;
       NSLog(@"prematurely ended calibration because accurate enough at value: %f", newOffset);
     }
     
     self.hostTimeOffset = newOffset;
     
     
-    if (calculatedOffsets >= self.numberOfCalibrations) {// If is the last value, calculate the average of all offsets.
+    // If calculation is done notify the host.
+    if (calculatedOffsets >= self.maxNumberOfCalibrations) {
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
@@ -351,10 +352,7 @@
       // Update the bool
       isCalibrating = NO;
       
-    } else {
-      // Calculate the final offset
-      self.hostTimeOffset = totalCalculatedOffsets/calculatedOffsets;
-      
+    } else {      
       // Send another calibration request.
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                           @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
