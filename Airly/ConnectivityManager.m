@@ -152,7 +152,11 @@
     
     for (MCPeerID *filteredPeerID in filteredPeerIDs) {
       NSProgress *progress = [session sendResourceAtURL:assetUrl withName:name toPeer:filteredPeerID withCompletionHandler:handler];
-      [progressArray addObject:progress];
+      if (progress) {
+        [progressArray addObject:progress];
+      } else {
+        NSLog(@"Progress was nil.");
+      }
     }
   }
   

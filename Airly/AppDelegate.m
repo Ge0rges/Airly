@@ -29,11 +29,10 @@
   
   // Ask for review every 5 launches.
   NSInteger launches = [[NSUserDefaults standardUserDefaults] integerForKey:@"launches"];
+  [[NSUserDefaults standardUserDefaults] setInteger:launches++ forKey:@"launches"];
   if (launches%5 == 0) {
     [SKStoreReviewController requestReview];
   
-  } else {
-    [[NSUserDefaults standardUserDefaults] setInteger:launches++ forKey:@"launches"];
   }
   
   return YES;

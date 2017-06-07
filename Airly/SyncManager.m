@@ -311,6 +311,18 @@
     uint64_t timePingSent = ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue;
     uint64_t timeHostReceivedPing = ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
+    // If this calculation doesn't meet our error margin, restart.
+    if (((int64_t)[self currentNetworkTime] - (int64_t)timePingSent) > 25000000000) {// Roundtrip can't be bigger than 0.250s
+      NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
+                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentNetworkTime]]
+                                                                                          }];
+      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
+      
+      [self.connectivityManager sendData:payload toPeers:@[peerID] reliable:YES];
+      
+      return;
+    }
+    
     int64_t calculatedOffset = ((int64_t)[self currentNetworkTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it cancels the latency out
     
     //calculatedOffset = (int64_t)timeHostReceivedPing - (int64_t)timePingSent - ((int64_t)[self currentNetworkTime] -  (int64_t)timePingSent)/2; D'apres Raja Baz.

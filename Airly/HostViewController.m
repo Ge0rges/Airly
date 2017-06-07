@@ -186,72 +186,77 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   [self.playerManager.musicController prepareToPlay];
   
   // Pause the music
-  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{    
-    // Check if the player is just looping
-    if (self.playerManager.musicController.indexOfNowPlayingItem == 0 && [self.playerManager.mediaCollection.items indexOfObject:lastSentMediaItem] == self.playerManager.mediaCollection.items.count-1) {
-      [self updateControlsForState:AIHostStatePaused];
-      return;
-    }
+  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:nil];
+  
+  // Check if the player is just looping
+  if (self.playerManager.musicController.indexOfNowPlayingItem == 0 && [self.playerManager.mediaCollection.items indexOfObject:lastSentMediaItem] == self.playerManager.mediaCollection.items.count-1) {
+    [self updateControlsForState:AIHostStatePaused];
+    return;
+  }
+  
+  // Before anything else, check if this is just the same song restarting, if it is just play.
+  if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
+    [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+    return;
+  }
+  
+  // Different song, update network.
+  if (currentMediaItem) {// Make sure peers are calibrated and song is loaded
+    // Send song metadata to peers, and update Player Song Info.
+    [self.syncManager sendSongMetadata:currentMediaItem toPeers:self.connectivityManager.allPeers];
+    [self updatePlayerSongInfo];
     
-    // Before anything else, check if this is just the same song restarting, if it is just play.
-    if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
-      [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
-      return;
-    }
+    // Track how many peers received and failed
+    __block uint peersReceived = 0;
+    __block uint peersFailed = 0;
     
-    if (currentMediaItem && self.syncManager.calibratedPeers.count >= self.connectivityManager.allPeers.count) {// Make sure peers are calibrated and song is loaded
-      // Send song metadata to peers, and update Player Song Info.
-      [self.syncManager sendSongMetadata:currentMediaItem toPeers:self.connectivityManager.allPeers];
-      [self updatePlayerSongInfo];
+    // Send the song to all peers
+    [self.syncManager sendSong:currentMediaItem toPeers:self.connectivityManager.allPeers progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
+      [self updateProgressBarWithProgressArray:progressArray];
       
-      // Track how many peers received and failed
-      __block uint peersReceived = 0;
-      __block uint peersFailed = 0;
+    } completion:^(NSError * _Nullable error) {
+      // Increment the peers received number.
+      if (error) {
+        peersFailed++;
+        NSLog(@"Airly failed sending song with error: %@", error);
+        
+      } else {
+        peersReceived++;
+        NSLog(@"Airly sent song.");
+      }
       
-      // Send the song to all peers
-      [self.syncManager sendSong:currentMediaItem toPeers:self.connectivityManager.allPeers progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
-        [self updateProgressBarWithProgressArray:progressArray];
+      // If we got a response from everyone, and at least one peer received: play.
+      if ((peersReceived+peersFailed) >= self.connectivityManager.allPeers.count && peersReceived > 0) {
+        [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+        lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
         
-      } completion:^(NSError * _Nullable error) {
-        // Increment the peers received number.
-        if (error) {
-          peersFailed++;
-          NSLog(@"Airly failed sending song with error: %@", error);
-          
-        } else {
-          peersReceived++;
-          NSLog(@"Airly sent song.");
-        }
+      } else if (peersReceived == 0 && self.connectivityManager.allPeers.count > 0) {// Retry, nobody received.
+        lastSentMediaItem = nil;
+        [self playingItemDidChange:notification];
+      }
+      
+      // If a peer failed
+      if (peersFailed > 0 && self.connectivityManager.allPeers.count > 0) {
+        // If this song replays it will be sent to all peers since at least one failed.
+        lastSentMediaItem = nil;
         
-        // If we got a response from everyone, and at least one peer received: play.
-        if ((peersReceived+peersFailed) >= self.connectivityManager.allPeers.count && peersReceived > 0) {
-          [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
-          lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
-          
-        } else if (peersReceived == 0 && self.connectivityManager.allPeers.count > 0) {// Retry, nobody received.
-          lastSentMediaItem = nil;
-          [self playingItemDidChange:notification];
-        }
+        // Show an error informing the user that some listeners won't be able to play
+        NSString *message = [NSString stringWithFormat:@"Sorry but Airly failed to send the song to %u listeners. %@", peersFailed, error.localizedDescription];
+        UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Error Sending" message:message preferredStyle:UIAlertControllerStyleAlert];
         
-        // If a peer failed
-        if (peersFailed > 0 && self.connectivityManager.allPeers.count > 0) {
-          // If this song replays it will be sent to all peers since at least one failed.
-          lastSentMediaItem = nil;
-          
-          // Show an error informing the user that some listeners won't be able to play
-          NSString *message = [NSString stringWithFormat:@"Sorry but Airly failed to send the song to %u listeners. %@", peersFailed, error.localizedDescription];
-          UIAlertController *failedPeerAlert = [UIAlertController alertControllerWithTitle:@"Error Sending" message:message preferredStyle:UIAlertControllerStyleAlert];
-          
-          [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
-          [self presentViewController:failedPeerAlert animated:YES completion:nil];
-        }
-      }];
-    }
-  }];
+        [failedPeerAlert addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil]];
+        [self presentViewController:failedPeerAlert animated:YES completion:nil];
+      }
+    }];
+  } else {
+    NSLog(@"Song changed, asked to pause, completion called but song is: %@ and calibrated is: %lu and peers is: %lu so FAILED", currentMediaItem, self.syncManager.calibratedPeers.count, self.connectivityManager.allPeers.count);
+  }
 
 }
 
 - (void)startPlaybackAtTime:(NSTimeInterval)playbackTime {
+  NSLog(@"Submitting network play for song time: %f", playbackTime);
+  
   // Tell the player manager to play everywhere
   [self.playerManager playAtPlaybackTime:playbackTime locallyAndOnHosts:self.connectivityManager.allPeers completion:^{
     // Update Controls
@@ -317,25 +322,28 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       [self.syncManager askPeersToCalculateOffset:@[peerID]];
       NSLog(@"Asked peer: %@ to calibrate.", peerID);
       
-      // If a song is loaded whent he peer calibrates, send it over.
-      if ([self.playerManager currentMediaItem]) {
-        [self.syncManager executeBlockWhenEachPeerCalibrates:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
+      // If a song is loaded whent the peer calibrates, send it over.
+      [self.syncManager executeBlockWhenEachPeerCalibrates:@[peerID] block:^(NSArray<MCPeerID *> * _Nullable peers) {
+        NSLog(@"Peer: %@ calibrated", peers);
+        
+        if ([self.playerManager currentMediaItem]) {
+          NSLog(@"Peer: %@ calibrated, sending song and song metadata.", peers);
           // Send the song info
           [self.syncManager sendSongMetadata:[self.playerManager currentMediaItem] toPeers:@[peerID]];
           [self.syncManager sendSong:[self.playerManager currentMediaItem] toPeers:@[peerID] progress:^(NSArray<NSProgress *> * _Nullable progressArray) {
             [self updateProgressBarWithProgressArray:progressArray];
-          
+            
           } completion:^(NSError * _Nullable error) {
             // If music is playing, send the command to have the peer sync in.
-            if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying && !error) {
+            if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying && !error && [self.playerManager currentMediaItem]) {
 #warning not good enough sync
               // [self.syncManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime whileHostPlaying:YES];
             }
           }];
-          
-        }];
-      }
-    }
+        }
+      }];
+    };
+      
       
       break;
       

@@ -8,6 +8,9 @@
 
 #import "PlayerManager.h"
 
+// Frameworks
+#import <AVFoundation/AVFoundation.h>
+
 // Managers
 #import "SyncManager.h"
 
@@ -74,7 +77,8 @@
 }
 
 #pragma mark - Player Control
-- (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray<MCPeerID *> * _Nonnull)peers completion:(completionBlock)block {  
+- (void)playAtPlaybackTime:(NSTimeInterval)playbackTime locallyAndOnHosts:(NSArray<MCPeerID *> * _Nonnull)peers completion:(completionBlock)block {
+  
   // Ask peers to calibrate first.
   NSLog(@"Asking all peers to calibrate for play.");
   [self.syncManager askPeersToCalculateOffset:peers];
@@ -90,6 +94,7 @@
       // Set the playback time on the current device
       if (playbackTime != self.musicController.currentPlaybackTime) {
         self.musicController.currentPlaybackTime = playbackTime;
+        NSLog(@"PlayerManager request playbackTime and actual playback time didn't match.");
       }
       
       // Play
