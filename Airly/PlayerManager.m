@@ -86,12 +86,12 @@
   [self.syncManager executeBlockWhenAllPeersCalibrate:peers block:^(NSArray <MCPeerID *> * _Nullable sentPeers) {
     NSLog(@"All peers calibrated for play.");
     
-    // Order a Synchronize play
+    // Order a Synchronized play
     uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO];
     
-    // Play at specified date
+    // Play at returned specified time
     [self.syncManager atExactTime:timeToPlay runBlock:^{
-      // Set the playback time on the current device
+      // Set the playback time on the current device in case it skewed for some reason
       if (playbackTime != self.musicController.currentPlaybackTime) {
         self.musicController.currentPlaybackTime = playbackTime;
         NSLog(@"PlayerManager request playbackTime and actual playback time didn't match.");
