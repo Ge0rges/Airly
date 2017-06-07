@@ -204,7 +204,7 @@
     totalCalculatedOffsets = 0;
     
     // Handle 0 calibrations
-    if (self.numberOfCalibrations == 0) {
+    if (self.maxNumberOfCalibrations == 0) {
       isCalibrating = NO;
       
       // Let the host know we calibrated
@@ -352,7 +352,7 @@
       // Update the bool
       isCalibrating = NO;
       
-    } else {      
+    } else {
       // Send another calibration request.
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                           @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
