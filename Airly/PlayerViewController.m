@@ -126,7 +126,8 @@
     [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
       // The host was playing during transmission. Adjust playback time. WARNING: Release doesn't use this.
       if ([payload[@"continuousPlay"] boolValue]) {
-        songPlaybackTime += (self.syncManager.latencyWithHost/(double)1000000000.0) + (double)1.0;// Nanoseconds to seconds
+#warning implement
+        songPlaybackTime += 0;// Nanoseconds to seconds
         [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
       }
       
@@ -173,7 +174,6 @@
     
     // Load the song
     [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:songURL]];
-    
   }
 }
 

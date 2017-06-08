@@ -248,6 +248,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
         [self presentViewController:failedPeerAlert animated:YES completion:nil];
       }
     }];
+    
   } else {
     NSLog(@"Song changed, asked to pause, completion called but song is: %@ and calibrated is: %lu and peers is: %lu so FAILED", currentMediaItem, self.syncManager.calibratedPeers.count, self.connectivityManager.allPeers.count);
   }
@@ -267,7 +268,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (void)pausePlayback {
   // Tell the player manager to pause everywhere
   [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{
-    // Update Controls
+    // Upd ate Controls
     [self updateControlsForState:AIHostStatePaused];
   }];
 }
