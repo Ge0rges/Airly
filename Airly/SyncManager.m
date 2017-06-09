@@ -47,14 +47,15 @@
 }
 
 #pragma mark - Player Interface
-- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying {
+- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying withCurrentTime:(NSTimeInterval)currentTime {
   // Create NSData to send
-  uint64_t timeToPlay = [self currentNetworkTime] + 1000000000;// In one second.
+  uint64_t timeToPlay = currentTime + 1000000000;// In one second.
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
-                                                                  @"date": [NSNumber numberWithUnsignedLongLong:timeToPlay],
-                                                                  @"commandTime": [NSNumber numberWithDouble:currentPlaybackTime],
+                                                                  @"date": @(timeToPlay),
+                                                                  @"commandTime": @(currentPlaybackTime),
                                                                   //If yes, the playback time will be adjusted on peer to take into account transfer time (eg the song was playing on host)
-                                                                  @"continuousPlay": [NSNumber numberWithBool:hostIsPlaying]
+                                                                  @"continuousPlay": @(hostIsPlaying),
+                                                                  @"timeAtCommandTime": @(currentTime)
                                                                   }];
   
   // Send data
@@ -65,7 +66,7 @@
 
 - (uint64_t)synchronisePause {
   // Create NSData to send
-  uint64_t timeToPause = [self currentNetworkTime] + 1000000000;// In one second.
+  uint64_t timeToPause = [self currentTime] + 1000000000;// In one second.
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"pause",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPause],
                                                                   }];

@@ -20,7 +20,7 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <MCPeerID *> * _Nullable peer
 
 + (instancetype _Nonnull)sharedManager;// Use this to get an instance of Synaction
 
-- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying;
+- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying withCurrentTime:(NSTimeInterval)currentTime;
 - (uint64_t)synchronisePause;
 - (uint64_t)sendSongMetadata:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers;
 - (void)sendSong:(MPMediaItem * _Nonnull)mediaItem toPeers:(NSArray<MCPeerID *> * _Nonnull)peers progress:(void(^ _Nullable)(NSArray <NSProgress *>* _Nullable progressArray))progressHandler completion:(void(^ _Nullable)(NSError * _Nullable error))handler;

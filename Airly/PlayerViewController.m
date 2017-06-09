@@ -119,21 +119,30 @@
     // Set the playback time
     __block NSTimeInterval songPlaybackTime = [payload[@"commandTime"] doubleValue];
     
-    [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
-
-    
-    // Schedule play at specified date
-    [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
-      // The host was playing during transmission. Adjust playback time. WARNING: Release doesn't use this.
-      if ([payload[@"continuousPlay"] boolValue]) {
-#warning implement
-        songPlaybackTime += 0;// Nanoseconds to seconds
-        [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-      }
+    // The host was playing during transmission. Adjust playback time.
+    if ([payload[@"continuousPlay"] boolValue]) {
+      NSLog(@"songPlaybackTime before adjustment is: %@", @(songPlaybackTime));
       
-      // Play
+      uint64_t currentNetworkTime = [self.syncManager currentNetworkTime];
+      songPlaybackTime += (currentNetworkTime - [payload[@"timeAtCommandTime"] unsignedLongLongValue])/1000000000.0;
+      
+      NSLog(@"songPlaybackTime after adjustment is: %@ with networkTime: %@ timeAtCommandTime: %@", @(songPlaybackTime), @(currentNetworkTime), @([payload[@"timeAtCommandTime"] unsignedLongLongValue]));
+      
+      
+      // Seek to adjustred song time
+      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
       [self.player play];
-    }];
+    
+    } else {
+      // Schedule play at specified date
+      [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
+        // Play
+        [self.player play];
+      }];
+      
+      // Seek to song time
+      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
+    }
     
     
   } else if ([payload[@"command"] isEqualToString:@"pause"]) {

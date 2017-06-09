@@ -337,8 +337,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
           } completion:^(NSError * _Nullable error) {
             // If music is playing, send the command to have the peer sync in.
             if (self.playerManager.musicController.playbackState == MPMusicPlaybackStatePlaying && !error && [self.playerManager currentMediaItem]) {
-#warning not good enough sync
-              // [self.syncManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime whileHostPlaying:YES];
+              [self.syncManager synchronisePlayWithCurrentPlaybackTime:self.playerManager.musicController.currentPlaybackTime whileHostPlaying:YES withCurrentTime:[self.syncManager currentTime]];
             }
           }];
         }

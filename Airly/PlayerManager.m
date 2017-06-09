@@ -87,7 +87,7 @@
     NSLog(@"All peers calibrated for play.");
     
     // Order a Synchronized play
-    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO];
+    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO withCurrentTime:[self.syncManager currentTime]];
         
     // Play at returned specified time
     [self.syncManager atExactTime:timeToPlay runBlock:^{
