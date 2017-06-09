@@ -200,6 +200,7 @@
 // Meant for speakers.
 - (void)calculateTimeOffsetWithHost:(MCPeerID *)hostPeer {
   if (!isCalibrating) {
+    self.hostTimeOffset = 0;
     isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
     totalCalculatedOffsets = 0;
