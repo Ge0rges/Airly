@@ -168,10 +168,6 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 }
 
 #pragma mark - Playing State Changers
-//- (void)playbackStateDidChange:(NSNotification *)notification {
-//    // In the future this will be used when we use the system music player.
-//}
-
 - (void)playingItemDidChange:(NSNotification *)notification {// Notification isn't nil when the song has changed
   // Update controls
   [self updateControlsForState:AIHostStateUpdatingPeers];
@@ -179,15 +175,16 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   // Get some needed variables
   __block MPMediaItem *currentMediaItem = [self.playerManager currentMediaItem];
   
+  // Pause the music
+  [self.playerManager.musicController pause];
+  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:nil];
+
   // Reset playback time to 0
   self.playerManager.musicController.currentPlaybackTime = (NSTimeInterval)0;
-
+  
   // Prepare to play
   [self.playerManager.musicController prepareToPlay];
-  
-  // Pause the music
-  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:nil];
-  
+
   // Check if the player is just looping
   if (self.playerManager.musicController.indexOfNowPlayingItem == 0 && [self.playerManager.mediaCollection.items indexOfObject:lastSentMediaItem] == self.playerManager.mediaCollection.items.count-1) {
     [self updateControlsForState:AIHostStatePaused];
@@ -196,7 +193,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
   
   // Before anything else, check if this is just the same song restarting, if it is just play.
   if ([lastSentMediaItem isEqual:currentMediaItem]) {// If the song didn't change
-    [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+    [self startPlaybackAtTime:0];
     return;
   }
   
@@ -227,7 +224,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       
       // If we got a response from everyone, and at least one peer received: play.
       if ((peersReceived+peersFailed) >= self.connectivityManager.allPeers.count && peersReceived > 0) {
-        [self startPlaybackAtTime:self.playerManager.musicController.currentPlaybackTime];
+        [self startPlaybackAtTime:0];
         lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
         
       } else if (peersReceived == 0 && self.connectivityManager.allPeers.count > 0) {// Retry, nobody received.
