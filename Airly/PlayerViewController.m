@@ -124,15 +124,18 @@
       NSLog(@"songPlaybackTime before adjustment is: %@", @(songPlaybackTime));
       
       uint64_t currentNetworkTime = [self.syncManager currentNetworkTime];
-      songPlaybackTime += (currentNetworkTime - [payload[@"timeAtCommandTime"] unsignedLongLongValue])/1000000000.0;
+      songPlaybackTime = songPlaybackTime + (currentNetworkTime - [payload[@"timeAtCommandTime"] unsignedLongLongValue])/1000000000.0 + 1.0;
       
       NSLog(@"songPlaybackTime after adjustment is: %@ with networkTime: %@ timeAtCommandTime: %@", @(songPlaybackTime), @(currentNetworkTime), @([payload[@"timeAtCommandTime"] unsignedLongLongValue]));
       
       
-      // Seek to adjustred song time
-      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
-      [self.player play];
-    
+      [self.syncManager atExactTime:([self.syncManager currentNetworkTime] + 1000000000) runBlock:^{
+        [self.player play];
+      }];
+      
+      // Seek to adjusted song time
+      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 100000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+
     } else {
       // Schedule play at specified date
       [self.syncManager atExactTime:[payload[@"date"] unsignedLongLongValue] runBlock:^{
@@ -141,7 +144,7 @@
       }];
       
       // Seek to song time
-      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 1000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
+      [self.player seekToTime:CMTimeMakeWithSeconds(songPlaybackTime, 100000000) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];// Precision.
     }
     
     

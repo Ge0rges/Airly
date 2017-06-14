@@ -47,9 +47,9 @@
 }
 
 #pragma mark - Player Interface
-- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying withCurrentTime:(NSTimeInterval)currentTime {
+- (uint64_t)synchronisePlayWithCurrentPlaybackTime:(NSTimeInterval)currentPlaybackTime whileHostPlaying:(BOOL)hostIsPlaying withCurrentTime:(uint64_t)currentTime {
   // Create NSData to send
-  uint64_t timeToPlay = currentTime + 1000000000;// In one second.
+  uint64_t timeToPlay = [self currentTime] + 1000000000;// In one second.
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"play",
                                                                   @"date": @(timeToPlay),
                                                                   @"commandTime": @(currentPlaybackTime),
@@ -66,7 +66,7 @@
 
 - (uint64_t)synchronisePause {
   // Create NSData to send
-  uint64_t timeToPause = [self currentTime] + 1000000000;// In one second.
+  uint64_t timeToPause = [self currentTime];// In one second.
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"pause",
                                                                   @"date": [NSNumber numberWithUnsignedLongLong:timeToPause],
                                                                   }];

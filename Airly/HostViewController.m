@@ -224,7 +224,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
       
       // If we got a response from everyone, and at least one peer received: play.
       if ((peersReceived+peersFailed) >= self.connectivityManager.allPeers.count && peersReceived > 0) {
-        [self startPlaybackAtTime:0];
+        [self startPlaybackAtTime:0.0];
         lastSentMediaItem = [currentMediaItem copy];// Store the previously sent song for reference.
         
       } else if (peersReceived == 0 && self.connectivityManager.allPeers.count > 0) {// Retry, nobody received.
@@ -255,19 +255,33 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
 - (void)startPlaybackAtTime:(NSTimeInterval)playbackTime {
   NSLog(@"Submitting network play for song time: %f", playbackTime);
   
+  // Play locally now
+  // Set the playback time on the current device in case it skewed for some reason
+  if (playbackTime != self.playerManager.musicController.currentPlaybackTime) {
+    self.playerManager.musicController.currentPlaybackTime = playbackTime;
+    NSLog(@"PlayerManager request playbackTime and actual playback time didn't match.");
+  }
+  
+  // Play
+  [self.playerManager.musicController play];
+
   // Tell the player manager to play everywhere
-  [self.playerManager playAtPlaybackTime:playbackTime locallyAndOnHosts:self.connectivityManager.allPeers completion:^{
-    // Update Controls
-    [self updateControlsForState:AIHostStatePlaying];
-  }];
+  [self.playerManager playAtPlaybackTime:playbackTime locallyAndOnHosts:self.connectivityManager.allPeers completion:nil];
+  
+  // Update Controls
+  [self updateControlsForState:AIHostStatePlaying];
+
 }
 
 - (void)pausePlayback {
+  //Pause locally now
+  [self.playerManager.musicController pause];
+
   // Tell the player manager to pause everywhere
-  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:^{
-    // Upd ate Controls
-    [self updateControlsForState:AIHostStatePaused];
-  }];
+  [self.playerManager pauseLocallyAndOnHosts:self.connectivityManager.allPeers completion:nil];
+  
+  // Update Controls
+  [self updateControlsForState:AIHostStatePaused];
 }
 
 #pragma mark - ConnectivityManagerDelegate & PlayerManagerDelegate

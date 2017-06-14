@@ -86,27 +86,40 @@
   [self.syncManager executeBlockWhenAllPeersCalibrate:peers block:^(NSArray <MCPeerID *> * _Nullable sentPeers) {
     NSLog(@"All peers calibrated for play.");
     
-    // Order a Synchronized play
-    uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO withCurrentTime:[self.syncManager currentTime]];
-        
-    // Play at returned specified time
-    [self.syncManager atExactTime:timeToPlay runBlock:^{
-      // Set the playback time on the current device in case it skewed for some reason
-      if (playbackTime != self.musicController.currentPlaybackTime) {
-        self.musicController.currentPlaybackTime = playbackTime;
-        NSLog(@"PlayerManager request playbackTime and actual playback time didn't match.");
-      }
-      
-      // Play
-      [self.musicController play];
+    if (self.musicController.playbackState == MPMusicPlaybackStatePlaying) {
+      [self.syncManager synchronisePlayWithCurrentPlaybackTime:self.musicController.currentPlaybackTime whileHostPlaying:YES withCurrentTime:[self.syncManager currentTime]];
       
       // Execute the block
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (block) {
+      if (block) {
+        dispatch_async(dispatch_get_main_queue(), ^{
           block();
+        });
+      }
+      
+    } else {
+      // Order a Synchronized play
+      uint64_t timeToPlay = [self.syncManager synchronisePlayWithCurrentPlaybackTime:playbackTime whileHostPlaying:NO withCurrentTime:[self.syncManager currentTime]];
+      
+      // Play at returned specified time
+      [self.syncManager atExactTime:timeToPlay runBlock:^{
+        // Set the playback time on the current device in case it skewed for some reason
+        if (playbackTime != self.musicController.currentPlaybackTime && self.musicController.playbackState != MPMusicPlaybackStatePlaying) {
+          self.musicController.currentPlaybackTime = playbackTime;
+          NSLog(@"PlayerManager request playbackTime and actual playback time didn't match.");
+          
+          // Play
+          [self.musicController play];
         }
-      });
-    }];
+        
+        // Execute the block
+        if (block) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            block();
+          });
+        }
+      }];
+
+    }
   }];
 }
 
