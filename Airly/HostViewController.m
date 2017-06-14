@@ -247,7 +247,7 @@ typedef NS_ENUM(NSUInteger, AIHostState) {
     }];
     
   } else {
-    NSLog(@"Song changed, asked to pause, completion called but song is: %@ and calibrated is: %lu and peers is: %lu so FAILED", currentMediaItem, self.syncManager.calibratedPeers.count, self.connectivityManager.allPeers.count);
+    NSLog(@"Song changed, asked to pause, completion called but song is: %@ and calibrated is: %@ and peers is: %@ so FAILED", currentMediaItem, @(self.syncManager.calibratedPeers.count), @(self.connectivityManager.allPeers.count));
   }
 
 }
