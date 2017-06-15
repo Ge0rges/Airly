@@ -37,6 +37,15 @@
 		FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastViewController.swift; sourceTree = "<group>"; };
 		FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverViewController.swift; sourceTree = "<group>"; };
 		FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
+		FBFB89871EF28B7F00F7F445 /* Synaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Synaction.h; sourceTree = "<group>"; };
+		FBFB89881EF28B7F00F7F445 /* Synaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
+		FBFB898A1EF28B7F00F7F445 /* ConnectivityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectivityManager.h; sourceTree = "<group>"; };
+		FBFB898B1EF28B7F00F7F445 /* ConnectivityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectivityManager.m; sourceTree = "<group>"; };
+		FBFB898C1EF28B7F00F7F445 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		FBFB898D1EF28B7F00F7F445 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		FBFB898E1EF28B7F00F7F445 /* Packet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Packet.h; sourceTree = "<group>"; };
+		FBFB898F1EF28B7F00F7F445 /* Packet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Packet.m; sourceTree = "<group>"; };
+		FBFB89901EF28E5A00F7F445 /* Airly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Airly-Bridging-Header.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,15 +78,10 @@
 		FB2F4A801EF25CBA00C9D835 /* Airly */ = {
 			isa = PBXGroup;
 			children = (
-				FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */,
-				FB2F4A831EF25CBA00C9D835 /* ViewController.swift */,
-				FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */,
-				FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */,
-				FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */,
-				FB2F4A851EF25CBA00C9D835 /* Main.storyboard */,
-				FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */,
-				FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */,
-				FB2F4A931EF25D1300C9D835 /* SLColorArt */,
+				FBFB89901EF28E5A00F7F445 /* Airly-Bridging-Header.h */,
+				FBFB89911EF28EB400F7F445 /* Swift Classes */,
+				FBFB89931EF28F1900F7F445 /* Objective-C Classes */,
+				FBFB89941EF28F2A00F7F445 /* Assets */,
 				FB2F4A8D1EF25CBA00C9D835 /* Info.plist */,
 			);
 			path = Airly;
@@ -93,8 +97,69 @@
 				FB2F4A981EF25D1300C9D835 /* UIImage+Scale.h */,
 				FB2F4A991EF25D1300C9D835 /* UIImage+Scale.m */,
 			);
-			name = SLColorArt;
-			path = ColorArt;
+			path = SLColorArt;
+			sourceTree = "<group>";
+		};
+		FBFB89861EF28B7F00F7F445 /* Synaction */ = {
+			isa = PBXGroup;
+			children = (
+				FBFB89871EF28B7F00F7F445 /* Synaction.h */,
+				FBFB89881EF28B7F00F7F445 /* Synaction.m */,
+			);
+			path = Synaction;
+			sourceTree = "<group>";
+		};
+		FBFB89891EF28B7F00F7F445 /* Connectivity Manager */ = {
+			isa = PBXGroup;
+			children = (
+				FBFB898A1EF28B7F00F7F445 /* ConnectivityManager.h */,
+				FBFB898B1EF28B7F00F7F445 /* ConnectivityManager.m */,
+				FBFB898C1EF28B7F00F7F445 /* GCDAsyncSocket.h */,
+				FBFB898D1EF28B7F00F7F445 /* GCDAsyncSocket.m */,
+				FBFB898E1EF28B7F00F7F445 /* Packet.h */,
+				FBFB898F1EF28B7F00F7F445 /* Packet.m */,
+			);
+			path = "Connectivity Manager";
+			sourceTree = "<group>";
+		};
+		FBFB89911EF28EB400F7F445 /* Swift Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */,
+				FBFB89921EF28EC300F7F445 /* View Controllers */,
+			);
+			path = "Swift Classes";
+			sourceTree = "<group>";
+		};
+		FBFB89921EF28EC300F7F445 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				FB2F4A831EF25CBA00C9D835 /* ViewController.swift */,
+				FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */,
+				FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */,
+				FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */,
+			);
+			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		FBFB89931EF28F1900F7F445 /* Objective-C Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FBFB89891EF28B7F00F7F445 /* Connectivity Manager */,
+				FBFB89861EF28B7F00F7F445 /* Synaction */,
+				FB2F4A931EF25D1300C9D835 /* SLColorArt */,
+			);
+			path = "Objective-C Classes";
+			sourceTree = "<group>";
+		};
+		FBFB89941EF28F2A00F7F445 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				FB2F4A851EF25CBA00C9D835 /* Main.storyboard */,
+				FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */,
+				FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -191,6 +256,7 @@
 				FB2F4A861EF25CBA00C9D835 /* Base */,
 			);
 			name = Main.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */ = {
@@ -199,6 +265,7 @@
 				FB2F4A8B1EF25CBA00C9D835 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -321,6 +388,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -337,6 +405,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = On;
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = 1;
