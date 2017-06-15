@@ -25,7 +25,7 @@ class ViewController: UIViewController {
     self.receiveImageview.translatesAutoresizingMaskIntoConstraints = true;
     
     // Animate
-    UIView.animate(withDuration: 0.3, animations: {
+    UIView.animate(withDuration: 0.5, animations: {
       // Calculate Image View positions
       let width = self.view.frame.width/3;
       let height = width;

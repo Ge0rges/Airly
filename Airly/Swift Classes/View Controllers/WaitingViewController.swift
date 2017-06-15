@@ -22,7 +22,7 @@ class WaitingViewController: UIViewController {
     //TODO: Stop broadcasting & disconnect.
     //TODO: Stop Playing
     
-    self.dismiss(animated: true, completion: nil);
+    self.navigationController?.popViewController(animated: true);
   }
   
   func connectedToHost() {

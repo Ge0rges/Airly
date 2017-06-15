@@ -17,8 +17,8 @@
 @optional
 - (void)socket:(GCDAsyncSocket * _Nonnull)socket didAcceptNewSocket:(GCDAsyncSocket * _Nonnull)newSocket;
 - (void)didReceivePacket:(Packet * _Nonnull)packet fromSocket:(GCDAsyncSocket *_Nonnull)socket ;
-- (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)error;
-- (void)socket:(GCDAsyncSocket *)socket didConnectToHost:(NSString *)host port:(UInt16)port;
+- (void)socketDidDisconnect:(GCDAsyncSocket * _Nonnull)socket withError:(NSError * _Nonnull)error;
+- (void)socket:(GCDAsyncSocket * _Nonnull)socket didConnectToHost:(NSString * _Nonnull)host port:(UInt16)port;
 @end
 
 

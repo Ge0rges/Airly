@@ -29,7 +29,7 @@ class BroadcastViewController: UIViewController {
     //TODO: Stop broadcasting & disconnect.
     //TODO: Stop Playing
     
-    self.dismiss(animated: true, completion: nil);
+    self.navigationController?.popViewController(animated: true);
   }
   
   @IBAction func addMusicButtonPressed(_ sender: UIButton) {
