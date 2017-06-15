@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0810"
+   LastUpgradeVersion = "0900"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DA5DFD8F1A92602500849BA1"
+               BlueprintIdentifier = "FB2F4A7D1EF25CBA00C9D835"
                BuildableName = "Airly.app"
                BlueprintName = "Airly"
                ReferencedContainer = "container:Airly.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DA5DFD8F1A92602500849BA1"
+            BlueprintIdentifier = "FB2F4A7D1EF25CBA00C9D835"
             BuildableName = "Airly.app"
             BlueprintName = "Airly"
             ReferencedContainer = "container:Airly.xcodeproj">
@@ -55,7 +55,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DA5DFD8F1A92602500849BA1"
+            BlueprintIdentifier = "FB2F4A7D1EF25CBA00C9D835"
             BuildableName = "Airly.app"
             BlueprintName = "Airly"
             ReferencedContainer = "container:Airly.xcodeproj">
@@ -74,7 +74,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DA5DFD8F1A92602500849BA1"
+            BlueprintIdentifier = "FB2F4A7D1EF25CBA00C9D835"
             BuildableName = "Airly.app"
             BlueprintName = "Airly"
             ReferencedContainer = "container:Airly.xcodeproj">
