@@ -119,7 +119,7 @@
   NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"sync"}];
   NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
   
-  Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+  Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
   [self.connectivityManager sendPacket:packet toSockets:peers];
 }
 
@@ -138,7 +138,7 @@
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[hostPeer]];
       
       return;
@@ -150,7 +150,7 @@
                                                                                         }];
     NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
     
-    Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+    Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
     [self.connectivityManager sendPacket:packet toSockets:@[hostPeer]];
   }
 }
@@ -226,7 +226,7 @@
     NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
     
     // Speakers are only connected to the host.
-    Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+    Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
     [self.connectivityManager sendPacket:packet toSockets:@[socket]];
     
     return;
@@ -247,7 +247,7 @@
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
       return;
@@ -279,7 +279,7 @@
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
       // Update the bool
@@ -292,7 +292,7 @@
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
-      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketSync];
+      Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
     }
     

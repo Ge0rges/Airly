@@ -18,9 +18,9 @@ typedef enum {
 
 typedef enum {
   PacketActionUnknown = -1,
-  PacketSync = 1,
-  PacketPlay,
-  PacketPause,
+  PacketActionSync = 1,
+  PacketActionPlay,
+  PacketActionPause,
 } PacketAction;
 
 @interface Packet : NSObject

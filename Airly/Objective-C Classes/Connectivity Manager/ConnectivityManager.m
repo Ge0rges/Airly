@@ -114,6 +114,12 @@
   return _isConnected;
 }
 
+- (void)disconnectSockets {
+  for (GCDAsyncSocket *socket in self.allSockets) {
+    [socket disconnect];
+  }
+}
+
 #pragma mark - Sending & Receiving
 - (void)sendPacket:(Packet *)packet toSockets:(NSArray<GCDAsyncSocket *> *)sockets{
   // Encode Packet Data

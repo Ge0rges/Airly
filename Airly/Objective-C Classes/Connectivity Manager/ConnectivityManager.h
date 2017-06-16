@@ -36,5 +36,6 @@
 
 - (void)startBrowsingForBonjourBroadcast;
 - (void)stopBonjour;
+- (void)disconnectSockets;
 
 @end

@@ -22,7 +22,11 @@ class PlayerManager: NSObject {
   }
   
   public var currentSong: AVPlayerItem? {
-    return (self.queue.count > 0) ? self.queue[currentSongIndex] : nil;
+    return (self.queue.count > 0 && currentSongIndex < self.queue.count) ? self.queue[currentSongIndex] : nil;
+  }
+  
+  public var currentMediaItem: MPMediaItem? {
+    return (self.queueMediaItems!.count > 0 && currentSongIndex < self.queueMediaItems!.count) ? self.queueMediaItems![currentSongIndex] : nil;
   }
   
   public var previousSong: AVPlayerItem? {
@@ -39,6 +43,7 @@ class PlayerManager: NSObject {
   
   private let session = AVAudioSession.sharedInstance();
   private var currentSongIndex = 0;
+  private var queueMediaItems: [MPMediaItem]? = nil;
   
   public static let PlayerSongChangedNotificationName = NSNotification.Name(rawValue: "PlayerSongChanged");
   public static let PlayerQueueChangedNotificationName = NSNotification.Name(rawValue: "PlayerQueueChanged");
@@ -69,8 +74,9 @@ class PlayerManager: NSObject {
   }
   
   public func loadQueueFromMPMediaItems(mediaItems: Array<MPMediaItem>?) -> Void {
-    self.queue.removeAll();// Remove old queue
-    self.queueMetadata.removeAll();// Clear old album artwork
+    self.queueMediaItems = mediaItems!;// Save the media items.
+    self.queue.removeAll();// Remove old queue.
+    self.queueMetadata.removeAll();// Clear old album artwork.
     currentSongIndex = 0;
     
     if (mediaItems == nil || mediaItems!.count == 0) {
@@ -92,6 +98,15 @@ class PlayerManager: NSObject {
     
     // Update notification
     self.playerDidFinishPlaying(notification: nil);
+  }
+  
+  public func loadSongFromPlayerItem(playerItem: AVPlayerItem!) {
+    self.queueMediaItems = nil;// Save the media items.
+    self.queue.removeAll();// Remove old queue.
+    self.queueMetadata.removeAll();// Clear old album artwork.
+    currentSongIndex = 0;
+    
+    self.player.replaceCurrentItem(with: playerItem);
   }
   
   public func playNextSong() {
@@ -120,7 +135,7 @@ class PlayerManager: NSObject {
     self.playerDidFinishPlaying(notification: nil);
   }
   
-  public func seekToTimeInSeconds(time: Float64, completionHandler: @escaping (Bool) -> Void) {
+  public func seekToTimeInSeconds(time: TimeInterval, completionHandler: @escaping (Bool) -> Void) {
     // Seek to time with max precision for syncing
     self.player.seek(to: CMTimeMakeWithSeconds(time, 1000000000), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: completionHandler);
   }

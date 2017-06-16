@@ -9,7 +9,7 @@
 import UIKit
 import MediaPlayer
 
-class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate {
+class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate, ConnectivityManagerDelegate {
   
   @IBOutlet var backButton: UIButton!
   @IBOutlet var numberOfClientsLabel: UILabel!
@@ -23,12 +23,15 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   
   let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.dark));
   let blurImageView:UIImageView! = UIImageView.init();
-  let playerManager:PlayerManager! = PlayerManager.sharedManager;
   let mediaPicker:MPMediaPickerController! = MPMediaPickerController(mediaTypes: .music);
+  let playerManager:PlayerManager! = PlayerManager.sharedManager;
+  let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
+  let synaction:Synaction! = Synaction.sharedManager();
   
   override func viewDidLoad() {
     super.viewDidLoad();
-    //TODO: To do Start Broadcasting Bonjour.
+    // Start broadcasting bonjour.
+    self.connectivityManager.startBonjourBroadcast();
     
     // Clear the music queue
     self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
@@ -71,12 +74,15 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   
   //MARK: - Button Actions
   @IBAction func dismissBroadcastViewController(_ sender: UIButton) {
-    //TODO: Stop broadcasting & disconnect.
+    //Stop broadcasting & disconnect.
+    self.connectivityManager.stopBonjour();
+    self.connectivityManager.disconnectSockets();
     
-    // Pause
+    // Stop playing
     self.playerManager.pause();
+    self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
     
-    // Dismiss
+    // Dismiss vie
     self.navigationController?.popViewController(animated: true);
   }
   
@@ -186,5 +192,71 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   // We prefer a white status bar
   override var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
+  }
+  
+  //MARK: - Communication
+  func sendPlayCommand() -> UInt64 {
+    let playbackTime: TimeInterval = CMTimeGetSeconds((self.playerManager.currentSong?.currentTime())!);
+    let deviceTimeAtPlaybackTime: UInt64 = self.synaction.currentTime();
+    let timeToExecute: UInt64 = deviceTimeAtPlaybackTime + 1000000000;
+    
+    let dictionaryPayload = ["command": "play", "timeToExecute": timeToExecute, "playbackTime": playbackTime, "continuousPlay": self.playerManager.isPlaying, "timeAtPlaybackTime": deviceTimeAtPlaybackTime] as [String : Any];
+    let payloadData = NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload);
+    let packet: Packet = Packet.init(data: payloadData, type: PacketTypeUnknown, action: PacketActionPlay);
+    self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+    
+    return timeToExecute;
+  }
+  
+  func sendPauseCommand() -> UInt64 {
+    let timeToExecute = self.synaction.currentTime() + 1000000000;
+    
+    let dictionaryPayload = ["command": "pause", "timeToExecute": timeToExecute] as [String : Any];
+    let payloadData = NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload);
+    let packet: Packet = Packet.init(data: payloadData, type: PacketTypeUnknown, action: PacketActionPlay);
+    self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+    
+    return timeToExecute;
+  }
+  
+  func sendCurrentSong() {
+    if (self.playerManager.currentSong == nil) {
+      return;
+    }
+    
+    // Export the currebnt song to a file and send the file to the peer
+    let currentSongAsset: AVAsset = self.playerManager.currentSong!.asset;
+    
+    let tempPath: URL = NSURL.fileURL(withPath: NSTemporaryDirectory());
+//    let assetURL: URL = self.playerManager.currentMediaItem?.value(forProperty: MPMediaItemPropertyAssetURL);
+//    let songURLAsset: AVURLAsset = AVURLAsset.init(url: assetURL);
+    let exporter: AVAssetExportSession = AVAssetExportSession.init(asset: currentSongAsset, presetName: AVAssetExportPresetPassthrough)!;
+    exporter.outputFileType = "com.apple.coreaudio-format";
+    exporter.outputURL = tempPath.appendingPathComponent("song.caf", isDirectory: false);
+    
+    exporter.exportAsynchronously {
+      // Send the file
+      do {
+        let fileData = try Data.init(contentsOf: exporter.outputURL!);
+        
+        let payloadDict: [String : Any] = ["command": "load", "index": "0", "file":fileData]  as [String : Any];
+        let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeUnknown, action: PacketActionUnknown);
+        self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+        
+      } catch {
+        print("failed to get data of file on host");
+      }
+    }
+  }
+  
+  func socket(_ socket: GCDAsyncSocket, didAcceptNewSocket newSocket: GCDAsyncSocket) {
+    // Update UI
+    self.numberOfClientsLabel.text = "to \(self.connectivityManager.allSockets.count) people";
+    
+    self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+    self.synaction.executeBlock(whenEachPeerCalibrates: self.synaction.connectivityManager.allSockets as! [GCDAsyncSocket]) { (peers) in
+      self.sendCurrentSong();
+      let _ = self.sendPlayCommand();
+    }
   }
 }
