@@ -15,6 +15,8 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate {
   let synaction: Synaction = Synaction.sharedManager();
   
   override func viewDidLoad() {
+    super.viewDidLoad();
+    
     // Set the delegate
     self.synaction.connectivityManager.delegate = self;
     

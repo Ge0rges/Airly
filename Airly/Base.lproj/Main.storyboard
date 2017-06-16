@@ -225,7 +225,7 @@
                                     <action selector="addMusicButtonPressed:" destination="KaY-s5-P31" eventType="touchUpInside" id="GOA-oT-qLH"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Broadcasting" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zZx-fo-65J">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Broadcasting" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zZx-fo-65J">
                                 <rect key="frame" x="135.5" y="72" width="104" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
@@ -234,7 +234,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="to 4 people" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ah-uM-Unt">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="to 0 people" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ah-uM-Unt">
                                 <rect key="frame" x="152.5" y="96" width="69" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
@@ -243,8 +243,8 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All you Need is Love" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qAx-CR-jLm">
-                                <rect key="frame" x="109.5" y="445.5" width="156.5" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All you Need is Love" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qAx-CR-jLm">
+                                <rect key="frame" x="-0.5" y="445.5" width="375" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
@@ -252,8 +252,8 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Beatles" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P6f-zW-cP4">
-                                <rect key="frame" x="151.5" y="469.5" width="72" height="16"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Beatles" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P6f-zW-cP4">
+                                <rect key="frame" x="-0.5" y="470" width="375" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
@@ -261,7 +261,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GcT-0I-lbs">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GcT-0I-lbs">
                                 <rect key="frame" x="37" y="137" width="300" height="300"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES" updatesFrequently="YES"/>
@@ -270,23 +270,6 @@
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="GcT-0I-lbs" secondAttribute="height" multiplier="1:1" id="XA2-vb-pkl"/>
                                 </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.shadowColor">
-                                        <color key="value" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="size" keyPath="layer.shadowOffset">
-                                        <size key="value" width="0.0" height="4"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.shadowOpacity">
-                                        <integer key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.shadowRadius">
-                                        <integer key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nfS-e8-Kyw">
                                 <rect key="frame" x="172" y="525.5" width="31" height="37"/>
@@ -314,7 +297,7 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="qAx-CR-jLm" firstAttribute="firstBaseline" secondItem="GcT-0I-lbs" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="1zj-gW-MyU"/>
                             <constraint firstItem="o92-8y-1uu" firstAttribute="centerY" secondItem="Kc6-aV-4Tx" secondAttribute="centerY" id="3nw-2P-omf"/>
@@ -323,6 +306,7 @@
                             <constraint firstItem="o92-8y-1uu" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="CME-up-9Yp"/>
                             <constraint firstItem="zZx-fo-65J" firstAttribute="firstBaseline" secondItem="o92-8y-1uu" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="CfZ-uW-z4w"/>
                             <constraint firstItem="8Ec-PS-iA3" firstAttribute="centerY" secondItem="nfS-e8-Kyw" secondAttribute="centerY" id="DIP-zK-9ew"/>
+                            <constraint firstItem="P6f-zW-cP4" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" id="EUe-zJ-8o8"/>
                             <constraint firstItem="P6f-zW-cP4" firstAttribute="firstBaseline" secondItem="qAx-CR-jLm" secondAttribute="baseline" constant="20" symbolType="layoutAnchor" id="HGp-nC-uO8"/>
                             <constraint firstItem="izl-di-b30" firstAttribute="centerY" secondItem="Kc6-aV-4Tx" secondAttribute="centerY" id="SQK-2T-cCj"/>
                             <constraint firstItem="GcT-0I-lbs" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="WKR-Jp-PXD"/>
@@ -334,6 +318,7 @@
                             <constraint firstAttribute="trailing" secondItem="izl-di-b30" secondAttribute="trailing" constant="8" id="gAV-12-8ZP"/>
                             <constraint firstItem="nfS-e8-Kyw" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="h4z-Pm-YOA"/>
                             <constraint firstItem="qAx-CR-jLm" firstAttribute="centerX" secondItem="GcT-0I-lbs" secondAttribute="centerX" id="iYd-EV-1c3"/>
+                            <constraint firstItem="qAx-CR-jLm" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" id="nXM-Or-7gl"/>
                             <constraint firstItem="8ah-uM-Unt" firstAttribute="centerX" secondItem="zZx-fo-65J" secondAttribute="centerX" id="nlI-5u-7wa"/>
                             <constraint firstItem="GcT-0I-lbs" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" multiplier="0.8" id="o3b-MU-zIR"/>
                             <constraint firstItem="zZx-fo-65J" firstAttribute="centerX" secondItem="o92-8y-1uu" secondAttribute="centerX" id="oA7-PH-cGI"/>
@@ -480,7 +465,7 @@
                                     <constraint firstAttribute="width" constant="45" id="wYD-z4-YUa"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receiving" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ob-xk-x5o">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receiving" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ob-xk-x5o">
                                 <rect key="frame" x="149.5" y="66" width="76.5" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
@@ -489,7 +474,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="from &quot;John's iPhone&quot;" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YDO-h5-BmL">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="from &quot;John's iPhone&quot;" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YDO-h5-BmL">
                                 <rect key="frame" x="124.5" y="90" width="126" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
@@ -498,8 +483,8 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All you Need is Love" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Sa-y7-9ml">
-                                <rect key="frame" x="109.5" y="439.5" width="156.5" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All you Need is Love" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Sa-y7-9ml">
+                                <rect key="frame" x="-0.5" y="439.5" width="375" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
@@ -507,8 +492,8 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Beatles" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jz7-Ba-ERd">
-                                <rect key="frame" x="151.5" y="463.5" width="72" height="16"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Beatles" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jz7-Ba-ERd">
+                                <rect key="frame" x="-1" y="463.5" width="375" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
@@ -544,7 +529,7 @@
                                 </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="7Sa-y7-9ml" firstAttribute="firstBaseline" secondItem="NUS-4Z-Md5" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="164-rj-BlA"/>
                             <constraint firstItem="dc4-46-Use" firstAttribute="centerX" secondItem="6bE-pi-3pn" secondAttribute="centerX" id="507-EP-Jd9"/>
@@ -552,7 +537,9 @@
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="top" secondItem="YDO-h5-BmL" secondAttribute="bottom" constant="25" id="9hm-mj-rye"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" multiplier="0.8" id="Atr-5k-CrB"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="centerX" secondItem="6bE-pi-3pn" secondAttribute="centerX" id="DYG-SE-rcq"/>
+                            <constraint firstItem="7Sa-y7-9ml" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" id="Noh-A6-8UF"/>
                             <constraint firstItem="dc4-46-Use" firstAttribute="centerY" secondItem="zTJ-TX-v3k" secondAttribute="centerY" id="PGX-6W-A2b"/>
+                            <constraint firstItem="jz7-Ba-ERd" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" id="ZX4-eH-3lK"/>
                             <constraint firstItem="YDO-h5-BmL" firstAttribute="centerX" secondItem="6ob-xk-x5o" secondAttribute="centerX" id="ami-be-0Fb"/>
                             <constraint firstItem="7Sa-y7-9ml" firstAttribute="centerX" secondItem="NUS-4Z-Md5" secondAttribute="centerX" id="bAd-Ab-7VW"/>
                             <constraint firstItem="jz7-Ba-ERd" firstAttribute="centerX" secondItem="7Sa-y7-9ml" secondAttribute="centerX" id="doS-Fa-bdu"/>
@@ -578,12 +565,12 @@
     </scenes>
     <resources>
         <image name="Backward Disclosure" width="10" height="16"/>
-        <image name="Broadcast" width="64" height="51"/>
+        <image name="Broadcast" width="29" height="22"/>
         <image name="Ping" width="327" height="327"/>
         <image name="Play" width="31" height="35"/>
-        <image name="Receive" width="96" height="88"/>
-        <image name="Rewind" width="34" height="20"/>
-        <image name="Skip" width="34" height="20"/>
+        <image name="Receive" width="24" height="22"/>
+        <image name="Rewind" width="34" height="21"/>
+        <image name="Skip" width="34" height="21"/>
         <image name="Small Broadcast" width="48" height="48"/>
         <image name="Small Receive" width="48" height="48"/>
         <image name="Yellow Backward Disclosure" width="10" height="16"/>

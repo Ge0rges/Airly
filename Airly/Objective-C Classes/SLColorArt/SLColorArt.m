@@ -94,7 +94,7 @@
 
 + (void)processImage:(UIImage *)image
         scaledToSize:(CGSize)scaleSize
-           threshold:(NSInteger)threshold
+           threshold:(CGFloat)threshold
           onComplete:(void (^)(SLColorArt *colorArt))completeBlock;
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

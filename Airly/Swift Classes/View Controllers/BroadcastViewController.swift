@@ -21,11 +21,17 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   @IBOutlet var playbackButton: UIButton!
   @IBOutlet var forwardPlaybackButton: UIButton!
   
-  let playerManager:PlayerManager = PlayerManager.sharedManager;
-  let mediaPicker = MPMediaPickerController(mediaTypes: .music);
+  let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.dark));
+  let blurImageView:UIImageView! = UIImageView.init();
+  let playerManager:PlayerManager! = PlayerManager.sharedManager;
+  let mediaPicker:MPMediaPickerController! = MPMediaPickerController(mediaTypes: .music);
   
   override func viewDidLoad() {
+    super.viewDidLoad();
     //TODO: To do Start Broadcasting Bonjour.
+    
+    // Clear the music queue
+    self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
     
     // Configure the media picker
     mediaPicker.delegate = self;
@@ -35,6 +41,32 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     
     // Register for player notifications
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
+    
+    // Round & Shadow the album art
+    self.albumArtImageView.layer.cornerRadius = self.albumArtImageView.frame.size.width/25;
+    let shadowPath:UIBezierPath = UIBezierPath(rect: self.albumArtImageView.bounds);
+    self.albumArtImageView.layer.shadowColor = UIColor.black.cgColor;
+    self.albumArtImageView.layer.shadowOffset = CGSize(width: 0, height: 1);
+    self.albumArtImageView.layer.shadowOpacity = 0.5;
+    self.albumArtImageView.layer.shadowPath = shadowPath.cgPath;
+    
+    // Setup the blur view
+    if (!UIAccessibilityIsReduceTransparencyEnabled() &&  self.view.backgroundColor != UIColor.clear) {
+      self.view.backgroundColor = UIColor.clear
+      
+      // Always fill the view
+      self.blurEffectView.frame = self.view.bounds;
+      self.blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
+      self.blurImageView.frame = self.view.bounds;
+      self.blurImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
+      self.blurImageView.contentMode = .scaleAspectFill;
+            
+      self.view.insertSubview(self.blurEffectView, at: 0);
+      self.view.insertSubview(self.blurImageView, belowSubview: self.blurEffectView);
+    }
+    
+    // Update the interface
+    self.updateInterface(notification: nil);
   }
   
   //MARK: - Button Actions
@@ -101,7 +133,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   }
   
   // MARK: - UI Functions
-  @objc func updateInterface(notification: Notification) {
+  @objc func updateInterface(notification: Notification?) {
     // Toggle Playback button
     let playbackImage = (self.playerManager.isPlaying) ? #imageLiteral(resourceName: "Pause") : #imageLiteral(resourceName: "Play");
     self.playbackButton.setImage(playbackImage, for: .normal);
@@ -137,5 +169,22 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     self.albumArtImageView.image = artwork;
     self.songNameLabel.text = title;
     self.songArtistLabel.text = artist;
+    
+    // Background blur/color
+    //only apply the blur if the user hasn't disabled transparency effects
+    if !UIAccessibilityIsReduceTransparencyEnabled() {
+      // Set the background album art
+      self.blurImageView.image = artwork;
+      
+    } else {
+      SLColorArt.processImage(self.albumArtImageView.image, scaledTo: self.albumArtImageView.frame.size, threshold: 0.01) { (colorArt) in
+        self.view.backgroundColor = colorArt?.primaryColor;
+      };
+    }
+  }
+  
+  // We prefer a white status bar
+  override var preferredStatusBarStyle: UIStatusBarStyle {
+    return .lightContent
   }
 }

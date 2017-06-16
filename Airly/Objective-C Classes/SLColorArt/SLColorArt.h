@@ -31,7 +31,7 @@
 
 + (void)processImage:(UIImage *)image
         scaledToSize:(CGSize)scaleSize
-           threshold:(NSInteger)threshold
+           threshold:(CGFloat)threshold
           onComplete:(void (^)(SLColorArt *colorArt))completeBlock;
 
 @end

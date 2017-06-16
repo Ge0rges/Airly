@@ -68,17 +68,17 @@ class PlayerManager: NSObject {
     self.player.pause();
   }
   
-  public func loadQueueFromMPMediaItems(mediaItems: Array<MPMediaItem>) -> Void {
+  public func loadQueueFromMPMediaItems(mediaItems: Array<MPMediaItem>?) -> Void {
     self.queue.removeAll();// Remove old queue
     self.queueMetadata.removeAll();// Clear old album artwork
     currentSongIndex = 0;
     
-    if mediaItems.count == 0 {
+    if (mediaItems == nil || mediaItems!.count == 0) {
       return;
     }
     
     // For every item, get the AVPlayerItem and set it in the array.
-    for mediaItem in mediaItems {
+    for mediaItem in mediaItems! {
       let mediaItemURL:URL = mediaItem.value(forProperty: MPMediaItemPropertyAssetURL) as! URL;
       let playerItem: AVPlayerItem = AVPlayerItem(asset: AVAsset(url: mediaItemURL));
       self.queue.append(playerItem);
