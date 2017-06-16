@@ -300,14 +300,11 @@
   }
 }
 
-#warning implement alternative for disconnect
-//- (void)session:(MCSession* _Nonnull)session peer:(MCPeerID* _Nonnull)peerID didChangeState:(MCSessionState)state {
-//  // Remove the disconnected peer from the calibratde peer list if it's there.
-//  if (state == MCSessionStateNotConnected) {
-//    [self.calibratedPeers removeObject:peerID];
-//    isCalibrating = NO;
-//    self.hostTimeOffset = 0;
-//  }
-//}
+- (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)error {
+  // Remove any reference to this socket
+  [self.calibratedPeers removeObject:socket];
+  isCalibrating = NO;
+  self.hostTimeOffset = 0;
+}
 
 @end

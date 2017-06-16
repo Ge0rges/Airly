@@ -12,15 +12,26 @@
 		FB2F4A871EF25CBA00C9D835 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A851EF25CBA00C9D835 /* Main.storyboard */; };
 		FB2F4A891EF25CBA00C9D835 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */; };
 		FB2F4A8C1EF25CBA00C9D835 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */; };
-		FB2F4A9A1EF25D1300C9D835 /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A951EF25D1300C9D835 /* SLColorArt.m */; };
-		FB2F4A9B1EF25D1300C9D835 /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A971EF25D1300C9D835 /* UIImage+ColorArt.m */; };
-		FB2F4A9C1EF25D1300C9D835 /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A991EF25D1300C9D835 /* UIImage+Scale.m */; };
+		FB77BC651EF2BCD1001362F8 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC641EF2BCD1001362F8 /* AVKit.framework */; };
+		FB77BC671EF2BCD6001362F8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */; };
+		FB77BC691EF2BCE0001362F8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC681EF2BCE0001362F8 /* UIKit.framework */; };
+		FB77BC6B1EF2BCE8001362F8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC6A1EF2BCE8001362F8 /* Foundation.framework */; };
+		FB77BC6D1EF2BCF4001362F8 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */; };
+		FB8831A91EF2CCCA00E2A30E /* ConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB88319A1EF2CCCA00E2A30E /* ConnectivityManager.m */; };
+		FB8831AA1EF2CCCA00E2A30E /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = FB88319C1EF2CCCA00E2A30E /* GCDAsyncSocket.m */; };
+		FB8831AB1EF2CCCA00E2A30E /* Packet.m in Sources */ = {isa = PBXBuildFile; fileRef = FB88319E1EF2CCCA00E2A30E /* Packet.m */; };
+		FB8831AC1EF2CCCA00E2A30E /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A11EF2CCCA00E2A30E /* SLColorArt.m */; };
+		FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */; };
+		FB8831AE1EF2CCCA00E2A30E /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A51EF2CCCA00E2A30E /* UIImage+Scale.m */; };
+		FB8831AF1EF2CCCA00E2A30E /* Synaction.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A81EF2CCCA00E2A30E /* Synaction.m */; };
 		FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */; };
 		FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */; };
 		FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */; };
+		FBFB89961EF2AC0300F7F445 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FB0A77481EF2D51700FE1B77 /* Airly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Airly.entitlements; sourceTree = "<group>"; };
 		FB2F4A7E1EF25CBA00C9D835 /* Airly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Airly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FB2F4A831EF25CBA00C9D835 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -28,24 +39,30 @@
 		FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FB2F4A8B1EF25CBA00C9D835 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FB2F4A8D1EF25CBA00C9D835 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FB2F4A941EF25D1300C9D835 /* SLColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLColorArt.h; sourceTree = "<group>"; };
-		FB2F4A951EF25D1300C9D835 /* SLColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SLColorArt.m; sourceTree = "<group>"; };
-		FB2F4A961EF25D1300C9D835 /* UIImage+ColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ColorArt.h"; sourceTree = "<group>"; };
-		FB2F4A971EF25D1300C9D835 /* UIImage+ColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ColorArt.m"; sourceTree = "<group>"; };
-		FB2F4A981EF25D1300C9D835 /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
-		FB2F4A991EF25D1300C9D835 /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
+		FB77BC641EF2BCD1001362F8 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		FB77BC681EF2BCE0001362F8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FB77BC6A1EF2BCE8001362F8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		FB8831991EF2CCCA00E2A30E /* ConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectivityManager.h; sourceTree = "<group>"; };
+		FB88319A1EF2CCCA00E2A30E /* ConnectivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectivityManager.m; sourceTree = "<group>"; };
+		FB88319B1EF2CCCA00E2A30E /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
+		FB88319C1EF2CCCA00E2A30E /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
+		FB88319D1EF2CCCA00E2A30E /* Packet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Packet.h; sourceTree = "<group>"; };
+		FB88319E1EF2CCCA00E2A30E /* Packet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Packet.m; sourceTree = "<group>"; };
+		FB8831A01EF2CCCA00E2A30E /* SLColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLColorArt.h; sourceTree = "<group>"; };
+		FB8831A11EF2CCCA00E2A30E /* SLColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SLColorArt.m; sourceTree = "<group>"; };
+		FB8831A21EF2CCCA00E2A30E /* UIImage+ColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ColorArt.h"; sourceTree = "<group>"; };
+		FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ColorArt.m"; sourceTree = "<group>"; };
+		FB8831A41EF2CCCA00E2A30E /* UIImage+Scale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Scale.h"; sourceTree = "<group>"; };
+		FB8831A51EF2CCCA00E2A30E /* UIImage+Scale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Scale.m"; sourceTree = "<group>"; };
+		FB8831A71EF2CCCA00E2A30E /* Synaction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Synaction.h; sourceTree = "<group>"; };
+		FB8831A81EF2CCCA00E2A30E /* Synaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
+		FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Airly-Bridging-Header.h"; path = "Airly/Objective-C Classes/Airly-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastViewController.swift; sourceTree = "<group>"; };
 		FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverViewController.swift; sourceTree = "<group>"; };
 		FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
-		FBFB89871EF28B7F00F7F445 /* Synaction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Synaction.h; sourceTree = "<group>"; };
-		FBFB89881EF28B7F00F7F445 /* Synaction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
-		FBFB898A1EF28B7F00F7F445 /* ConnectivityManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConnectivityManager.h; sourceTree = "<group>"; };
-		FBFB898B1EF28B7F00F7F445 /* ConnectivityManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ConnectivityManager.m; sourceTree = "<group>"; };
-		FBFB898C1EF28B7F00F7F445 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
-		FBFB898D1EF28B7F00F7F445 /* GCDAsyncSocket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
-		FBFB898E1EF28B7F00F7F445 /* Packet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Packet.h; sourceTree = "<group>"; };
-		FBFB898F1EF28B7F00F7F445 /* Packet.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Packet.m; sourceTree = "<group>"; };
-		FBFB89901EF28E5A00F7F445 /* Airly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Airly-Bridging-Header.h"; sourceTree = "<group>"; };
+		FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +70,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB77BC6D1EF2BCF4001362F8 /* MediaPlayer.framework in Frameworks */,
+				FB77BC6B1EF2BCE8001362F8 /* Foundation.framework in Frameworks */,
+				FB77BC691EF2BCE0001362F8 /* UIKit.framework in Frameworks */,
+				FB77BC671EF2BCD6001362F8 /* AVFoundation.framework in Frameworks */,
+				FB77BC651EF2BCD1001362F8 /* AVKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +86,7 @@
 			children = (
 				FB2F4A801EF25CBA00C9D835 /* Airly */,
 				FB2F4A7F1EF25CBA00C9D835 /* Products */,
+				FB77BC611EF2BCCC001362F8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -78,48 +101,71 @@
 		FB2F4A801EF25CBA00C9D835 /* Airly */ = {
 			isa = PBXGroup;
 			children = (
-				FBFB89901EF28E5A00F7F445 /* Airly-Bridging-Header.h */,
 				FBFB89911EF28EB400F7F445 /* Swift Classes */,
-				FBFB89931EF28F1900F7F445 /* Objective-C Classes */,
+				FB8831971EF2CCCA00E2A30E /* Objective-C Classes */,
 				FBFB89941EF28F2A00F7F445 /* Assets */,
 				FB2F4A8D1EF25CBA00C9D835 /* Info.plist */,
+				FB0A77481EF2D51700FE1B77 /* Airly.entitlements */,
 			);
 			path = Airly;
 			sourceTree = "<group>";
 		};
-		FB2F4A931EF25D1300C9D835 /* SLColorArt */ = {
+		FB77BC611EF2BCCC001362F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				FB2F4A941EF25D1300C9D835 /* SLColorArt.h */,
-				FB2F4A951EF25D1300C9D835 /* SLColorArt.m */,
-				FB2F4A961EF25D1300C9D835 /* UIImage+ColorArt.h */,
-				FB2F4A971EF25D1300C9D835 /* UIImage+ColorArt.m */,
-				FB2F4A981EF25D1300C9D835 /* UIImage+Scale.h */,
-				FB2F4A991EF25D1300C9D835 /* UIImage+Scale.m */,
+				FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */,
+				FB77BC6A1EF2BCE8001362F8 /* Foundation.framework */,
+				FB77BC681EF2BCE0001362F8 /* UIKit.framework */,
+				FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */,
+				FB77BC641EF2BCD1001362F8 /* AVKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FB8831971EF2CCCA00E2A30E /* Objective-C Classes */ = {
+			isa = PBXGroup;
+			children = (
+				FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */,
+				FB8831981EF2CCCA00E2A30E /* Connectivity Manager */,
+				FB88319F1EF2CCCA00E2A30E /* SLColorArt */,
+				FB8831A61EF2CCCA00E2A30E /* Synaction */,
+			);
+			path = "Objective-C Classes";
+			sourceTree = "<group>";
+		};
+		FB8831981EF2CCCA00E2A30E /* Connectivity Manager */ = {
+			isa = PBXGroup;
+			children = (
+				FB8831991EF2CCCA00E2A30E /* ConnectivityManager.h */,
+				FB88319A1EF2CCCA00E2A30E /* ConnectivityManager.m */,
+				FB88319B1EF2CCCA00E2A30E /* GCDAsyncSocket.h */,
+				FB88319C1EF2CCCA00E2A30E /* GCDAsyncSocket.m */,
+				FB88319D1EF2CCCA00E2A30E /* Packet.h */,
+				FB88319E1EF2CCCA00E2A30E /* Packet.m */,
+			);
+			path = "Connectivity Manager";
+			sourceTree = "<group>";
+		};
+		FB88319F1EF2CCCA00E2A30E /* SLColorArt */ = {
+			isa = PBXGroup;
+			children = (
+				FB8831A01EF2CCCA00E2A30E /* SLColorArt.h */,
+				FB8831A11EF2CCCA00E2A30E /* SLColorArt.m */,
+				FB8831A21EF2CCCA00E2A30E /* UIImage+ColorArt.h */,
+				FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */,
+				FB8831A41EF2CCCA00E2A30E /* UIImage+Scale.h */,
+				FB8831A51EF2CCCA00E2A30E /* UIImage+Scale.m */,
 			);
 			path = SLColorArt;
 			sourceTree = "<group>";
 		};
-		FBFB89861EF28B7F00F7F445 /* Synaction */ = {
+		FB8831A61EF2CCCA00E2A30E /* Synaction */ = {
 			isa = PBXGroup;
 			children = (
-				FBFB89871EF28B7F00F7F445 /* Synaction.h */,
-				FBFB89881EF28B7F00F7F445 /* Synaction.m */,
+				FB8831A71EF2CCCA00E2A30E /* Synaction.h */,
+				FB8831A81EF2CCCA00E2A30E /* Synaction.m */,
 			);
 			path = Synaction;
-			sourceTree = "<group>";
-		};
-		FBFB89891EF28B7F00F7F445 /* Connectivity Manager */ = {
-			isa = PBXGroup;
-			children = (
-				FBFB898A1EF28B7F00F7F445 /* ConnectivityManager.h */,
-				FBFB898B1EF28B7F00F7F445 /* ConnectivityManager.m */,
-				FBFB898C1EF28B7F00F7F445 /* GCDAsyncSocket.h */,
-				FBFB898D1EF28B7F00F7F445 /* GCDAsyncSocket.m */,
-				FBFB898E1EF28B7F00F7F445 /* Packet.h */,
-				FBFB898F1EF28B7F00F7F445 /* Packet.m */,
-			);
-			path = "Connectivity Manager";
 			sourceTree = "<group>";
 		};
 		FBFB89911EF28EB400F7F445 /* Swift Classes */ = {
@@ -127,6 +173,7 @@
 			children = (
 				FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */,
 				FBFB89921EF28EC300F7F445 /* View Controllers */,
+				FBFB89971EF2AC0700F7F445 /* Managers */,
 			);
 			path = "Swift Classes";
 			sourceTree = "<group>";
@@ -142,16 +189,6 @@
 			path = "View Controllers";
 			sourceTree = "<group>";
 		};
-		FBFB89931EF28F1900F7F445 /* Objective-C Classes */ = {
-			isa = PBXGroup;
-			children = (
-				FBFB89891EF28B7F00F7F445 /* Connectivity Manager */,
-				FBFB89861EF28B7F00F7F445 /* Synaction */,
-				FB2F4A931EF25D1300C9D835 /* SLColorArt */,
-			);
-			path = "Objective-C Classes";
-			sourceTree = "<group>";
-		};
 		FBFB89941EF28F2A00F7F445 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +197,14 @@
 				FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		FBFB89971EF2AC0700F7F445 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,6 +242,17 @@
 						DevelopmentTeam = X427N69BRP;
 						LastSwiftMigration = 0900;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.InterAppAudio = {
+								enabled = 0;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -236,14 +292,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB8831AA1EF2CCCA00E2A30E /* GCDAsyncSocket.m in Sources */,
 				FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */,
 				FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */,
-				FB2F4A9C1EF25D1300C9D835 /* UIImage+Scale.m in Sources */,
 				FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */,
+				FB8831A91EF2CCCA00E2A30E /* ConnectivityManager.m in Sources */,
+				FB8831AB1EF2CCCA00E2A30E /* Packet.m in Sources */,
+				FB8831AC1EF2CCCA00E2A30E /* SLColorArt.m in Sources */,
 				FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */,
-				FB2F4A9A1EF25D1300C9D835 /* SLColorArt.m in Sources */,
+				FBFB89961EF2AC0300F7F445 /* PlayerManager.swift in Sources */,
+				FB8831AF1EF2CCCA00E2A30E /* Synaction.m in Sources */,
+				FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */,
+				FB8831AE1EF2CCCA00E2A30E /* UIImage+Scale.m in Sources */,
 				FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */,
-				FB2F4A9B1EF25D1300C9D835 /* UIImage+ColorArt.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,15 +443,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
 				INFOPLIST_FILE = Airly/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Airly-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -399,15 +461,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
 				INFOPLIST_FILE = Airly/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Airly-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

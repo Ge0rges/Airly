@@ -37,6 +37,14 @@ class ViewController: UIViewController {
       self.broadcastImageView.frame = CGRect(x: x, y: yBroadcast, width: width, height: height);
       self.receiveImageview.frame = CGRect(x: x, y: yReceive, width: width, height: height);
       
+      // Animate alpha on everything else
+      self.orLabel.alpha = 0;
+      self.broadcastLabel.alpha = 0;
+      self.receiveLabel.alpha = 0;
+      self.getStartedButton.alpha = 0;
+      self.subtitleLabel.alpha = 0;
+      
+    }, completion: { (finished) in
       // Hide everything else
       self.orLabel.isHidden = true;
       self.broadcastLabel.isHidden = true;
@@ -44,7 +52,6 @@ class ViewController: UIViewController {
       self.getStartedButton.isHidden = true;
       self.subtitleLabel.isHidden = true;
       
-    }, completion: { (finished) in
       // Enable user interaction on the images
       self.broadcastImageView.isUserInteractionEnabled = true;
       self.receiveImageview.isUserInteractionEnabled = true;

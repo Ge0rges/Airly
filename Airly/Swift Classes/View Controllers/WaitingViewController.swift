@@ -8,24 +8,32 @@
 
 import UIKit
 
-class WaitingViewController: UIViewController {
+class WaitingViewController: UIViewController, ConnectivityManagerDelegate {
   @IBOutlet var backButton: UIButton!
   @IBOutlet var pingImageView: UIImageView!
   
+  let synaction: Synaction = Synaction.sharedManager();
+  
   override func viewDidLoad() {
-    //TODO: Start Broadcasting
-    //TODO: Animate Ping
+    // Set the delegate
+    self.synaction.connectivityManager.delegate = self;
+    
+    // Start looking for a host
+    self.synaction.connectivityManager.startBrowsingForBonjourBroadcast();
   }
   
   //MARK: - Button Actions
-  @IBAction func dismissBroadcastViewController(_ sender: UIButton) {
-    //TODO: Stop broadcasting & disconnect.
-    //TODO: Stop Playing
+  @IBAction func dismissBroadcastViewController(_ sender: UIButton) {// Called when user presses back.
+    // Stop broadcasting
+    self.synaction.connectivityManager.stopBonjour();
     
+    // Dismiss
     self.navigationController?.popViewController(animated: true);
   }
   
-  func connectedToHost() {
-    //TODO: Show ReceiverViewController. Segue ID: showReceiverSegue
+  //MARK: - ConnectivityManagerDelegate
+  func socket(_ socket: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+    // Show receiver view controller
+    self.performSegue(withIdentifier: "showReceiverSegue", sender: self);
   }
 }
