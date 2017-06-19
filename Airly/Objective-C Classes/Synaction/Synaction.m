@@ -302,7 +302,10 @@
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)error {
   // Remove any reference to this socket
-  [self.calibratedPeers removeObject:socket];
+  if (socket) {
+    [self.calibratedPeers removeObject:socket];
+  }
+  
   isCalibrating = NO;
   self.hostTimeOffset = 0;
 }

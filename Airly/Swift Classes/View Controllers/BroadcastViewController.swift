@@ -33,6 +33,9 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     // Start broadcasting bonjour.
     self.connectivityManager.startBonjourBroadcast();
     
+    // Set the delegate for the connectivity manager
+    self.synaction.connectivityManager.delegate = self;
+    
     // Clear the music queue
     self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
     
@@ -44,6 +47,12 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     
     // Register for player notifications
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
+    NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPausedNotificationName, object: nil);
+    NotificationCenter.default.addObserver(self, selector: #selector(self.sendCurrentSong), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
+    NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlayCommand), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
+    NotificationCenter.default.addObserver(self, selector: #selector(self.sendPauseCommand), name: PlayerManager.PlayerPausedNotificationName, object: nil);
+    
     
     // Round & Shadow the album art
     self.albumArtImageView.layer.cornerRadius = self.albumArtImageView.frame.size.width/25;
@@ -79,7 +88,9 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     self.connectivityManager.disconnectSockets();
     
     // Stop playing
-    self.playerManager.pause();
+    if self.playerManager.isPlaying {
+      self.playerManager.pause();
+    }
     self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
     
     // Dismiss vie
@@ -195,68 +206,112 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   }
   
   //MARK: - Communication
-  func sendPlayCommand() -> UInt64 {
+  @objc func sendPlayCommand() -> UInt64 {
     let playbackTime: TimeInterval = CMTimeGetSeconds((self.playerManager.currentSong?.currentTime())!);
     let deviceTimeAtPlaybackTime: UInt64 = self.synaction.currentTime();
     let timeToExecute: UInt64 = deviceTimeAtPlaybackTime + 1000000000;
     
-    let dictionaryPayload = ["command": "play", "timeToExecute": timeToExecute, "playbackTime": playbackTime, "continuousPlay": self.playerManager.isPlaying, "timeAtPlaybackTime": deviceTimeAtPlaybackTime] as [String : Any];
+    let dictionaryPayload = ["command": "play",
+                             "timeToExecute": timeToExecute,
+                             "playbackTime": playbackTime,
+                             "continuousPlay": self.playerManager.isPlaying,
+                             "timeAtPlaybackTime": deviceTimeAtPlaybackTime,
+                             "song": self.playerManager.currentSongMetadata?["title"] as Any
+      ] as [String : Any];
+    
     let payloadData = NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload);
-    let packet: Packet = Packet.init(data: payloadData, type: PacketTypeUnknown, action: PacketActionPlay);
+    let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
     self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
     
     return timeToExecute;
   }
   
-  func sendPauseCommand() -> UInt64 {
-    let timeToExecute = self.synaction.currentTime() + 1000000000;
+  @objc func sendPauseCommand() -> UInt64 {
+    let timeToExecute = self.synaction.currentTime();
     
-    let dictionaryPayload = ["command": "pause", "timeToExecute": timeToExecute] as [String : Any];
+    let dictionaryPayload = ["command": "pause",
+                             "timeToExecute": timeToExecute,
+                             "song": (self.playerManager.currentSongMetadata?["title"] ?? "")!
+      ] as [String : Any];
+    
     let payloadData = NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload);
-    let packet: Packet = Packet.init(data: payloadData, type: PacketTypeUnknown, action: PacketActionPlay);
+    let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
     self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
     
     return timeToExecute;
   }
   
-  func sendCurrentSong() {
+  @objc func sendCurrentSong() {
+    // Pause command
+    let _ = self.sendPauseCommand();
+    
+    // Get the path for the song
+    let tempPath: URL = NSURL.fileURL(withPath: NSTemporaryDirectory());
+    let songURL: URL = tempPath.appendingPathComponent("song.caf", isDirectory: false);
+    
+    // Delete old song
+    do {
+      try FileManager.default.removeItem(at: songURL);
+      
+    } catch {
+      print("Failed to delete old song for export. Error: \(error)");
+    }
+    
+    // If no new song return.
     if (self.playerManager.currentSong == nil) {
       return;
     }
     
-    // Export the currebnt song to a file and send the file to the peer
+    // Export the current song to a file and send the file to the peer
     let currentSongAsset: AVAsset = self.playerManager.currentSong!.asset;
     
-    let tempPath: URL = NSURL.fileURL(withPath: NSTemporaryDirectory());
 //    let assetURL: URL = self.playerManager.currentMediaItem?.value(forProperty: MPMediaItemPropertyAssetURL);
 //    let songURLAsset: AVURLAsset = AVURLAsset.init(url: assetURL);
     let exporter: AVAssetExportSession = AVAssetExportSession.init(asset: currentSongAsset, presetName: AVAssetExportPresetPassthrough)!;
     exporter.outputFileType = "com.apple.coreaudio-format";
-    exporter.outputURL = tempPath.appendingPathComponent("song.caf", isDirectory: false);
+    exporter.outputURL = songURL;
     
     exporter.exportAsynchronously {
       // Send the file
       do {
         let fileData = try Data.init(contentsOf: exporter.outputURL!);
         
-        let payloadDict: [String : Any] = ["command": "load", "index": "0", "file":fileData]  as [String : Any];
-        let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeUnknown, action: PacketActionUnknown);
+        var metadataA: [String: Any?]? = self.playerManager.currentSongMetadata;
+        if let metadataB = metadataA {
+          metadataA!["artwork"] = (metadataB["artwork"] as! MPMediaItemArtwork).image(at: self.albumArtImageView.frame.size);
+        }
+        
+        let payloadDict: [String : Any] = ["command": "load", "index": "0", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
+        let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
         self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
         
       } catch {
         print("failed to get data of file on host");
+      }
+      
+      // Send the latest command
+      if self.playerManager.isPlaying {
+        let _ = self.sendPlayCommand();
       }
     }
   }
   
   func socket(_ socket: GCDAsyncSocket, didAcceptNewSocket newSocket: GCDAsyncSocket) {
     // Update UI
-    self.numberOfClientsLabel.text = "to \(self.connectivityManager.allSockets.count) people";
+    self.numberOfClientsLabel.text = (self.connectivityManager.allSockets.count == 1) ? "to 1 person" : "to \(self.connectivityManager.allSockets.count) people";
     
     self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
     self.synaction.executeBlock(whenEachPeerCalibrates: self.synaction.connectivityManager.allSockets as! [GCDAsyncSocket]) { (peers) in
       self.sendCurrentSong();
-      let _ = self.sendPlayCommand();
+      
+      if self.playerManager.isPlaying {
+        let _ = self.sendPlayCommand();
+      }
     }
+  }
+  
+  func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
+    // Update UI
+    self.numberOfClientsLabel.text = "to \(self.connectivityManager.allSockets.count) people";
   }
 }

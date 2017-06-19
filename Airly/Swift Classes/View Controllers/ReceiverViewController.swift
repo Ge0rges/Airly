@@ -22,14 +22,25 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   let playerManager:PlayerManager! = PlayerManager.sharedManager;
   let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
   let synaction:Synaction! = Synaction.sharedManager();
+  
+  var lastReceivedHostTime: UInt64 = 0;
+  var lastReceivedHostPlaybackTime: TimeInterval = 0;
+  var currentSongMetadata: Dictionary<String, Any?>? = nil;
+  var pendingCommand: String? = nil;
 
   override func viewDidLoad() {
     super.viewDidLoad();
-    // Start browsing for bonjour broadcast.
-    self.connectivityManager.startBrowsingForBonjourBroadcast();
+    // Stop browsing for bonjour broadcast.
+    self.connectivityManager.stopBonjour();
+    
+    // Set the delegate
+    self.connectivityManager.delegate = self;
     
     // Register for player notifications
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
+    
+    // Update the interface
+    self.updateInterface(notification: nil);
     
     // Round & Shadow the album art
     self.albumArtImageView.layer.cornerRadius = self.albumArtImageView.frame.size.width/25;
@@ -66,31 +77,33 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
     
     // Dismiss view
-    self.navigationController?.popViewController(animated: true);
+    self.navigationController?.popToRootViewController(animated: true);
   }
   
   // MARK: - UI Functions
   @objc func updateInterface(notification: Notification?) {
     // Album Art
-    let metadata:Dictionary<String, Any?>? = self.playerManager.currentSongMetadata;
+    let metadata:Dictionary<String, Any?>? = self.currentSongMetadata;
     var artwork: UIImage? = nil;//TODO: Default Image
     var title: String = "Unknown Song Name";
     var artist: String = "Unknown Artist";
     
     if let metadata = metadata {
-      let mediaItemArtwork = metadata["artwork"] as! MPMediaItemArtwork?;
-      if (mediaItemArtwork != nil) {
-        artwork = mediaItemArtwork!.image(at: self.albumArtImageView.frame.size);
-      }
-      
-      let mediaItemArtist = metadata["artist"] as! String?;
-      if (mediaItemArtist != nil) {
-        artist = mediaItemArtist!;
-      }
-      
-      let mediaItemTitle = metadata["title"] as! String?;
-      if (mediaItemTitle != nil) {
-        title = mediaItemTitle!;
+      if metadata.index(forKey: "empty") == nil {
+        let mediaItemArtwork = metadata["artwork"] as! UIImage?;
+        if (mediaItemArtwork != nil) {
+          artwork = mediaItemArtwork!
+        }
+        
+        let mediaItemArtist = metadata["artist"] as! String?;
+        if (mediaItemArtist != nil) {
+          artist = mediaItemArtist!;
+        }
+        
+        let mediaItemTitle = metadata["title"] as! String?;
+        if (mediaItemTitle != nil) {
+          title = mediaItemTitle!;
+        }
       }
     }
     
@@ -109,6 +122,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
         self.view.backgroundColor = colorArt?.primaryColor;
       };
     }
+    
+    // Update host name
+    self.hostLabel.text = "from \"\(self.connectivityManager.hostName ?? "host")\"";
   }
   
   // We prefer a white status bar
@@ -122,18 +138,27 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     let command: String! = payloadDict["command"] as! String;
     
     if  (command == "play") {// Play command
+      if ((payloadDict["song"] as? String) != self.songNameLabel.text) {
+        self.pendingCommand = "play";
+        
+        // Save the values for next play
+        lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
+        lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
+        return;
+      }
+      
+      self.pendingCommand = nil;
       let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
       
       if continuousPlay {// Host is playing
         // Calculate time passed on host
-        let timePassedBetweenSent: UInt64 = self.synaction.currentNetworkTime() - (payloadDict["timeAtPlaybackTime"] as! UInt64);
-        let timeToForwardSong:TimeInterval = Double(timePassedBetweenSent)/1000000000.0// Convert to seconds
+        lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
+        lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
         
-        let adjustedSongTime: TimeInterval = (payloadDict["playbackTime"] as! TimeInterval) + timeToForwardSong;// Adjust song time
         self.playerManager.play();// Play locally
         
         // Seek to adjusted song time
-        self.playerManager.seekToTimeInSeconds(time: adjustedSongTime, completionHandler: { (success) in
+        self.playerManager.seekToTimeInSeconds(time: self.adjustedSongTimeForHost(), completionHandler: { (success) in
           if !success {
             print("Failed to seek for continuous play.");
           }
@@ -157,6 +182,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       }
       
     } else if (command == "pause") {
+      self.pendingCommand = nil;
       let timeToExecute: UInt64 = (payloadDict["timeToExecute"] as! UInt64);
       
       self.synaction.atExactTime(timeToExecute, run: {
@@ -164,17 +190,51 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       });
       
     } else if (command == "load") {
+      self.currentSongMetadata = payloadDict["metadata"] as! Dictionary<String, Any?>?;
+      self.updateInterface(notification: nil);
+      
       let songPath: URL = NSURL.fileURL(withPath: NSTemporaryDirectory()).appendingPathComponent("song.caf", isDirectory: false);
-      
       let fileData: Data = payloadDict["file"] as! Data;
-      FileManager.default.createFile(atPath: songPath.absoluteString, contents: fileData, attributes: nil);
       
-      let playerItem: AVPlayerItem = AVPlayerItem.init(url: songPath);
-      self.playerManager.loadSongFromPlayerItem(playerItem: playerItem);
+      do {
+        try FileManager.default.removeItem(at: songPath);
+      } catch {
+        print("Error deleting old song: \(error)");
+      }
+      
+      do {
+        try fileData.write(to: songPath);
+        
+        let asset: AVAsset = AVAsset(url: songPath);
+        
+        let playerItem: AVPlayerItem = AVPlayerItem.init(asset: asset);
+        self.playerManager.loadSongFromPlayerItem(playerItem: playerItem);
+        
+        if (pendingCommand == "play") {
+          self.playerManager.play();// Play locally
+          
+          // Seek to adjusted song time
+          self.playerManager.seekToTimeInSeconds(time: self.adjustedSongTimeForHost(), completionHandler: { (success) in
+            if !success {
+              print("Failed to seek for continuous play.");
+            }
+          });
+        }
+      } catch {
+        print("Error writing song data to file: \(error)");
+      }
     }
   }
   
-  func socket(_ socket: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
-    self.hostLabel.text = "from \"\(host)\"";
+  func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
+    self.dismissBroadcastViewController(self.backButton);
+  }
+  
+  func adjustedSongTimeForHost() -> TimeInterval {
+    let timePassedBetweenSent: UInt64 = self.synaction.currentNetworkTime() - lastReceivedHostTime;
+    let timeToForwardSong: TimeInterval = Double(timePassedBetweenSent)/1000000000.0// Convert to seconds
+    let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong;// Adjust song time
+    
+    return adjustedSongTime
   }
 }

@@ -15,6 +15,7 @@
 @property (strong, nonatomic) NSNetService *service;
 @property (strong, nonatomic) NSMutableArray *services;
 @property (strong, nonatomic) NSNetServiceBrowser *serviceBrowser;
+@property (strong, nonatomic) NSString * _Nullable hostName;
 
 @end
 
@@ -178,6 +179,17 @@
   // Connect With Service
   if ([self connectWithService:service]) {
     NSLog(@"Did Connect with Service: domain(%@) type(%@) name(%@) port(%i)", service.domain, service.type, service.name, (int)service.port);
+    
+    self.hostName = service.name;
+    
+    if ([self.delegate respondsToSelector:@selector(didConnectToService:)]) {
+      [self.delegate didConnectToService:service];
+    }
+    
+    if ([self.synaction respondsToSelector:@selector(didConnectToService:)]) {
+      [self.synaction didConnectToService:service];
+    }
+    
   } else {
     NSLog(@"Unable to Connect with Service: domain(%@) type(%@) name(%@) port(%i)", service.domain, service.type, service.name, (int)service.port);
   }
@@ -274,7 +286,9 @@
 - (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)error {
   NSLog(@"%s error: %@", __PRETTY_FUNCTION__, error);
   
-  [self.allSockets removeObject:socket];
+  if (socket) {
+    [self.allSockets removeObject:socket];
+  }
   
   if ([self.delegate respondsToSelector:@selector(socketDidDisconnect:withError:)]) {
     [self.delegate socketDidDisconnect:socket withError:error];

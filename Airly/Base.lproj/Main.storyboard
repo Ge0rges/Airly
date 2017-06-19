@@ -384,6 +384,7 @@
                                 </state>
                                 <connections>
                                     <action selector="dismissBroadcastViewController:" destination="4PR-OI-9YP" eventType="touchUpInside" id="3H7-q3-4Gc"/>
+                                    <action selector="dismissBroadcastViewController:" destination="3wv-vq-8aV" eventType="touchUpInside" id="anV-9X-nNw"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Waiting..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3mP-Dj-2ZC">
@@ -421,7 +422,7 @@
                     <connections>
                         <outlet property="backButton" destination="LeP-D5-cyf" id="fbq-CP-0hA"/>
                         <outlet property="pingImageView" destination="JZO-Cs-L03" id="q6c-89-HE3"/>
-                        <segue destination="4PR-OI-9YP" kind="show" identifier="showReceiverSeugue" id="TME-Td-w7y"/>
+                        <segue destination="4PR-OI-9YP" kind="show" identifier="showReceiverSegue" id="TME-Td-w7y"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qlr-4B-wes" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -501,7 +502,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NUS-4Z-Md5">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NUS-4Z-Md5">
                                 <rect key="frame" x="37" y="131" width="300" height="300"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES" updatesFrequently="YES"/>
@@ -510,23 +511,6 @@
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="NUS-4Z-Md5" secondAttribute="height" multiplier="1:1" id="jpM-U1-VGO"/>
                                 </constraints>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="color" keyPath="layer.shadowColor">
-                                        <color key="value" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="size" keyPath="layer.shadowOffset">
-                                        <size key="value" width="0.0" height="4"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.shadowOpacity">
-                                        <integer key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.shadowRadius">
-                                        <integer key="value" value="1"/>
-                                    </userDefinedRuntimeAttribute>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                        <integer key="value" value="10"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

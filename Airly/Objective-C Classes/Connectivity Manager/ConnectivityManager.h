@@ -19,6 +19,7 @@
 - (void)didReceivePacket:(Packet * _Nonnull)packet fromSocket:(GCDAsyncSocket *_Nonnull)socket ;
 - (void)socketDidDisconnect:(GCDAsyncSocket * _Nonnull)socket withError:(NSError * _Nonnull)error;
 - (void)socket:(GCDAsyncSocket * _Nonnull)socket didConnectToHost:(NSString * _Nonnull)host port:(UInt16)port;
+- (void)didConnectToService:(NSNetService * _Nonnull)service;
 @end
 
 
@@ -28,6 +29,8 @@
 @property (nonatomic, assign) id<ConnectivityManagerDelegate> _Nullable synaction;
 
 @property (strong, nonatomic) NSMutableArray<GCDAsyncSocket *> * _Nonnull allSockets;
+
+@property (readonly, strong, nonatomic) NSString * _Nullable hostName;
 
 + (instancetype _Nullable)sharedManager;
 

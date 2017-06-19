@@ -47,6 +47,9 @@ class PlayerManager: NSObject {
   
   public static let PlayerSongChangedNotificationName = NSNotification.Name(rawValue: "PlayerSongChanged");
   public static let PlayerQueueChangedNotificationName = NSNotification.Name(rawValue: "PlayerQueueChanged");
+  public static let PlayerPlayedNotificationName = NSNotification.Name(rawValue: "PlayerPlayed");
+  public static let PlayerPausedNotificationName = NSNotification.Name(rawValue: "PlayerPaused");
+  
   
   static let sharedManager = PlayerManager();
   override private init() {//This prevents others from using the default '()' initializer for this class
@@ -67,14 +70,18 @@ class PlayerManager: NSObject {
   
   public func play() {
     self.player.playImmediately(atRate: 1.0)// Play at default rate
+    
+    NotificationCenter.default.post(name: PlayerManager.PlayerPlayedNotificationName, object: self);
   }
   
   public func pause() {
     self.player.pause();
+    
+    NotificationCenter.default.post(name: PlayerManager.PlayerPausedNotificationName, object: self);
   }
   
   public func loadQueueFromMPMediaItems(mediaItems: Array<MPMediaItem>?) -> Void {
-    self.queueMediaItems = mediaItems!;// Save the media items.
+    self.queueMediaItems = mediaItems;// Save the media items.
     self.queue.removeAll();// Remove old queue.
     self.queueMetadata.removeAll();// Clear old album artwork.
     currentSongIndex = 0;
