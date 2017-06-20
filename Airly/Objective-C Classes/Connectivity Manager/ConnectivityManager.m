@@ -129,12 +129,14 @@
     [socket disconnect];
   }
   
+  [self.serverSocket disconnect];
+  
   [self.allSockets removeAllObjects];
 }
 
 #pragma mark - Sending & Receiving
 - (void)sendPacket:(Packet *)packet toSockets:(NSArray<GCDAsyncSocket *> *)sockets {
-  NSLog(@"Sending packet to sockets: %@", sockets);
+  NSLog(@"Sending packet to sockets");
   
   // Encode Packet Data
   NSMutableData *packetData = [[NSMutableData alloc] init];

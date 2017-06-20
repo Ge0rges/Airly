@@ -139,9 +139,9 @@
 			isa = PBXGroup;
 			children = (
 				FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */,
+				FB8831A61EF2CCCA00E2A30E /* Synaction */,
 				FB8831981EF2CCCA00E2A30E /* Connectivity Manager */,
 				FB88319F1EF2CCCA00E2A30E /* SLColorArt */,
-				FB8831A61EF2CCCA00E2A30E /* Synaction */,
 			);
 			path = "Objective-C Classes";
 			sourceTree = "<group>";
