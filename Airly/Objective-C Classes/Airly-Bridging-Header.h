@@ -9,5 +9,5 @@
 #import "Synaction.h"
 #import "ConnectivityManager.h"
 #import "Packet.h"
-#import "GCDAsyncSocket.h"
+@import CocoaAsyncSocket;
 #import "SLColorArt.h"

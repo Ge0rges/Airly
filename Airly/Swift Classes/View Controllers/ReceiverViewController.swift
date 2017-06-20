@@ -25,6 +25,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   
   var lastReceivedHostTime: UInt64 = 0;
   var lastReceivedHostPlaybackTime: TimeInterval = 0;
+  var lastReceivedTimeToExecute: UInt64 = 0;
   var currentSongMetadata: Dictionary<String, Any?>? = nil;
   var pendingCommand: String? = nil;
 
@@ -38,6 +39,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     
     // Register for player notifications
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
+    NotificationCenter.default.addObserver(self, selector: #selector(self.executePendingCommand), name:NSNotification.Name(rawValue: "CalibrationDone"), object: nil);
     
     // Update the interface
     self.updateInterface(notification: nil);
@@ -64,6 +66,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       self.view.insertSubview(self.blurEffectView, at: 0);
       self.view.insertSubview(self.blurImageView, belowSubview: self.blurEffectView);
     }
+    
   }
   
   //MARK: - Button Actions
@@ -82,6 +85,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   
   // MARK: - UI Functions
   @objc func updateInterface(notification: Notification?) {
+    print("Listener updating UI called.");
+    
     // Album Art
     let metadata:Dictionary<String, Any?>? = self.currentSongMetadata;
     var artwork: UIImage? = nil;//TODO: Default Image
@@ -89,7 +94,11 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     var artist: String = "Unknown Artist";
     
     if let metadata = metadata {
+      print("metadata not nil");
+      
       if metadata.index(forKey: "empty") == nil {
+        print("Metadata had empty key nil.");
+        
         let mediaItemArtwork = metadata["artwork"] as! UIImage?;
         if (mediaItemArtwork != nil) {
           artwork = mediaItemArtwork!
@@ -138,12 +147,16 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     let command: String! = payloadDict["command"] as! String;
     
     if  (command == "play") {// Play command
-      if ((payloadDict["song"] as? String) != self.songNameLabel.text) {
-        self.pendingCommand = "play";
+      print("Received play command.");
+      
+      // Save the values for next play
+      lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
+      lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
+      
+      if ((payloadDict["song"] as? String) != self.songNameLabel.text || self.synaction.isCalibrating) {
+        print("Pending command is play command.");
         
-        // Save the values for next play
-        lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
-        lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
+        self.pendingCommand = "play";
         return;
       }
       
@@ -151,9 +164,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
       
       if continuousPlay {// Host is playing
-        // Calculate time passed on host
-        lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
-        lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
+        print("Executing play as continuous command.");
         
         self.playerManager.play();// Play locally
         
@@ -165,6 +176,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
         });
         
       } else {// Play in sync
+        print("Executing play as start-stop command.");
+        
         let timeToExecute: UInt64 = (payloadDict["timeToExecute"] as! UInt64);// Get the time to execute
         
         // Play at exact time
@@ -182,6 +195,13 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       }
       
     } else if (command == "pause") {
+      print("Received pause command.");
+      
+      if self.synaction.isCalibrating {
+        self.pendingCommand = "pause";
+        lastReceivedTimeToExecute = (payloadDict["timeToExecute"] as! UInt64);
+      }
+      
       self.pendingCommand = nil;
       let timeToExecute: UInt64 = (payloadDict["timeToExecute"] as! UInt64);
       
@@ -190,6 +210,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       });
       
     } else if (command == "load") {
+      print("Received load command.");
+      
       self.currentSongMetadata = payloadDict["metadata"] as! Dictionary<String, Any?>?;
       self.updateInterface(notification: nil);
       
@@ -210,29 +232,50 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
         let playerItem: AVPlayerItem = AVPlayerItem.init(asset: asset);
         self.playerManager.loadSongFromPlayerItem(playerItem: playerItem);
         
-        if (pendingCommand == "play") {
-          self.playerManager.play();// Play locally
-          
-          // Seek to adjusted song time
-          self.playerManager.seekToTimeInSeconds(time: self.adjustedSongTimeForHost(), completionHandler: { (success) in
-            if !success {
-              print("Failed to seek for continuous play.");
-            }
-          });
-        }
+        self.executePendingCommand();
+        
       } catch {
         print("Error writing song data to file: \(error)");
       }
     }
   }
-  
+
+  @objc func executePendingCommand() {
+    if (self.pendingCommand == "play") {
+      print("Executing play as pending command.");
+      
+      self.playerManager.play();// Play locally
+      
+      // Seek to adjusted song time
+      self.playerManager.seekToTimeInSeconds(time: self.adjustedSongTimeForHost(), completionHandler: { (success) in
+        if !success {
+          print("Failed to seek for continuous play.");
+        }
+      });
+      
+    } else if self.pendingCommand == "pause" {
+      self.synaction.atExactTime(lastReceivedTimeToExecute, run: {
+        self.playerManager.pause();
+      });
+      
+    } else {
+      print("Couldn't handle pending command: \(String(describing: self.pendingCommand))");
+    }
+    
+    self.pendingCommand = nil;
+  }
+
   func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
     self.dismissBroadcastViewController(self.backButton);
   }
   
   func adjustedSongTimeForHost() -> TimeInterval {
-    let timePassedBetweenSent: UInt64 = self.synaction.currentNetworkTime() - lastReceivedHostTime;
-    let timeToForwardSong: TimeInterval = Double(timePassedBetweenSent)/1000000000.0// Convert to seconds
+    let currentNetworkTime = self.synaction.currentNetworkTime()
+    let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostTime);
+    
+    print("timePassedBetweenSent overflowed: \(timePassedBetweenSent.overflow)");
+    
+    let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenSent.partialValue)!/1000000000.0// Convert to seconds
     let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong;// Adjust song time
     
     return adjustedSongTime

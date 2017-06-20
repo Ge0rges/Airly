@@ -1,0 +1,6 @@
+framework module Pods_Airly {
+  umbrella header "Pods-Airly-umbrella.h"
+
+  export *
+  module * { export * }
+}

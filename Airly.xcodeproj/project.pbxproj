@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F150DA7FD6DE8D528FEF21D /* Pods_Airly.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B50A7FAF7A127F24894AB42 /* Pods_Airly.framework */; };
 		FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */; };
 		FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A831EF25CBA00C9D835 /* ViewController.swift */; };
 		FB2F4A871EF25CBA00C9D835 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A851EF25CBA00C9D835 /* Main.storyboard */; };
@@ -18,7 +19,6 @@
 		FB77BC6B1EF2BCE8001362F8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC6A1EF2BCE8001362F8 /* Foundation.framework */; };
 		FB77BC6D1EF2BCF4001362F8 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */; };
 		FB8831A91EF2CCCA00E2A30E /* ConnectivityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FB88319A1EF2CCCA00E2A30E /* ConnectivityManager.m */; };
-		FB8831AA1EF2CCCA00E2A30E /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = FB88319C1EF2CCCA00E2A30E /* GCDAsyncSocket.m */; };
 		FB8831AB1EF2CCCA00E2A30E /* Packet.m in Sources */ = {isa = PBXBuildFile; fileRef = FB88319E1EF2CCCA00E2A30E /* Packet.m */; };
 		FB8831AC1EF2CCCA00E2A30E /* SLColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A11EF2CCCA00E2A30E /* SLColorArt.m */; };
 		FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */; };
@@ -31,6 +31,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6B50A7FAF7A127F24894AB42 /* Pods_Airly.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Airly.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D1CA24D835EB4CE3925D9EF3 /* Pods-Airly.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Airly.release.xcconfig"; path = "Pods/Target Support Files/Pods-Airly/Pods-Airly.release.xcconfig"; sourceTree = "<group>"; };
+		DEEE16FEBFFE7ABA2B64DFEE /* Pods-Airly.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Airly.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Airly/Pods-Airly.debug.xcconfig"; sourceTree = "<group>"; };
 		FB0A77481EF2D51700FE1B77 /* Airly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Airly.entitlements; sourceTree = "<group>"; };
 		FB2F4A7E1EF25CBA00C9D835 /* Airly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Airly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -46,8 +49,6 @@
 		FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		FB8831991EF2CCCA00E2A30E /* ConnectivityManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectivityManager.h; sourceTree = "<group>"; };
 		FB88319A1EF2CCCA00E2A30E /* ConnectivityManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectivityManager.m; sourceTree = "<group>"; };
-		FB88319B1EF2CCCA00E2A30E /* GCDAsyncSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
-		FB88319C1EF2CCCA00E2A30E /* GCDAsyncSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GCDAsyncSocket.m; sourceTree = "<group>"; };
 		FB88319D1EF2CCCA00E2A30E /* Packet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Packet.h; sourceTree = "<group>"; };
 		FB88319E1EF2CCCA00E2A30E /* Packet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Packet.m; sourceTree = "<group>"; };
 		FB8831A01EF2CCCA00E2A30E /* SLColorArt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SLColorArt.h; sourceTree = "<group>"; };
@@ -75,18 +76,29 @@
 				FB77BC691EF2BCE0001362F8 /* UIKit.framework in Frameworks */,
 				FB77BC671EF2BCD6001362F8 /* AVFoundation.framework in Frameworks */,
 				FB77BC651EF2BCD1001362F8 /* AVKit.framework in Frameworks */,
+				5F150DA7FD6DE8D528FEF21D /* Pods_Airly.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F8F9B254A4B7B867CC50AA60 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DEEE16FEBFFE7ABA2B64DFEE /* Pods-Airly.debug.xcconfig */,
+				D1CA24D835EB4CE3925D9EF3 /* Pods-Airly.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		FB2F4A751EF25CBA00C9D835 = {
 			isa = PBXGroup;
 			children = (
 				FB2F4A801EF25CBA00C9D835 /* Airly */,
 				FB2F4A7F1EF25CBA00C9D835 /* Products */,
 				FB77BC611EF2BCCC001362F8 /* Frameworks */,
+				F8F9B254A4B7B867CC50AA60 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -118,6 +130,7 @@
 				FB77BC681EF2BCE0001362F8 /* UIKit.framework */,
 				FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */,
 				FB77BC641EF2BCD1001362F8 /* AVKit.framework */,
+				6B50A7FAF7A127F24894AB42 /* Pods_Airly.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -138,8 +151,6 @@
 			children = (
 				FB8831991EF2CCCA00E2A30E /* ConnectivityManager.h */,
 				FB88319A1EF2CCCA00E2A30E /* ConnectivityManager.m */,
-				FB88319B1EF2CCCA00E2A30E /* GCDAsyncSocket.h */,
-				FB88319C1EF2CCCA00E2A30E /* GCDAsyncSocket.m */,
 				FB88319D1EF2CCCA00E2A30E /* Packet.h */,
 				FB88319E1EF2CCCA00E2A30E /* Packet.m */,
 			);
@@ -214,9 +225,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FB2F4A901EF25CBA00C9D835 /* Build configuration list for PBXNativeTarget "Airly" */;
 			buildPhases = (
+				522D52F05ACA39482442AB7A /* [CP] Check Pods Manifest.lock */,
 				FB2F4A7A1EF25CBA00C9D835 /* Sources */,
 				FB2F4A7B1EF25CBA00C9D835 /* Frameworks */,
 				FB2F4A7C1EF25CBA00C9D835 /* Resources */,
+				EBE29887FDD97C265C0F06AB /* [CP] Embed Pods Frameworks */,
+				2D25EDED1A8383F8DC0B7D30 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -287,12 +301,59 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		2D25EDED1A8383F8DC0B7D30 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Airly/Pods-Airly-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		522D52F05ACA39482442AB7A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		EBE29887FDD97C265C0F06AB /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Airly/Pods-Airly-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		FB2F4A7A1EF25CBA00C9D835 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FB8831AA1EF2CCCA00E2A30E /* GCDAsyncSocket.m in Sources */,
 				FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */,
 				FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */,
 				FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */,
@@ -379,7 +440,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -430,7 +491,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -441,12 +502,13 @@
 		};
 		FB2F4A911EF25CBA00C9D835 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DEEE16FEBFFE7ABA2B64DFEE /* Pods-Airly.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
 				INFOPLIST_FILE = Airly/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -459,12 +521,13 @@
 		};
 		FB2F4A921EF25CBA00C9D835 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D1CA24D835EB4CE3925D9EF3 /* Pods-Airly.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
 				INFOPLIST_FILE = Airly/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";

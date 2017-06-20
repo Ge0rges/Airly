@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 // Frameworks & Librairies
-#import "GCDAsyncSocket.h"
+@import CocoaAsyncSocket;
 #import "Packet.h"
 
 @protocol ConnectivityManagerDelegate <NSObject>

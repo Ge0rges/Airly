@@ -1,0 +1,18 @@
+PODS:
+  - CocoaAsyncSocket (7.6.1)
+  - Flurry-iOS-SDK/FlurryAds (8.1.0):
+    - Flurry-iOS-SDK/FlurrySDK
+  - Flurry-iOS-SDK/FlurrySDK (8.1.0)
+
+DEPENDENCIES:
+  - CocoaAsyncSocket
+  - Flurry-iOS-SDK/FlurryAds
+  - Flurry-iOS-SDK/FlurrySDK
+
+SPEC CHECKSUMS:
+  CocoaAsyncSocket: 7eadd3f59e1a6c84e2aefc93e9ff7b55156fe174
+  Flurry-iOS-SDK: 51065be4436f3e21fc8d3d7bb0b7d6869df6333d
+
+PODFILE CHECKSUM: 09ab5613ee6fa3ff4fbc26fd13a005c807931e0f
+
+COCOAPODS: 1.0.1

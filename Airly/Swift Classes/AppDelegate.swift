@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Flurry_iOS_SDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +17,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
-    //TODO: Implement review
+    // Ask review after 2 usages
+    let launchesSinceReview: Int = UserDefaults.standard.integer(forKey: "launchesSinceLastReview");
+    if launchesSinceReview >= 2 {
+      if #available(iOS 10.3, *) {
+        SKStoreReviewController.requestReview();
+      }
+      
+      UserDefaults.standard.set(0, forKey: "launchesSinceLastReview");
+      
+    } else {
+      UserDefaults.standard.set(launchesSinceReview+1, forKey: "launchesSinceLastReview");
+    }
+    
+    // Start Flurry session
+    DispatchQueue.main.async {
+      Flurry.startSession("WNWRYRCQXJ2CKHJYQ9PW", withOptions: launchOptions);
+      Flurry.setLogLevel(FlurryLogLevelCriticalOnly);
+      Flurry.setShowErrorInLogEnabled(true);
+    }
+    
     return true
   }
 
@@ -41,7 +61,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationWillTerminate(_ application: UIApplication) {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
   }
-
-
+  
 }
-

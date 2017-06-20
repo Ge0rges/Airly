@@ -11,7 +11,6 @@ import AVKit
 import AVFoundation
 import MediaPlayer
 
-//TODO: AVURLAssetPreferPreciseDurationAndTimingKey
 class PlayerManager: NSObject {
   public let player = AVPlayer.init();
   public var queue: [AVPlayerItem] = [];
@@ -22,7 +21,7 @@ class PlayerManager: NSObject {
   }
   
   public var currentSong: AVPlayerItem? {
-    return (self.queue.count > 0 && currentSongIndex < self.queue.count) ? self.queue[currentSongIndex] : nil;
+    return (currentSongIndex >= 0 && currentSongIndex < self.queue.count) ? self.queue[currentSongIndex] : nil;
   }
   
   public var currentMediaItem: MPMediaItem? {
@@ -41,8 +40,8 @@ class PlayerManager: NSObject {
     return (self.queueMetadata.count > currentSongIndex) ? self.queueMetadata[currentSongIndex] : nil;
   }
   
-  private let session = AVAudioSession.sharedInstance();
-  private var currentSongIndex = 0;
+  private let session: AVAudioSession = AVAudioSession.sharedInstance();
+  private var currentSongIndex: Int = 0;
   private var queueMediaItems: [MPMediaItem]? = nil;
   
   public static let PlayerSongChangedNotificationName = NSNotification.Name(rawValue: "PlayerSongChanged");
@@ -66,10 +65,19 @@ class PlayerManager: NSObject {
     
     // Register for notifications of song end
     NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil);
+    
+    // Notification of status change
+    self.player.addObserver(self, forKeyPath: "player.status", options: .new, context: nil);
   }
   
   public func play() {
-    self.player.playImmediately(atRate: 1.0)// Play at default rate
+    // Play at default rate
+    if #available(iOS 10.0, *) {
+      self.player.playImmediately(atRate: 1.0)
+    } else {
+      // Fallback on earlier versions
+      self.player.play();
+    }
     
     NotificationCenter.default.post(name: PlayerManager.PlayerPlayedNotificationName, object: self);
   }
@@ -118,7 +126,7 @@ class PlayerManager: NSObject {
   
   public func playNextSong() {
     currentSongIndex += 1;
-    if (currentSongIndex > self.queue.count-1) {
+    if (currentSongIndex >= self.queue.count) {
       currentSongIndex = self.queue.count-1;
       return;
     }
@@ -150,5 +158,20 @@ class PlayerManager: NSObject {
   @objc private func playerDidFinishPlaying(notification: Notification?) {
     // Post the song changed notification
     NotificationCenter.default.post(name: PlayerManager.PlayerSongChangedNotificationName, object: self);
+  }
+  
+  override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    if keyPath == "player.status" && self.player == (object as! AVPlayer) {
+      if self.player.status == .readyToPlay {
+        self.player.preroll(atRate: 1.0, completionHandler: { (success) in
+          print("Player prerolled: \(success)");
+        })
+        print("Player ready status. Prerolling.");
+        
+        
+      } else if self.player.status == .failed {
+        print("Player failed status.");
+      }
+    }
   }
 }

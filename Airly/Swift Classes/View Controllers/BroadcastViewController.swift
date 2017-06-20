@@ -8,6 +8,7 @@
 
 import UIKit
 import MediaPlayer
+import Flurry_iOS_SDK
 
 class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate, ConnectivityManagerDelegate {
   
@@ -79,6 +80,11 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     
     // Update the interface
     self.updateInterface(notification: nil);
+    
+    // Log
+    DispatchQueue.main.async {
+      Flurry.logEvent("startedBroadcast", timed: true);
+    }
   }
   
   //MARK: - Button Actions
@@ -93,8 +99,13 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     }
     self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
     
-    // Dismiss vie
+    // Dismiss view
     self.navigationController?.popViewController(animated: true);
+    
+    // Log
+    DispatchQueue.main.async {
+      Flurry.endTimedEvent("startedBroadcast", withParameters: nil);
+    }
   }
   
   @IBAction func addMusicButtonPressed(_ sender: UIButton) {
@@ -207,7 +218,14 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   
   //MARK: - Communication
   @objc func sendPlayCommand() -> UInt64 {
-    let playbackTime: TimeInterval = CMTimeGetSeconds((self.playerManager.currentSong?.currentTime())!);
+    print("Sending play command.");
+    
+    if self.playerManager.currentSong == nil {
+      print("Canceled send play, current song was nil: %@", self.playerManager.currentSong as Any);
+      return 0;
+    }
+    
+    let playbackTime: TimeInterval = CMTimeGetSeconds(self.playerManager.currentSong!.currentTime());
     let deviceTimeAtPlaybackTime: UInt64 = self.synaction.currentTime();
     let timeToExecute: UInt64 = deviceTimeAtPlaybackTime + 1000000000;
     
@@ -227,6 +245,8 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
   }
   
   @objc func sendPauseCommand() -> UInt64 {
+    print("Sending pause command.");
+    
     let timeToExecute = self.synaction.currentTime();
     
     let dictionaryPayload = ["command": "pause",
@@ -238,10 +258,15 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
     self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
     
+    print("Making calibration request in pause before returning");
+    self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+    
     return timeToExecute;
   }
   
   @objc func sendCurrentSong() {
+    print("Sending pause command from current song.");
+    
     // Pause command
     let _ = self.sendPauseCommand();
     
@@ -271,6 +296,8 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     exporter.outputFileType = "com.apple.coreaudio-format";
     exporter.outputURL = songURL;
     
+    print("Exporting current song host");
+    
     exporter.exportAsynchronously {
       // Send the file
       do {
@@ -281,17 +308,22 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
           metadataA!["artwork"] = (metadataB["artwork"] as! MPMediaItemArtwork).image(at: self.albumArtImageView.frame.size);
         }
         
+        print("Sending current song.");
+        
         let payloadDict: [String : Any] = ["command": "load", "index": "0", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
         let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
         self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
         
+        self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+        self.synaction.executeBlock(whenEachPeerCalibrates: self.synaction.connectivityManager.allSockets as! [GCDAsyncSocket]) { (peers) in
+          // Send the latest command
+          if self.playerManager.isPlaying {
+            let _ = self.sendPlayCommand();
+          }
+        };
+        
       } catch {
         print("failed to get data of file on host");
-      }
-      
-      // Send the latest command
-      if self.playerManager.isPlaying {
-        let _ = self.sendPlayCommand();
       }
     }
   }
@@ -300,14 +332,18 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     // Update UI
     self.numberOfClientsLabel.text = (self.connectivityManager.allSockets.count == 1) ? "to 1 person" : "to \(self.connectivityManager.allSockets.count) people";
     
-    self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-    self.synaction.executeBlock(whenEachPeerCalibrates: self.synaction.connectivityManager.allSockets as! [GCDAsyncSocket]) { (peers) in
+    print("Making calibration request from connection");
+    self.synaction.askPeers(toCalculateOffset: [newSocket] );
+    self.synaction.executeBlock(whenEachPeerCalibrates: [newSocket] ) { (peers) in
+      print("Calibration request completed, sending current song.");
+      
       self.sendCurrentSong();
       
       if self.playerManager.isPlaying {
+        print("Calibration request completed, started sending song, sending play.");
         let _ = self.sendPlayCommand();
       }
-    }
+    };
   }
   
   func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {

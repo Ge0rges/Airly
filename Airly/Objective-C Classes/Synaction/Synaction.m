@@ -15,12 +15,12 @@
 @interface Synaction () {
   double calculatedOffsets;
   double totalCalculatedOffsets;
-  BOOL isCalibrating;
 }
 
 @property (nonatomic) int64_t hostTimeOffset;// Offset between this device and the host, in nanoseconds. 0 on host.
 @property (nonatomic) uint64_t latencyWithHost;// Calculated latency with host for one ping (one-way) based on offsetWithHost, in nanoseconds.
 @property (nonatomic) uint64_t maxNumberOfCalibrations;
+@property (nonatomic) BOOL isCalibrating;
 
 @end
 
@@ -123,16 +123,16 @@
   [self.connectivityManager sendPacket:packet toSockets:peers];
 }
 
-// Meant for speakers.
+// Meant for peers.
 - (void)calculateTimeOffsetWithHost:(GCDAsyncSocket *)hostPeer {
-  if (!isCalibrating) {
-    isCalibrating = YES;// Used to track the calibration
+  if (!self.isCalibrating) {
+    self.isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
     totalCalculatedOffsets = 0;
     
     // Handle 0 calibrations
     if (self.maxNumberOfCalibrations == 0) {
-      isCalibrating = NO;
+      self.isCalibrating = NO;
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
@@ -169,7 +169,7 @@
 }
 
 - (uint64_t)currentNetworkTime {
-  return (int64_t)[self currentTime] - self.hostTimeOffset;
+  return [self currentTime] - self.hostTimeOffset;
 }
 
 - (void)atExactTime:(uint64_t)val runBlock:(dispatch_block_t _Nonnull)block {
@@ -275,6 +275,8 @@
     
     // If calculation is done notify the host.
     if (calculatedOffsets >= self.maxNumberOfCalibrations) {
+      NSLog(@"Calibration done.");
+      
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
@@ -283,7 +285,8 @@
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
       // Update the bool
-      isCalibrating = NO;
+      self.isCalibrating = NO;
+      [[NSNotificationCenter defaultCenter] postNotificationName:@"CalibrationDone" object:self];
       
     } else {
       // Send another calibration request.
@@ -306,7 +309,7 @@
     [self.calibratedPeers removeObject:socket];
   }
   
-  isCalibrating = NO;
+  self.isCalibrating = NO;
   self.hostTimeOffset = 0;
 }
 

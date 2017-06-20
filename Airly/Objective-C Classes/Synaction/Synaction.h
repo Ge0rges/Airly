@@ -31,5 +31,6 @@ typedef void(^ _Nullable calibrationBlock)(NSArray <GCDAsyncSocket *> * _Nullabl
 @property (nonatomic, readonly) uint64_t latencyWithHost;// The calculated latency between the peer and host. Only on peer.
 @property (nonatomic, readonly) int64_t hostTimeOffset;// The calculated offset between the peer and the host. Only on peer.
 @property (strong, nonatomic) ConnectivityManager * _Nonnull connectivityManager;// The accompanying connectivity manager.
+@property (readonly, nonatomic) BOOL isCalibrating;// Indicates wether we are currently calibrating with host.
 
 @end

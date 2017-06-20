@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Flurry_iOS_SDK
 
 class ViewController: UIViewController {
   
@@ -18,6 +19,14 @@ class ViewController: UIViewController {
   @IBOutlet var receiveImageview: UIImageView!
   @IBOutlet var getStartedButton: UIButton!
   
+  override func viewDidLoad() {
+    super.viewDidLoad();
+    
+    // Flurry log page views
+    DispatchQueue.main.async {
+      Flurry.logAllPageViews(forTarget: self.navigationController);
+    };
+  }
   
   @IBAction func getStartedPressed(_ sender: UIButton) {// Animate view change
     // Tell autolayout to fuck off

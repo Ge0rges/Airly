@@ -6,9 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.14"/>
-        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Baseline standard spacing" minToolsVersion="9.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -299,16 +297,14 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="qAx-CR-jLm" firstAttribute="firstBaseline" secondItem="GcT-0I-lbs" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="1zj-gW-MyU"/>
                             <constraint firstItem="o92-8y-1uu" firstAttribute="centerY" secondItem="Kc6-aV-4Tx" secondAttribute="centerY" id="3nw-2P-omf"/>
-                            <constraint firstItem="8ah-uM-Unt" firstAttribute="firstBaseline" secondItem="zZx-fo-65J" secondAttribute="baseline" constant="20" symbolType="layoutAnchor" id="6TF-Zl-arY"/>
                             <constraint firstItem="P6f-zW-cP4" firstAttribute="centerX" secondItem="qAx-CR-jLm" secondAttribute="centerX" id="ACS-sX-rKc"/>
                             <constraint firstItem="o92-8y-1uu" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="CME-up-9Yp"/>
-                            <constraint firstItem="zZx-fo-65J" firstAttribute="firstBaseline" secondItem="o92-8y-1uu" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="CfZ-uW-z4w"/>
                             <constraint firstItem="8Ec-PS-iA3" firstAttribute="centerY" secondItem="nfS-e8-Kyw" secondAttribute="centerY" id="DIP-zK-9ew"/>
                             <constraint firstItem="P6f-zW-cP4" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" id="EUe-zJ-8o8"/>
-                            <constraint firstItem="P6f-zW-cP4" firstAttribute="firstBaseline" secondItem="qAx-CR-jLm" secondAttribute="baseline" constant="20" symbolType="layoutAnchor" id="HGp-nC-uO8"/>
+                            <constraint firstItem="qAx-CR-jLm" firstAttribute="top" secondItem="GcT-0I-lbs" secondAttribute="bottom" constant="8.5" id="NGR-Nt-1Rm"/>
                             <constraint firstItem="izl-di-b30" firstAttribute="centerY" secondItem="Kc6-aV-4Tx" secondAttribute="centerY" id="SQK-2T-cCj"/>
+                            <constraint firstItem="P6f-zW-cP4" firstAttribute="top" secondItem="qAx-CR-jLm" secondAttribute="bottom" constant="3.5" id="VY7-kc-PN5"/>
                             <constraint firstItem="GcT-0I-lbs" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="WKR-Jp-PXD"/>
                             <constraint firstItem="Kc6-aV-4Tx" firstAttribute="top" secondItem="upJ-Y7-3YO" secondAttribute="bottom" constant="10" id="WqB-pe-7JN"/>
                             <constraint firstItem="GcT-0I-lbs" firstAttribute="top" secondItem="8ah-uM-Unt" secondAttribute="bottom" constant="25" id="YkV-HZ-XxE"/>
@@ -318,6 +314,7 @@
                             <constraint firstAttribute="trailing" secondItem="izl-di-b30" secondAttribute="trailing" constant="8" id="gAV-12-8ZP"/>
                             <constraint firstItem="nfS-e8-Kyw" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="h4z-Pm-YOA"/>
                             <constraint firstItem="qAx-CR-jLm" firstAttribute="centerX" secondItem="GcT-0I-lbs" secondAttribute="centerX" id="iYd-EV-1c3"/>
+                            <constraint firstItem="8ah-uM-Unt" firstAttribute="top" secondItem="zZx-fo-65J" secondAttribute="bottom" constant="3" id="lMV-dz-Rv7"/>
                             <constraint firstItem="qAx-CR-jLm" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" id="nXM-Or-7gl"/>
                             <constraint firstItem="8ah-uM-Unt" firstAttribute="centerX" secondItem="zZx-fo-65J" secondAttribute="centerX" id="nlI-5u-7wa"/>
                             <constraint firstItem="GcT-0I-lbs" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" multiplier="0.8" id="o3b-MU-zIR"/>
@@ -325,6 +322,7 @@
                             <constraint firstItem="Kc6-aV-4Tx" firstAttribute="leading" secondItem="4jX-tU-ymn" secondAttribute="leading" constant="16" id="sSM-zY-byf"/>
                             <constraint firstItem="nfS-e8-Kyw" firstAttribute="top" secondItem="P6f-zW-cP4" secondAttribute="bottom" constant="40" id="sir-iB-wPf"/>
                             <constraint firstItem="8Ec-PS-iA3" firstAttribute="leading" secondItem="nfS-e8-Kyw" secondAttribute="trailing" constant="26" id="tHz-Zt-1CD"/>
+                            <constraint firstItem="zZx-fo-65J" firstAttribute="top" secondItem="o92-8y-1uu" secondAttribute="bottom" constant="8" id="zu3-IQ-ZRZ"/>
                         </constraints>
                     </view>
                     <connections>
@@ -415,8 +413,8 @@
                             <constraint firstItem="JZO-Cs-L03" firstAttribute="width" secondItem="cjC-TW-QU2" secondAttribute="width" multiplier="0.8" id="O1L-MT-uiY"/>
                             <constraint firstItem="3mP-Dj-2ZC" firstAttribute="top" secondItem="1aF-9H-x8H" secondAttribute="bottom" multiplier="1.5" constant="20" id="O41-fr-cth"/>
                             <constraint firstItem="LeP-D5-cyf" firstAttribute="top" secondItem="1aF-9H-x8H" secondAttribute="bottom" id="Xqn-lk-gdL"/>
-                            <constraint firstItem="KA6-NS-WM5" firstAttribute="firstBaseline" secondItem="3mP-Dj-2ZC" secondAttribute="baseline" constant="24" symbolType="layoutAnchor" id="dre-qK-8QN"/>
                             <constraint firstItem="JZO-Cs-L03" firstAttribute="centerX" secondItem="cjC-TW-QU2" secondAttribute="centerX" id="pCE-oJ-N0T"/>
+                            <constraint firstItem="KA6-NS-WM5" firstAttribute="top" secondItem="3mP-Dj-2ZC" secondAttribute="bottom" constant="2.5" id="tmB-xe-Hbi"/>
                         </constraints>
                     </view>
                     <connections>
@@ -515,9 +513,9 @@
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="7Sa-y7-9ml" firstAttribute="firstBaseline" secondItem="NUS-4Z-Md5" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="164-rj-BlA"/>
                             <constraint firstItem="dc4-46-Use" firstAttribute="centerX" secondItem="6bE-pi-3pn" secondAttribute="centerX" id="507-EP-Jd9"/>
-                            <constraint firstItem="YDO-h5-BmL" firstAttribute="firstBaseline" secondItem="6ob-xk-x5o" secondAttribute="baseline" constant="20" symbolType="layoutAnchor" id="7eN-eg-JT5"/>
+                            <constraint firstItem="YDO-h5-BmL" firstAttribute="top" secondItem="6ob-xk-x5o" secondAttribute="bottom" constant="3" id="5zo-ZR-ED7"/>
+                            <constraint firstItem="6ob-xk-x5o" firstAttribute="top" secondItem="dc4-46-Use" secondAttribute="bottom" constant="8" id="96a-JF-UMp"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="top" secondItem="YDO-h5-BmL" secondAttribute="bottom" constant="25" id="9hm-mj-rye"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" multiplier="0.8" id="Atr-5k-CrB"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="centerX" secondItem="6bE-pi-3pn" secondAttribute="centerX" id="DYG-SE-rcq"/>
@@ -528,10 +526,10 @@
                             <constraint firstItem="7Sa-y7-9ml" firstAttribute="centerX" secondItem="NUS-4Z-Md5" secondAttribute="centerX" id="bAd-Ab-7VW"/>
                             <constraint firstItem="jz7-Ba-ERd" firstAttribute="centerX" secondItem="7Sa-y7-9ml" secondAttribute="centerX" id="doS-Fa-bdu"/>
                             <constraint firstItem="zTJ-TX-v3k" firstAttribute="leading" secondItem="6bE-pi-3pn" secondAttribute="leading" constant="16" id="dwi-QO-Olb"/>
-                            <constraint firstItem="6ob-xk-x5o" firstAttribute="firstBaseline" secondItem="dc4-46-Use" secondAttribute="baseline" constant="24.5" symbolType="layoutAnchor" id="g2C-G0-yux"/>
-                            <constraint firstItem="jz7-Ba-ERd" firstAttribute="firstBaseline" secondItem="7Sa-y7-9ml" secondAttribute="baseline" constant="20" symbolType="layoutAnchor" id="hYB-Cw-wjx"/>
                             <constraint firstItem="6ob-xk-x5o" firstAttribute="centerX" secondItem="dc4-46-Use" secondAttribute="centerX" id="hd2-9r-1Yf"/>
+                            <constraint firstItem="jz7-Ba-ERd" firstAttribute="top" secondItem="7Sa-y7-9ml" secondAttribute="bottom" constant="3" id="pGp-Y6-pRk"/>
                             <constraint firstItem="zTJ-TX-v3k" firstAttribute="top" secondItem="UMe-mJ-LSo" secondAttribute="bottom" constant="10" id="swJ-JU-FFB"/>
+                            <constraint firstItem="7Sa-y7-9ml" firstAttribute="top" secondItem="NUS-4Z-Md5" secondAttribute="bottom" constant="8.5" id="w5C-TQ-D3Q"/>
                         </constraints>
                     </view>
                     <connections>

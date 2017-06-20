@@ -11,7 +11,7 @@
 
 @interface ConnectivityManager () <NSNetServiceDelegate, NSNetServiceBrowserDelegate, GCDAsyncSocketDelegate>
 
-@property (strong, nonatomic) GCDAsyncSocket *socket;
+@property (strong, nonatomic) GCDAsyncSocket *serverSocket;
 @property (strong, nonatomic) NSNetService *service;
 @property (strong, nonatomic) NSMutableArray *services;
 @property (strong, nonatomic) NSNetServiceBrowser *serviceBrowser;
@@ -37,19 +37,21 @@
 #pragma mark - Host
 - (void)startBonjourBroadcast {
   // Initialize GCDAsyncSocket
-  self.socket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+  self.serverSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
 
   // Start Listening for Incoming Connections
   NSError *error = nil;
-  if ([self.socket acceptOnPort:0 error:&error]) {
+  if ([self.serverSocket acceptOnPort:0 error:&error]) {
     // Initialize Service
-    self.service = [[NSNetService alloc] initWithDomain:@"local." type:@"_airly._tcp." name:@"" port:self.socket.localPort];
+    self.service = [[NSNetService alloc] initWithDomain:@"local." type:@"_airly._tcp." name:@"" port:self.serverSocket.localPort];
 
     // Configure Service
     [self.service setDelegate:self];
 
     // Publish Service
     [self.service publish];
+    
+    NSLog(@"Created socket for bonjour broadcast.");
 
   } else {
     NSLog(@"Unable to create socket. Error %@ with user info %@.", error, [error userInfo]);
@@ -72,9 +74,13 @@
   // Configure Service Browser
   [self.serviceBrowser setDelegate:self];
   [self.serviceBrowser searchForServicesOfType:@"_airly._tcp." inDomain:@"local."];
+  
+  NSLog(@"Started browsing for bonjour.");
 }
 
 - (void)stopBonjour {
+  NSLog(@"Stopped bonjour.");
+
   [self.service stop];
 
   if (self.serviceBrowser) {
@@ -91,38 +97,45 @@
   // Copy Service Addresses
   NSArray *addresses = [[service addresses] mutableCopy];
 
-  if (!self.socket || ![self.socket isConnected]) {
+  if (!self.serverSocket || ![self.serverSocket isConnected]) {
     // Initialize Socket
-    self.allSockets[0] = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+    self.serverSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
 
     // Connect
     while (!_isConnected && [addresses count]) {
       NSData *address = [addresses objectAtIndex:0];
 
       NSError *error = nil;
-      if ([self.allSockets[0] connectToAddress:address error:&error]) {
+      if ([self.serverSocket connectToAddress:address error:&error]) {
         _isConnected = YES;
-
+        NSLog(@"Connected to service.");
+                
       } else if (error) {
         NSLog(@"Unable to connect to address. Error %@ with user info %@.", error, [error userInfo]);
       }
     }
 
   } else {
-    _isConnected = [self.allSockets[0] isConnected];
+    _isConnected = [self.serverSocket isConnected];
   }
 
   return _isConnected;
 }
 
 - (void)disconnectSockets {
+  NSLog(@"Disconnecting from sockets.");
+
   for (GCDAsyncSocket *socket in self.allSockets) {
     [socket disconnect];
   }
+  
+  [self.allSockets removeAllObjects];
 }
 
 #pragma mark - Sending & Receiving
-- (void)sendPacket:(Packet *)packet toSockets:(NSArray<GCDAsyncSocket *> *)sockets{
+- (void)sendPacket:(Packet *)packet toSockets:(NSArray<GCDAsyncSocket *> *)sockets {
+  NSLog(@"Sending packet to sockets: %@", sockets);
+  
   // Encode Packet Data
   NSMutableData *packetData = [[NSMutableData alloc] init];
   NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:packetData];
@@ -155,10 +168,8 @@
   Packet *packet = [unarchiver decodeObjectForKey:@"packet"];
   [unarchiver finishDecoding];
 
-  NSLog(@"Parsed Packet Data > %@", packet.data);
-  NSLog(@"Parsed Packet Type > %i", packet.type);
-  NSLog(@"Parsed Packet Action > %i", packet.action);
-
+  NSLog(@"Parsed packet.");
+  
   return packet;
 }
 
@@ -173,9 +184,12 @@
 
 - (void)netService:(NSNetService *)service didNotResolve:(NSDictionary *)errorDict {
   [service setDelegate:nil];
+  NSLog(@"Service dit not resolve. Error: %@", errorDict);
 }
 
 - (void)netServiceDidResolveAddress:(NSNetService *)service {
+  NSLog(@"Started to resolve address for service: %@", service);
+  
   // Connect With Service
   if ([self connectWithService:service]) {
     NSLog(@"Did Connect with Service: domain(%@) type(%@) name(%@) port(%i)", service.domain, service.type, service.name, (int)service.port);
@@ -222,10 +236,12 @@
 
 - (void)netServiceBrowserDidStopSearch:(NSNetServiceBrowser *)serviceBrowser {
   [self stopBonjour];
+  NSLog(@"Net service stopped search.");
 }
 
 - (void)netServiceBrowser:(NSNetServiceBrowser *)aBrowser didNotSearch:(NSDictionary *)userInfo {
   [self stopBonjour];
+  NSLog(@"Net service did not search: %@", userInfo);
 }
 
 #pragma mark - GCDAsyncSocketDelegate
@@ -288,6 +304,10 @@
   
   if (socket) {
     [self.allSockets removeObject:socket];
+  }
+  
+  if ([socket isEqual:self.serverSocket]) {
+    [self.allSockets removeAllObjects];
   }
   
   if ([self.delegate respondsToSelector:@selector(socketDidDisconnect:withError:)]) {
