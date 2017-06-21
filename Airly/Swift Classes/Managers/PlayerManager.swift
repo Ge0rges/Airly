@@ -39,6 +39,10 @@ class PlayerManager: NSObject {
   public var currentSongMetadata: Dictionary<String, Any?>? {
     return (self.queueMetadata.count > currentSongIndex) ? self.queueMetadata[currentSongIndex] : nil;
   }
+	
+	public var outputLatency: TimeInterval {
+		return self.session.outputLatency;
+	}
   
   private let session: AVAudioSession = AVAudioSession.sharedInstance();
   private var currentSongIndex: Int = 0;
@@ -58,7 +62,8 @@ class PlayerManager: NSObject {
     do {
       try self.session.setCategory(AVAudioSessionCategoryPlayback);
       try self.session.setActive(true);
-      
+			try self.session.setPreferredIOBufferDuration(0.005);
+			
     } catch let error as NSError {
       print("Unable to activate audio session:  \(error.localizedDescription)");
     }

@@ -107,7 +107,8 @@
 
 - (void)askPeersToCalculateOffset:(NSArray <GCDAsyncSocket*>* _Nonnull)peers {
   if (!peers) {
-    NSAssert(!peers, @"Peers cannot be nil when calling `-askPeersToCalculateOffset`");
+    NSLog(@"Peers cannot be nil when calling `-askPeersToCalculateOffset`");
+		return;
   }
   
   // Remove all peer calibrated
@@ -125,13 +126,19 @@
 
 // Meant for peers.
 - (void)calculateTimeOffsetWithHost:(GCDAsyncSocket *)hostPeer {
+	NSLog(@"Called calibrate function.");
+	
   if (!self.isCalibrating) {
+		NSLog(@"Calibration request valid sending ping.");
+		
     self.isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
     totalCalculatedOffsets = 0;
     
     // Handle 0 calibrations
     if (self.maxNumberOfCalibrations == 0) {
+			NSLog(@"Max calibs 0 so ending now.");
+			
       self.isCalibrating = NO;
       
       // Let the host know we calibrated
@@ -143,7 +150,9 @@
       
       return;
     }
-    
+		
+		NSLog(@"Sending initial ping.");
+		
     // Send a starting ping
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                         @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
@@ -208,15 +217,19 @@
   
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
+		NSLog(@"Host asked us to sync.");
     [self calculateTimeOffsetWithHost:socket];
-    
+		
     return;
     
   } else if ([payload[@"command"] isEqualToString:@"syncDone"]) {
+		NSLog(@"peer told us sync done");
+		
     [self.calibratedPeers addObject:socket];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"peerCalibrated" object:self.calibratedPeers userInfo:@{@"calibratedPeer": socket}];
     
     return;
+		
   } else if ([payload[@"command"] isEqualToString:@"syncPing"]) {// This is done on the peer with which we are calculating the offset (Host).
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
                                                                                         @"timeReceived": [NSNumber numberWithUnsignedLongLong:[self currentTime]],
@@ -275,7 +288,7 @@
     
     // If calculation is done notify the host.
     if (calculatedOffsets >= self.maxNumberOfCalibrations) {
-      NSLog(@"Calibration done.");
+      NSLog(@"Calibration done, informing host.");
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];

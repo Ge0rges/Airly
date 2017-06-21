@@ -50,7 +50,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPausedNotificationName, object: nil);
-    NotificationCenter.default.addObserver(self, selector: #selector(self.sendCurrentSong), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
+		NotificationCenter.default.addObserver(self, selector: #selector(self.sendCurrentSong(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
     NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlayCommand), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
     NotificationCenter.default.addObserver(self, selector: #selector(self.sendPauseCommand), name: PlayerManager.PlayerPausedNotificationName, object: nil);
     
@@ -258,13 +258,13 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
     self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
     
-    print("Making calibration request in pause before returning");
+    print("Asking peers to calibrate after pause");
     self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
     
     return timeToExecute;
   }
   
-  @objc func sendCurrentSong() {
+	@objc func sendCurrentSong(notification: Notification?) {
     print("Sending pause command from current song.");
     
     // Pause command
@@ -289,9 +289,6 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     
     // Export the current song to a file and send the file to the peer
     let currentSongAsset: AVAsset = self.playerManager.currentSong!.asset;
-    
-//    let assetURL: URL = self.playerManager.currentMediaItem?.value(forProperty: MPMediaItemPropertyAssetURL);
-//    let songURLAsset: AVURLAsset = AVURLAsset.init(url: assetURL);
     let exporter: AVAssetExportSession = AVAssetExportSession.init(asset: currentSongAsset, presetName: AVAssetExportPresetPassthrough)!;
     exporter.outputFileType = "com.apple.coreaudio-format";
     exporter.outputURL = songURL;
@@ -313,15 +310,13 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
         let payloadDict: [String : Any] = ["command": "load", "index": "0", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
         let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
         self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-        
-        self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-        self.synaction.executeBlock(whenEachPeerCalibrates: self.synaction.connectivityManager.allSockets as! [GCDAsyncSocket]) { (peers) in
-          // Send the latest command
-          if self.playerManager.isPlaying {
-            let _ = self.sendPlayCommand();
-          }
-        };
-        
+				
+				// Update the player with our current state
+				if self.playerManager.isPlaying {// Pause was sent previously
+					print("Sending play after sending current song in function");
+					let _ = self.sendPlayCommand();
+				}
+				
       } catch {
         print("failed to get data of file on host");
       }
@@ -332,17 +327,12 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     // Update UI
     self.numberOfClientsLabel.text = (self.connectivityManager.allSockets.count == 1) ? "to 1 person" : "to \(self.connectivityManager.allSockets.count) people";
     
-    print("Making calibration request from connection");
+    print("Socket connected, asking to calibrate");
     self.synaction.askPeers(toCalculateOffset: [newSocket] );
     self.synaction.executeBlock(whenEachPeerCalibrates: [newSocket] ) { (peers) in
-      print("Calibration request completed, sending current song.");
+      print("Peer calibrated, sending current song.");
       
-      self.sendCurrentSong();
-      
-      if self.playerManager.isPlaying {
-        print("Calibration request completed, started sending song, sending play.");
-        let _ = self.sendPlayCommand();
-      }
+			self.sendCurrentSong(notification: nil);// It will handle sending player state
     };
   }
   

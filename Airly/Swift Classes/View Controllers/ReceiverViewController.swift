@@ -85,7 +85,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   
   // MARK: - UI Functions
   @objc func updateInterface(notification: Notification?) {
-    print("Listener updating UI called.");
+    print("Listener updating UI");
     
     // Album Art
     let metadata:Dictionary<String, Any?>? = self.currentSongMetadata;
@@ -159,7 +159,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
         self.pendingCommand = "play";
         return;
       }
-      
+			
+			print("pendingCommand set to nil from play received");
+			
       self.pendingCommand = nil;
       let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
       
@@ -200,8 +202,11 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       if self.synaction.isCalibrating {
         self.pendingCommand = "pause";
         lastReceivedTimeToExecute = (payloadDict["timeToExecute"] as! UInt64);
+				return;
       }
-      
+			
+			print("pendingCommand set to nil from pause received");
+			
       self.pendingCommand = nil;
       let timeToExecute: UInt64 = (payloadDict["timeToExecute"] as! UInt64);
       
@@ -220,18 +225,23 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       
       do {
         try FileManager.default.removeItem(at: songPath);
+				print("Deleted old song file.");
+				
       } catch {
         print("Error deleting old song: \(error)");
       }
       
       do {
         try fileData.write(to: songPath);
-        
+				print("Wrote new song to file.");
+				
         let asset: AVAsset = AVAsset(url: songPath);
         
         let playerItem: AVPlayerItem = AVPlayerItem.init(asset: asset);
         self.playerManager.loadSongFromPlayerItem(playerItem: playerItem);
-        
+				
+				print("Loaded song into player.");
+				
         self.executePendingCommand();
         
       } catch {
@@ -241,6 +251,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   }
 
   @objc func executePendingCommand() {
+		print("Called execute command with command: \(String(describing: self.pendingCommand))");
+		
     if (self.pendingCommand == "play") {
       print("Executing play as pending command.");
       
@@ -253,7 +265,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
         }
       });
       
-    } else if self.pendingCommand == "pause" {
+    } else if (self.pendingCommand == "pause") {
+			print("Executing pause as pending command.");
+			
       self.synaction.atExactTime(lastReceivedTimeToExecute, run: {
         self.playerManager.pause();
       });
@@ -261,7 +275,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     } else {
       print("Couldn't handle pending command: \(String(describing: self.pendingCommand))");
     }
-    
+		
+		print("pendingCommand set to nil from executePendingCommand");
     self.pendingCommand = nil;
   }
 
@@ -276,7 +291,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     print("timePassedBetweenSent overflowed: \(timePassedBetweenSent.overflow)");
     
     let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenSent.partialValue)!/1000000000.0// Convert to seconds
-    let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong;// Adjust song time
+    let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
     
     return adjustedSongTime
   }
