@@ -6,6 +6,8 @@
 //  Copyright © 2017 Georges Kanaan. All rights reserved.
 //
 
+//TODO: Don't send same song twice. + File ID + Delete all end session + no sending twice.
+
 import UIKit
 import MediaPlayer
 import Flurry_iOS_SDK

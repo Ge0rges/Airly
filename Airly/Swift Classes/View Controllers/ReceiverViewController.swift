@@ -286,13 +286,16 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   
   func adjustedSongTimeForHost() -> TimeInterval {
     let currentNetworkTime = self.synaction.currentNetworkTime()
-    let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostTime);
+		let timePassedBetweenSent = currentNetworkTime - lastReceivedHostTime;
+		//let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostTime);// TODO
     
-    print("timePassedBetweenSent overflowed: \(timePassedBetweenSent.overflow)");
+    print("timePassedBetweenSent overflowed: \(timePassedBetweenSent)");
     
-    let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenSent.partialValue)!/1000000000.0// Convert to seconds
+    let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenSent)!/1000000000.0// Convert to seconds
     let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
-    
+		
+		print("adjustedSongTime: \(adjustedSongTime) timeToForwardSong: \(timeToForwardSong) lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime) timeToForwardSong: \(timeToForwardSong) outputLatency: \(self.playerManager.outputLatency)");
+		
     return adjustedSongTime
   }
 }
