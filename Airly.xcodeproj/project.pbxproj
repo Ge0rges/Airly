@@ -23,6 +23,8 @@
 		FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */; };
 		FB8831AE1EF2CCCA00E2A30E /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A51EF2CCCA00E2A30E /* UIImage+Scale.m */; };
 		FB8831AF1EF2CCCA00E2A30E /* Synaction.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A81EF2CCCA00E2A30E /* Synaction.m */; };
+		FBE3CD441EFBADB200D6C980 /* AppleMusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE3CD431EFBADB200D6C980 /* AppleMusicManager.swift */; };
+		FBE3CD461EFBAE1600D6C980 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE3CD451EFBAE1500D6C980 /* SyncManager.swift */; };
 		FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */; };
 		FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */; };
 		FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */; };
@@ -41,6 +43,7 @@
 		FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FB2F4A8B1EF25CBA00C9D835 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FB2F4A8D1EF25CBA00C9D835 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FB59D9111EFB986200972E2E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		FB77BC641EF2BCD1001362F8 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FB77BC681EF2BCE0001362F8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -60,6 +63,8 @@
 		FB8831A81EF2CCCA00E2A30E /* Synaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
 		FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Airly-Bridging-Header.h"; path = "Airly/Objective-C Classes/Airly-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		FBAF91D81EF96017005FF715 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		FBE3CD431EFBADB200D6C980 /* AppleMusicManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicManager.swift; sourceTree = "<group>"; };
+		FBE3CD451EFBAE1500D6C980 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
 		FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastViewController.swift; sourceTree = "<group>"; };
 		FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverViewController.swift; sourceTree = "<group>"; };
 		FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
@@ -124,6 +129,7 @@
 		FB77BC611EF2BCCC001362F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB59D9111EFB986200972E2E /* StoreKit.framework */,
 				FBAF91D81EF96017005FF715 /* CoreAudio.framework */,
 				FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */,
 				FB77BC6A1EF2BCE8001362F8 /* Foundation.framework */,
@@ -213,6 +219,8 @@
 		FBFB89971EF2AC0700F7F445 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				FBE3CD431EFBADB200D6C980 /* AppleMusicManager.swift */,
+				FBE3CD451EFBAE1500D6C980 /* SyncManager.swift */,
 				FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */,
 			);
 			path = Managers;
@@ -355,6 +363,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */,
+				FBE3CD441EFBADB200D6C980 /* AppleMusicManager.swift in Sources */,
+				FBE3CD461EFBAE1600D6C980 /* SyncManager.swift in Sources */,
 				FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */,
 				FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */,
 				FB8831A91EF2CCCA00E2A30E /* ConnectivityManager.m in Sources */,

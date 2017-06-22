@@ -89,7 +89,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     
     // Album Art
     let metadata:Dictionary<String, Any?>? = self.currentSongMetadata;
-    var artwork: UIImage? = nil;//TODO: Default Image
+    var artwork: UIImage? = #imageLiteral(resourceName: "Default Music");// Default Image
     var title: String = "Unknown Song Name";
     var artist: String = "Unknown Artist";
     

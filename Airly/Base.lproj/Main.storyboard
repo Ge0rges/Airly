@@ -259,7 +259,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="GcT-0I-lbs">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Default Music" translatesAutoresizingMaskIntoConstraints="NO" id="GcT-0I-lbs">
                                 <rect key="frame" x="37" y="137" width="300" height="300"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES" updatesFrequently="YES"/>
@@ -500,7 +500,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="NUS-4Z-Md5">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Default Music" translatesAutoresizingMaskIntoConstraints="NO" id="NUS-4Z-Md5">
                                 <rect key="frame" x="37" y="131" width="300" height="300"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES" updatesFrequently="YES"/>
@@ -548,6 +548,7 @@
     <resources>
         <image name="Backward Disclosure" width="10" height="16"/>
         <image name="Broadcast" width="29" height="22"/>
+        <image name="Default Music" width="640" height="640"/>
         <image name="Ping" width="327" height="327"/>
         <image name="Play" width="31" height="35"/>
         <image name="Receive" width="24" height="22"/>
