@@ -34,7 +34,8 @@ class ViewController: UIViewController {
     self.receiveImageview.translatesAutoresizingMaskIntoConstraints = true;
     
     // Animate
-    UIView.animate(withDuration: 0.5, animations: {
+    UIView.animate(withDuration: 0.3
+			, animations: {
       // Calculate Image View positions
       let width = self.view.frame.width/3;
       let height = width;
@@ -46,21 +47,14 @@ class ViewController: UIViewController {
       self.broadcastImageView.frame = CGRect(x: x, y: yBroadcast, width: width, height: height);
       self.receiveImageview.frame = CGRect(x: x, y: yReceive, width: width, height: height);
       
-      // Animate alpha on everything else
-      self.orLabel.alpha = 0;
-      self.broadcastLabel.alpha = 0;
-      self.receiveLabel.alpha = 0;
-      self.getStartedButton.alpha = 0;
-      self.subtitleLabel.alpha = 0;
-      
+			// Hide everything else
+			self.orLabel.isHidden = true;
+			self.broadcastLabel.isHidden = true;
+			self.receiveLabel.isHidden = true;
+			self.getStartedButton.isHidden = true;
+			self.subtitleLabel.isHidden = true;
+			
     }, completion: { (finished) in
-      // Hide everything else
-      self.orLabel.isHidden = true;
-      self.broadcastLabel.isHidden = true;
-      self.receiveLabel.isHidden = true;
-      self.getStartedButton.isHidden = true;
-      self.subtitleLabel.isHidden = true;
-      
       // Enable user interaction on the images
       self.broadcastImageView.isUserInteractionEnabled = true;
       self.receiveImageview.isUserInteractionEnabled = true;

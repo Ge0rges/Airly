@@ -28,7 +28,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	let mediaPicker:MPMediaPickerController! = MPMediaPickerController(mediaTypes: .music);
 	let playerManager:PlayerManager! = PlayerManager.sharedManager;
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
-	let syncManager: SyncManager! = SyncManager.sharedManager;
+	let syncManager: HostSyncManager! = HostSyncManager.sharedManager;
 	
 	override func viewDidLoad() {
 		super.viewDidLoad();

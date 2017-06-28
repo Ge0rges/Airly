@@ -1,5 +1,5 @@
 //
-//  SyncManager.swift
+//  HostSyncManager.swift
 //  Airly
 //
 //  Created by Georges Kanaan on 22/06/2017.
@@ -13,14 +13,14 @@ import MediaPlayer
 import Flurry_iOS_SDK
 import AVFoundation
 
-class SyncManager: NSObject, ConnectivityManagerDelegate {
+class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 	
 	let playerManager:PlayerManager! = PlayerManager.sharedManager;
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
 	let synaction:Synaction! = Synaction.sharedManager();
 	public var broadcastViewController: BroadcastViewController?;
 	
-	static let sharedManager = SyncManager();
+	static let sharedManager = HostSyncManager();
 	override private init() {//This prevents others from using the default '()' initializer for this class
 		super.init();
 		

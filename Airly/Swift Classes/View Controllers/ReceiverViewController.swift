@@ -70,7 +70,10 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   }
   
   //MARK: - Button Actions
-  @IBAction func dismissBroadcastViewController(_ sender: UIButton) {
+  @IBAction func dismissReceiverViewController(_ sender: UIButton) {
+		// Stop the delegate
+		self.connectivityManager.delegate = nil;
+		
     //Stop broadcasting & disconnect.
     self.connectivityManager.stopBonjour();
     self.connectivityManager.disconnectSockets();
@@ -165,7 +168,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       self.pendingCommand = nil;
       let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
       
-      if continuousPlay {// Host is playing
+      if (continuousPlay) {// Host is playing
         print("Executing play as continuous command.");
         
         self.playerManager.play();// Play locally
@@ -189,9 +192,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
         
         // Seek to the playback time
         let playbackTime: TimeInterval = (payloadDict["playbackTime"] as! TimeInterval);
-        self.playerManager.seekToTimeInSeconds(time: playbackTime, completionHandler: { (success) in
+        self.playerManager.seekToTimeInSeconds(time: (playbackTime+self.playerManager.outputLatency), completionHandler: { (success) in
           if !success {
-            print("Failed to seek for sync play.");
+            print("Failed to seek for sync play."); 
           }
         })
       }
@@ -247,7 +250,10 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       } catch {
         print("Error writing song data to file: \(error)");
       }
-    }
+			
+		} else {
+			print("Received unparsed command & payload: [\(command)] \(payloadDict)");
+		}
   }
 
   @objc func executePendingCommand() {
@@ -281,12 +287,12 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   }
 
   func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
-    self.dismissBroadcastViewController(self.backButton);
+    self.dismissReceiverViewController(self.backButton);
   }
   
   func adjustedSongTimeForHost() -> TimeInterval {
-    let currentNetworkTime = self.synaction.currentNetworkTime()
-		let timePassedBetweenSent = currentNetworkTime - lastReceivedHostTime;
+		let currentNetworkTime: UInt64 = self.synaction.currentNetworkTime()
+		let timePassedBetweenSent: UInt64 = currentNetworkTime - lastReceivedHostTime;
 		//let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostTime);// TODO
     
     print("timePassedBetweenSent overflowed: \(timePassedBetweenSent)");
@@ -294,7 +300,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenSent)!/1000000000.0// Convert to seconds
     let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
 		
-		print("adjustedSongTime: \(adjustedSongTime) timeToForwardSong: \(timeToForwardSong) lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime) timeToForwardSong: \(timeToForwardSong) outputLatency: \(self.playerManager.outputLatency)");
+		print("adjustedSongTime: \(adjustedSongTime) timeToForwardSong: \(timeToForwardSong) lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime)  outputLatency: \(self.playerManager.outputLatency)");
 		
     return adjustedSongTime
   }

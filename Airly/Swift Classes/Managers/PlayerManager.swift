@@ -72,13 +72,14 @@ class PlayerManager: NSObject {
     NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil);
     
     // Notification of status change
-    self.player.addObserver(self, forKeyPath: "player.status", options: .new, context: nil);
+    self.player.addObserver(self, forKeyPath: "status", options: .new, context: nil);
   }
   
   public func play() {
     // Play at default rate
     if #available(iOS 10.0, *) {
       self.player.playImmediately(atRate: 1.0)
+			
     } else {
       // Fallback on earlier versions
       self.player.play();
@@ -156,6 +157,10 @@ class PlayerManager: NSObject {
   }
   
   public func seekToTimeInSeconds(time: TimeInterval, completionHandler: @escaping (Bool) -> Void) {
+		if (self.player.status != .readyToPlay) {
+			completionHandler(false);
+		}
+		
     // Seek to time with max precision for syncing
     self.player.seek(to: CMTimeMakeWithSeconds(time, 1000000000), toleranceBefore: kCMTimeZero, toleranceAfter: kCMTimeZero, completionHandler: completionHandler);
   }
@@ -166,13 +171,13 @@ class PlayerManager: NSObject {
   }
   
   override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
-    if keyPath == "player.status" && self.player == (object as! AVPlayer) {
-      if self.player.status == .readyToPlay {
+    if (keyPath == "status" && self.player == (object as! AVPlayer)) {
+      if (self.player.status == .readyToPlay) {
         self.player.preroll(atRate: 1.0, completionHandler: { (success) in
           print("Player prerolled: \(success)");
-        })
+				});
+				
         print("Player ready status. Prerolling.");
-        
         
       } else if self.player.status == .failed {
         print("Player failed status.");

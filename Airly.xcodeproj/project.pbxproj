@@ -23,8 +23,7 @@
 		FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */; };
 		FB8831AE1EF2CCCA00E2A30E /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A51EF2CCCA00E2A30E /* UIImage+Scale.m */; };
 		FB8831AF1EF2CCCA00E2A30E /* Synaction.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A81EF2CCCA00E2A30E /* Synaction.m */; };
-		FBE3CD441EFBADB200D6C980 /* AppleMusicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE3CD431EFBADB200D6C980 /* AppleMusicManager.swift */; };
-		FBE3CD461EFBAE1600D6C980 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE3CD451EFBAE1500D6C980 /* SyncManager.swift */; };
+		FBE3CD461EFBAE1600D6C980 /* HostSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE3CD451EFBAE1500D6C980 /* HostSyncManager.swift */; };
 		FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */; };
 		FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */; };
 		FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */; };
@@ -63,8 +62,7 @@
 		FB8831A81EF2CCCA00E2A30E /* Synaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
 		FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Airly-Bridging-Header.h"; path = "Airly/Objective-C Classes/Airly-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		FBAF91D81EF96017005FF715 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		FBE3CD431EFBADB200D6C980 /* AppleMusicManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicManager.swift; sourceTree = "<group>"; };
-		FBE3CD451EFBAE1500D6C980 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
+		FBE3CD451EFBAE1500D6C980 /* HostSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostSyncManager.swift; sourceTree = "<group>"; };
 		FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastViewController.swift; sourceTree = "<group>"; };
 		FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverViewController.swift; sourceTree = "<group>"; };
 		FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
@@ -219,8 +217,7 @@
 		FBFB89971EF2AC0700F7F445 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				FBE3CD431EFBADB200D6C980 /* AppleMusicManager.swift */,
-				FBE3CD451EFBAE1500D6C980 /* SyncManager.swift */,
+				FBE3CD451EFBAE1500D6C980 /* HostSyncManager.swift */,
 				FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */,
 			);
 			path = Managers;
@@ -363,8 +360,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */,
-				FBE3CD441EFBADB200D6C980 /* AppleMusicManager.swift in Sources */,
-				FBE3CD461EFBAE1600D6C980 /* SyncManager.swift in Sources */,
+				FBE3CD461EFBAE1600D6C980 /* HostSyncManager.swift in Sources */,
 				FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */,
 				FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */,
 				FB8831A91EF2CCCA00E2A30E /* ConnectivityManager.m in Sources */,
