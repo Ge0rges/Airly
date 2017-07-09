@@ -39,6 +39,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     // Register for player notifications
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
 		NotificationCenter.default.addObserver(self, selector: #selector(self.requestHostState(notification:)), name:NSNotification.Name(rawValue: CalibrationDoneNotificationName), object: nil);
+		NotificationCenter.default.addObserver(self, selector: #selector(self.requestHostState(notification:)), name:AppDelegate.AppDelegateDidBecomeActive, object: nil);
 		
 		// Request the initial host state
 		self.requestHostState(notification:  nil);
@@ -63,12 +64,11 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       self.blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
       self.blurImageView.frame = self.view.bounds;
       self.blurImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
-      self.blurImageView.contentMode = .scaleAspectFill;
-      
-      self.view.insertSubview(self.blurEffectView, at: 0);
-      self.view.insertSubview(self.blurImageView, belowSubview: self.blurEffectView);
-    }
-    
+			self.blurImageView.clipsToBounds = true;
+			
+			self.view.insertSubview(self.blurEffectView, at: 0);
+			self.blurEffectView.insertSubview(self.blurImageView, at: 0);
+    }    
   }
   
   //MARK: - Button Actions
@@ -259,10 +259,10 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		
 		print("adjustedSongTime: \(adjustedSongTime) timeToForwardSong: \(timeToForwardSong) lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime)  outputLatency: \(self.playerManager.outputLatency)");
 		
-    return adjustedSongTime
+		return adjustedSongTime;
   }
 	
-	func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
+	public func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
 		if (self.playerManager.currentSong == nil) {
 			let payloadDict: [String : Any] = ["command": "getSong"]  as [String : Any];
 			let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);

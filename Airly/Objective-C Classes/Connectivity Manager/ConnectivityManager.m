@@ -273,7 +273,11 @@
 	
 	// Set the host socket
 	self.hostSocket = socket;
-  
+	
+	[self.hostSocket performBlock:^{
+		[self.hostSocket enableBackgroundingOnSocket];
+	}];
+	
   if ([self.delegate respondsToSelector:@selector(socket:didConnectToHost:port:)]) {
     [self.delegate socket:socket didConnectToHost:host port:port];
   }
@@ -286,7 +290,7 @@
 - (void)socket:(GCDAsyncSocket *)socket didReadData:(NSData *)data withTag:(long)tag {
   if (tag == 0) {
     uint64_t bodyLength = [self parseHeader:data];
-    [socket readDataToLength:bodyLength withTimeout:-1.0 tag:1];
+    [socket readDataToLength:(NSUInteger)bodyLength withTimeout:-1.0 tag:1];
 
   } else if (tag == 1) {
     Packet *packet = [self parseBody:data];

@@ -55,7 +55,7 @@ class PlayerManager: NSObject {
 		return BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetPosition(self.channel, DWORD(BASS_POS_BYTE)));
 	}
 	
-	private var channel: HSTREAM = 0;
+	public var channel: HSTREAM = 0;
 	private let session: AVAudioSession = AVAudioSession.sharedInstance();
 	private var currentSongIndex: Int = 0;
 	private var queueMediaItems: [MPMediaItem]? = nil;

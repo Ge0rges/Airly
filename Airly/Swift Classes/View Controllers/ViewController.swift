@@ -9,7 +9,7 @@
 import UIKit
 import Flurry_iOS_SDK
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UIGestureRecognizerDelegate {
   
   @IBOutlet var subtitleLabel: UILabel!
   @IBOutlet var broadcastLabel: UILabel!
@@ -27,7 +27,19 @@ class ViewController: UIViewController {
       Flurry.logAllPageViews(forTarget: self.navigationController);
     };
   }
-  
+	
+	override func viewDidAppear(_ animated: Bool) {
+		super.viewDidAppear(animated);
+		
+		// Enable slide to back
+		self.navigationController!.interactivePopGestureRecognizer?.isEnabled = true;
+		self.navigationController!.interactivePopGestureRecognizer?.delegate = self;
+	}
+	
+	func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+		return true;
+	}
+	
   @IBAction func getStartedPressed(_ sender: UIButton) {// Animate view change
     // Tell autolayout to fuck off
     self.broadcastImageView.translatesAutoresizingMaskIntoConstraints = true;

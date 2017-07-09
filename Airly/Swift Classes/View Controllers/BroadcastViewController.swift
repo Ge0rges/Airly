@@ -29,7 +29,12 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
 	let syncManager: HostSyncManager! = HostSyncManager.sharedManager;
 	var mediaPicker: MPMediaPickerController? = nil;
+	var timeAtInterruption: UInt64 = 0;
+	var playbackPositionAtInterruption: TimeInterval = 0;
+	var shouldResumePlayAfterInterruption: Bool = false;
 	
+	
+	//MARK: - Lifecycle
 	override func viewDidLoad() {
 		super.viewDidLoad();
 		// Set the sync manager
@@ -45,7 +50,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.mediaPicker!.showsItemsWithProtectedAssets = false;
 		self.mediaPicker!.allowsPickingMultipleItems = true;
 		self.mediaPicker!.prompt = "Only music you own is playable.";
-
+		
 		// Clear the music queue
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
 		
@@ -53,6 +58,10 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPausedNotificationName, object: nil);
+		NotificationCenter.default.addObserver(self, selector: #selector(self.handleInterruption(notification:)), name: .AVAudioSessionInterruption, object: AVAudioSession.sharedInstance());
+		//NotificationCenter.default.addObserver(self, selector: #selector(self.handleActivated(notification:)), name:AppDelegate.AppDelegateDidBecomeActive, object: nil);
+		//NotificationCenter.default.addObserver(self, selector: #selector(self.handleBackgrounded(notification:)), name:AppDelegate.AppDelegateDidBackground, object: nil);
+
 		
 		// Round & Shadow the album art
 		self.albumArtImageView.layer.cornerRadius = self.albumArtImageView.frame.size.width/25;
@@ -67,14 +76,15 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 			self.view.backgroundColor = UIColor.clear
 			
 			// Always fill the view
-			self.blurEffectView.frame = self.view.bounds;
+			self.blurEffectView.frame = self.view.frame;
 			self.blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
-			self.blurImageView.frame = self.view.bounds;
+			self.blurImageView.frame = self.view.frame;
 			self.blurImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight];
 			self.blurImageView.contentMode = .scaleAspectFill;
+			self.blurImageView.clipsToBounds = true;
 			
 			self.view.insertSubview(self.blurEffectView, at: 0);
-			self.view.insertSubview(self.blurImageView, belowSubview: self.blurEffectView);
+			self.blurEffectView.insertSubview(self.blurImageView, at: 0);
 		}
 		
 		// Update the interface
@@ -141,7 +151,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.playerManager.playNextSong();
 	}
 	
-		
+	
 	//MARK: - MPMediaPickerConrollerDelegate
 	func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
 		// Tell the player to load the items
@@ -149,7 +159,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		
 		DispatchQueue.main.async {// Main Queue
 			// Dismiss Media Picker
-			self.dismiss(animated: true, completion: { 
+			self.dismiss(animated: true, completion: {
 				self.mediaPicker = nil;
 				
 				// Create & configure the media picker
@@ -234,5 +244,57 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	// We prefer a white status bar
 	override var preferredStatusBarStyle: UIStatusBarStyle {
 		return .lightContent
+	}
+	
+	
+	//MARK: - Background
+	func handleInterruption(notification: NSNotification) {
+		guard let info = notification.userInfo,
+			let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+			let type = AVAudioSessionInterruptionType(rawValue: typeValue) else {
+				return
+		}
+		
+		if type == .began {
+			self.handleBackgrounded(notification: nil);
+			
+		} else if type == .ended {
+			guard let optionsValue = info[AVAudioSessionInterruptionOptionKey] as? UInt else {
+				return
+			}
+			
+			let options = AVAudioSessionInterruptionOptions(rawValue: optionsValue)
+			if options.contains(.shouldResume) {
+				self.handleActivated(notification: nil);
+			}
+		}
+	}
+	
+	public func handleBackgrounded(notification: Notification?) {
+		// Pause playback, save the time so we can resume later
+		shouldResumePlayAfterInterruption = false;
+		if self.playerManager.isPlaying {
+			BASS_ChannelPause(self.playerManager.channel);
+			
+			if self.connectivityManager.allSockets.count > 0 {// Peers connected we'll have to catch up to them
+				shouldResumePlayAfterInterruption = true;
+				timeAtInterruption = self.syncManager.synaction.currentTime();
+				playbackPositionAtInterruption = self.playerManager.currentPlaybackTime;
+			}
+		}
+	}
+	
+	public func handleActivated(notification: Notification?) {
+		// Resume playback
+		if self.shouldResumePlayAfterInterruption {
+			let timePassedBetweenInterruption: UInt64 = self.syncManager.synaction.currentTime() - timeAtInterruption;
+			let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenInterruption)!/1000000000.0// Convert to seconds
+			let adjustedSongTime: TimeInterval = playbackPositionAtInterruption + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
+			
+			BASS_ChannelPlay(self.playerManager.channel, false);
+			self.playerManager.seekToTimeInSeconds(time: adjustedSongTime) { (success) in
+				print("Failed to seek for host interruption play.");
+			}
+		}
 	}
 }
