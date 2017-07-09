@@ -556,7 +556,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
 				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -580,7 +580,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
 				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
