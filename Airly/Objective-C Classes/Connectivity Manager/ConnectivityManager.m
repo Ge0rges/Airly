@@ -106,7 +106,7 @@
       NSData *address = [addresses objectAtIndex:0];
 
       NSError *error = nil;
-      if ([self.serverSocket connectToAddress:address error:&error]) {
+      if ([self.serverSocket connectToAddress:address withTimeout:10 error:&error]) {
         _isConnected = YES;
         NSLog(@"Connected to service.");
                 
@@ -116,7 +116,8 @@
     }
 
   } else {
-    _isConnected = [self.serverSocket isConnected];
+		[self.serverSocket disconnect];
+		[self connectWithService:service];
   }
 
   return _isConnected;
@@ -169,9 +170,7 @@
   NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
   Packet *packet = [unarchiver decodeObjectForKey:@"packet"];
   [unarchiver finishDecoding];
-
-  NSLog(@"Parsed packet.");
-  
+	
   return packet;
 }
 
@@ -267,15 +266,18 @@
 }
 
 - (void)socket:(GCDAsyncSocket *)socket didConnectToHost:(NSString *)host port:(UInt16)port {
-  NSLog(@"Socket Did Connect to Host: %@ Port: %hu", host, port);
+  NSLog(@"Socket did connect to Host: %@ Port: %hu", host, port);
 
   // Start Reading
   [socket readDataToLength:sizeof(uint64_t) withTimeout:-1.0 tag:0];
+	
+	// Set the host socket
+	self.hostSocket = socket;
   
   if ([self.delegate respondsToSelector:@selector(socket:didConnectToHost:port:)]) {
     [self.delegate socket:socket didConnectToHost:host port:port];
   }
-  
+	
   if ([self.synaction respondsToSelector:@selector(socket:didConnectToHost:port:)]) {
     [self.synaction socket:socket didConnectToHost:host port:port];
   }
@@ -303,6 +305,8 @@
 
 - (void)socketDidDisconnect:(GCDAsyncSocket *)socket withError:(NSError *)error {
   NSLog(@"%s error: %@", __PRETTY_FUNCTION__, error);
+	
+	self.hostSocket = nil;
   
   if (socket) {
     [self.allSockets removeObject:socket];
@@ -320,5 +324,6 @@
     [self.synaction socketDidDisconnect:socket withError:error];
   }
 }
+
 
 @end

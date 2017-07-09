@@ -6,8 +6,10 @@
 //  Copyright © 2017 Georges Kanaan. All rights reserved.
 //
 
+@import CocoaAsyncSocket;
+
 #import "Synaction.h"
 #import "ConnectivityManager.h"
 #import "Packet.h"
-@import CocoaAsyncSocket;
 #import "SLColorArt.h"
+#import "Bass.h"

@@ -29,11 +29,11 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 		
 		// Register for notifications
 		NotificationCenter.default.addObserver(self, selector: #selector(self.sendCurrentSong(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
-		NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlayCommand), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
-		NotificationCenter.default.addObserver(self, selector: #selector(self.sendPauseCommand), name: PlayerManager.PlayerPausedNotificationName, object: nil);
+		NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlayCommand(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
+		NotificationCenter.default.addObserver(self, selector: #selector(self.sendPauseCommand(calibrate:)), name: PlayerManager.PlayerPausedNotificationName, object: nil);
 	}
 	
-	@objc public func sendPlayCommand() -> UInt64 {
+	@objc public func sendPlayCommand(notification: Notification?) -> UInt64 {
 		print("Sending play command.");
 		
 		if self.playerManager.currentSong == nil {
@@ -41,13 +41,12 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 			return 0;
 		}
 		
-		let playbackTime: TimeInterval = CMTimeGetSeconds(self.playerManager.currentSong!.currentTime());
 		let deviceTimeAtPlaybackTime: UInt64 = self.synaction.currentTime();
 		let timeToExecute: UInt64 = deviceTimeAtPlaybackTime + 1000000000;
 		
 		let dictionaryPayload = ["command": "play",
 		                         "timeToExecute": timeToExecute,
-		                         "playbackTime": playbackTime,
+		                         "playbackTime": self.playerManager.currentPlaybackTime,
 		                         "continuousPlay": self.playerManager.isPlaying,
 		                         "timeAtPlaybackTime": deviceTimeAtPlaybackTime,
 		                         "song": self.playerManager.currentSongMetadata?["title"] as Any
@@ -60,7 +59,7 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 		return timeToExecute;
 	}
 	
-	@objc public func sendPauseCommand() -> UInt64 {
+	@objc public func sendPauseCommand(calibrate: Any) -> UInt64 {
 		print("Sending pause command.");
 		
 		let timeToExecute = self.synaction.currentTime();
@@ -74,68 +73,43 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 		let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
 		self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
 		
-		print("Asking peers to calibrate after pause");
-		self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+		if (calibrate is Bool) {
+			if (calibrate as! Bool == true) {
+				print("Asking peers to calibrate after pause");
+				self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+			}
+		}
 		
 		return timeToExecute;
 	}
 	
 	@objc public func sendCurrentSong(notification: Notification?) {
-		print("Sending pause command from current song.");
+		print("sendCurrentSong called on thread: \(Thread.current)");
 		
 		// Pause command
-		let _ = self.sendPauseCommand();
+		let _ = self.sendPauseCommand(calibrate: false);
 		
-		// Get the path for the song
-		let tempPath: URL = NSURL.fileURL(withPath: NSTemporaryDirectory());
-		let songURL: URL = tempPath.appendingPathComponent("song.caf", isDirectory: false);
-		
-		// Delete old song
+		// Send the file
 		do {
-			try FileManager.default.removeItem(at: songURL);
+			let fileData = try Data.init(contentsOf: self.playerManager.currentSongFilePath!);
+			
+			var metadataA: [String: Any?]? = self.playerManager.currentSongMetadata;
+			if let metadataB = metadataA {
+				metadataA!["artwork"] = (metadataB["artwork"] as! MPMediaItemArtwork).image(at: self.broadcastViewController!.albumArtImageView.frame.size);
+			}
+			
+			print("Building current song packet with song data: \(fileData)");
+
+			let payloadDict: [String : Any] = ["command": "load", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
+			let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
+			
+			self.synaction.executeBlock(whenAllPeersCalibrate: self.connectivityManager.allSockets as! [GCDAsyncSocket], block: { (sockets) in
+				print("Sending current song: \(payloadDict)");
+				self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+			});
 			
 		} catch {
-			print("Failed to delete old song for export. Error: \(error)");
-		}
-		
-		// If no new song return.
-		if (self.playerManager.currentSong == nil) {
-			return;
-		}
-		
-		// Export the current song to a file and send the file to the peer
-		let currentSongAsset: AVAsset = self.playerManager.currentSong!.asset;
-		let exporter: AVAssetExportSession = AVAssetExportSession.init(asset: currentSongAsset, presetName: AVAssetExportPresetPassthrough)!;
-		exporter.outputFileType = "com.apple.coreaudio-format";
-		exporter.outputURL = songURL;
-		
-		print("Exporting current song host");
-		
-		exporter.exportAsynchronously {
-			// Send the file
-			do {
-				let fileData = try Data.init(contentsOf: exporter.outputURL!);
-				
-				var metadataA: [String: Any?]? = self.playerManager.currentSongMetadata;
-				if let metadataB = metadataA {
-					metadataA!["artwork"] = (metadataB["artwork"] as! MPMediaItemArtwork).image(at: self.broadcastViewController!.albumArtImageView.frame.size);
-				}
-				
-				print("Sending current song.");
-				
-				let payloadDict: [String : Any] = ["command": "load", "index": "0", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
-				let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
-				self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-				
-				// Update the player with our current state
-				if self.playerManager.isPlaying {// Pause was sent previously
-					print("Sending play after sending current song in function");
-					let _ = self.sendPlayCommand();
-				}
-				
-			} catch {
-				print("failed to get data of file on host");
-			}
+			print("failed to get data of file on host \(error)");
 		}
 	}
 	
@@ -145,15 +119,30 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 		
 		print("Socket connected, asking to calibrate");
 		self.synaction.askPeers(toCalculateOffset: [newSocket] );
-		self.synaction.executeBlock(whenEachPeerCalibrates: [newSocket] ) { (peers) in
-			print("Peer calibrated, sending current song.");
-			
-			self.sendCurrentSong(notification: nil);// It will handle sending player state
-		};
 	}
 	
 	func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
 		// Update UI
 		self.broadcastViewController!.numberOfClientsLabel.text = "to \(self.connectivityManager.allSockets.count) people";
+	}
+	
+	func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
+		let payloadDict: Dictionary<String,Any?> = NSKeyedUnarchiver.unarchiveObject(with: packet.data as! Data) as! Dictionary;
+		let command: String! = payloadDict["command"] as! String;
+		
+		if (command == "status") {// Send our current status to this peer
+			print("A peer requested host status. Sending.");
+			
+			if self.playerManager.isPlaying {
+				let _ = self.sendPlayCommand(notification: nil);
+				
+			} else {
+				let _ = self.sendPauseCommand(calibrate: false);
+			}
+			
+		} else if (command == "getSong") {
+			print("A peer requested the song. Sending.");
+			self.sendCurrentSong(notification: nil);// It will handle sending player state
+		}
 	}
 }

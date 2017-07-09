@@ -23,6 +23,11 @@
 		FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A31EF2CCCA00E2A30E /* UIImage+ColorArt.m */; };
 		FB8831AE1EF2CCCA00E2A30E /* UIImage+Scale.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A51EF2CCCA00E2A30E /* UIImage+Scale.m */; };
 		FB8831AF1EF2CCCA00E2A30E /* Synaction.m in Sources */ = {isa = PBXBuildFile; fileRef = FB8831A81EF2CCCA00E2A30E /* Synaction.m */; };
+		FBB15AEA1F119F6A009D3C48 /* libbass.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB15AE91F119F6A009D3C48 /* libbass.a */; };
+		FBB15AEC1F11A1AF009D3C48 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB15AEB1F11A1AF009D3C48 /* AudioToolbox.framework */; };
+		FBB15AEE1F11A1B5009D3C48 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB15AED1F11A1B5009D3C48 /* CFNetwork.framework */; };
+		FBB15AF01F11A1BF009D3C48 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB15AEF1F11A1BF009D3C48 /* SystemConfiguration.framework */; };
+		FBB15AF21F11A1C9009D3C48 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FBB15AF11F11A1C9009D3C48 /* Accelerate.framework */; };
 		FBE3CD461EFBAE1600D6C980 /* HostSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBE3CD451EFBAE1500D6C980 /* HostSyncManager.swift */; };
 		FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */; };
 		FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */; };
@@ -62,6 +67,12 @@
 		FB8831A81EF2CCCA00E2A30E /* Synaction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Synaction.m; sourceTree = "<group>"; };
 		FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Airly-Bridging-Header.h"; path = "Airly/Objective-C Classes/Airly-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		FBAF91D81EF96017005FF715 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		FBB15AE81F119F6A009D3C48 /* bass.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bass.h; sourceTree = "<group>"; };
+		FBB15AE91F119F6A009D3C48 /* libbass.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbass.a; sourceTree = "<group>"; };
+		FBB15AEB1F11A1AF009D3C48 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		FBB15AED1F11A1B5009D3C48 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		FBB15AEF1F11A1BF009D3C48 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		FBB15AF11F11A1C9009D3C48 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		FBE3CD451EFBAE1500D6C980 /* HostSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostSyncManager.swift; sourceTree = "<group>"; };
 		FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastViewController.swift; sourceTree = "<group>"; };
 		FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverViewController.swift; sourceTree = "<group>"; };
@@ -74,8 +85,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FBB15AF21F11A1C9009D3C48 /* Accelerate.framework in Frameworks */,
+				FBB15AF01F11A1BF009D3C48 /* SystemConfiguration.framework in Frameworks */,
+				FBB15AEE1F11A1B5009D3C48 /* CFNetwork.framework in Frameworks */,
+				FBB15AEC1F11A1AF009D3C48 /* AudioToolbox.framework in Frameworks */,
 				FB77BC6D1EF2BCF4001362F8 /* MediaPlayer.framework in Frameworks */,
 				FB77BC6B1EF2BCE8001362F8 /* Foundation.framework in Frameworks */,
+				FBB15AEA1F119F6A009D3C48 /* libbass.a in Frameworks */,
 				FB77BC691EF2BCE0001362F8 /* UIKit.framework in Frameworks */,
 				FB77BC671EF2BCD6001362F8 /* AVFoundation.framework in Frameworks */,
 				5F150DA7FD6DE8D528FEF21D /* Pods_Airly.framework in Frameworks */,
@@ -127,6 +143,10 @@
 		FB77BC611EF2BCCC001362F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FBB15AF11F11A1C9009D3C48 /* Accelerate.framework */,
+				FBB15AEF1F11A1BF009D3C48 /* SystemConfiguration.framework */,
+				FBB15AED1F11A1B5009D3C48 /* CFNetwork.framework */,
+				FBB15AEB1F11A1AF009D3C48 /* AudioToolbox.framework */,
 				FB59D9111EFB986200972E2E /* StoreKit.framework */,
 				FBAF91D81EF96017005FF715 /* CoreAudio.framework */,
 				FB77BC6C1EF2BCF4001362F8 /* MediaPlayer.framework */,
@@ -145,6 +165,7 @@
 				FB8831B01EF2CD4800E2A30E /* Airly-Bridging-Header.h */,
 				FB8831A61EF2CCCA00E2A30E /* Synaction */,
 				FB8831981EF2CCCA00E2A30E /* Connectivity Manager */,
+				FBB15AE71F119F6A009D3C48 /* Bass */,
 				FB88319F1EF2CCCA00E2A30E /* SLColorArt */,
 			);
 			path = "Objective-C Classes";
@@ -181,6 +202,15 @@
 				FB8831A81EF2CCCA00E2A30E /* Synaction.m */,
 			);
 			path = Synaction;
+			sourceTree = "<group>";
+		};
+		FBB15AE71F119F6A009D3C48 /* Bass */ = {
+			isa = PBXGroup;
+			children = (
+				FBB15AE81F119F6A009D3C48 /* bass.h */,
+				FBB15AE91F119F6A009D3C48 /* libbass.a */,
+			);
+			path = Bass;
 			sourceTree = "<group>";
 		};
 		FBFB89911EF28EB400F7F445 /* Swift Classes */ = {
@@ -513,9 +543,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Airly/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Airly/Objective-C\\ Classes/Bass",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
@@ -532,9 +567,14 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Airly/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Airly/Objective-C\\ Classes/Bass",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";

@@ -27,7 +27,6 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   var lastReceivedHostPlaybackTime: TimeInterval = 0;
   var lastReceivedTimeToExecute: UInt64 = 0;
   var currentSongMetadata: Dictionary<String, Any?>? = nil;
-  var pendingCommand: String? = nil;
 
   override func viewDidLoad() {
     super.viewDidLoad();
@@ -39,8 +38,11 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     
     // Register for player notifications
     NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
-    NotificationCenter.default.addObserver(self, selector: #selector(self.executePendingCommand), name:NSNotification.Name(rawValue: "CalibrationDone"), object: nil);
-    
+		NotificationCenter.default.addObserver(self, selector: #selector(self.requestHostState(notification:)), name:NSNotification.Name(rawValue: CalibrationDoneNotificationName), object: nil);
+		
+		// Request the initial host state
+		self.requestHostState(notification:  nil);
+		
     // Update the interface
     self.updateInterface(notification: nil);
     
@@ -70,10 +72,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   }
   
   //MARK: - Button Actions
-  @IBAction func dismissReceiverViewController(_ sender: UIButton) {
-		// Stop the delegate
-		self.connectivityManager.delegate = nil;
-		
+  @IBAction func dismissReceiverViewController(_ sender: UIButton) {		
     //Stop broadcasting & disconnect.
     self.connectivityManager.stopBonjour();
     self.connectivityManager.disconnectSockets();
@@ -84,6 +83,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
     
     // Dismiss view
     self.navigationController?.popToRootViewController(animated: true);
+		
+		NotificationCenter.default.removeObserver(self);
   }
   
   // MARK: - UI Functions
@@ -148,25 +149,17 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
   func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
     let payloadDict: Dictionary<String,Any?> = NSKeyedUnarchiver.unarchiveObject(with: packet.data as! Data) as! Dictionary;
     let command: String! = payloadDict["command"] as! String;
-    
+		
+		print("Received packet with command: \(command)");
+		
     if  (command == "play") {// Play command
       print("Received play command.");
       
       // Save the values for next play
       lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
       lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
-      
-      if ((payloadDict["song"] as? String) != self.songNameLabel.text || self.synaction.isCalibrating) {
-        print("Pending command is play command.");
-        
-        self.pendingCommand = "play";
-        return;
-      }
-			
-			print("pendingCommand set to nil from play received");
-			
-      self.pendingCommand = nil;
-      let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
+ 
+			let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
       
       if (continuousPlay) {// Host is playing
         print("Executing play as continuous command.");
@@ -203,15 +196,11 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       print("Received pause command.");
       
       if self.synaction.isCalibrating {
-        self.pendingCommand = "pause";
         lastReceivedTimeToExecute = (payloadDict["timeToExecute"] as! UInt64);
 				return;
       }
 			
-			print("pendingCommand set to nil from pause received");
-			
-      self.pendingCommand = nil;
-      let timeToExecute: UInt64 = (payloadDict["timeToExecute"] as! UInt64);
+			let timeToExecute: UInt64 = (payloadDict["timeToExecute"] as! UInt64);
       
       self.synaction.atExactTime(timeToExecute, run: {
         self.playerManager.pause();
@@ -222,12 +211,11 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       
       self.currentSongMetadata = payloadDict["metadata"] as! Dictionary<String, Any?>?;
       self.updateInterface(notification: nil);
-      
-      let songPath: URL = NSURL.fileURL(withPath: NSTemporaryDirectory()).appendingPathComponent("song.caf", isDirectory: false);
-      let fileData: Data = payloadDict["file"] as! Data;
-      
+			
+			let fileData: Data = payloadDict["file"] as! Data;
+
       do {
-        try FileManager.default.removeItem(at: songPath);
+        try FileManager.default.removeItem(at: self.playerManager.currentSongFilePath!);
 				print("Deleted old song file.");
 				
       } catch {
@@ -235,18 +223,17 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
       }
       
       do {
-        try fileData.write(to: songPath);
+        try fileData.write(to: self.playerManager.currentSongFilePath!);
 				print("Wrote new song to file.");
 				
-        let asset: AVAsset = AVAsset(url: songPath);
-        
+        let asset: AVAsset = AVAsset(url: self.playerManager.currentSongFilePath!);
+				
         let playerItem: AVPlayerItem = AVPlayerItem.init(asset: asset);
         self.playerManager.loadSongFromPlayerItem(playerItem: playerItem);
-				
 				print("Loaded song into player.");
+
+				self.requestHostState(notification:  nil);
 				
-        self.executePendingCommand();
-        
       } catch {
         print("Error writing song data to file: \(error)");
       }
@@ -254,36 +241,6 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		} else {
 			print("Received unparsed command & payload: [\(command)] \(payloadDict)");
 		}
-  }
-
-  @objc func executePendingCommand() {
-		print("Called execute command with command: \(String(describing: self.pendingCommand))");
-		
-    if (self.pendingCommand == "play") {
-      print("Executing play as pending command.");
-      
-      self.playerManager.play();// Play locally
-      
-      // Seek to adjusted song time
-      self.playerManager.seekToTimeInSeconds(time: self.adjustedSongTimeForHost(), completionHandler: { (success) in
-        if !success {
-          print("Failed to seek for continuous play.");
-        }
-      });
-      
-    } else if (self.pendingCommand == "pause") {
-			print("Executing pause as pending command.");
-			
-      self.synaction.atExactTime(lastReceivedTimeToExecute, run: {
-        self.playerManager.pause();
-      });
-      
-    } else {
-      print("Couldn't handle pending command: \(String(describing: self.pendingCommand))");
-    }
-		
-		print("pendingCommand set to nil from executePendingCommand");
-    self.pendingCommand = nil;
   }
 
   func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
@@ -304,4 +261,21 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		
     return adjustedSongTime
   }
+	
+	func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
+		if (self.playerManager.currentSong == nil) {
+			let payloadDict: [String : Any] = ["command": "getSong"]  as [String : Any];
+			let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
+			
+			print("Asking host to send us the song");
+			self.connectivityManager.send(packet, to: [self.connectivityManager.hostSocket!]);
+			return;
+		}
+		
+		let payloadDict: [String : Any] = ["command": "status"]  as [String : Any];
+		let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
+		
+		print("Asking host to send us their status");
+		self.connectivityManager.send(packet, to: [self.connectivityManager.hostSocket!]);
+	}
 }

@@ -49,6 +49,7 @@
 - (void)executeBlockWhenAllPeersCalibrate:(NSArray <GCDAsyncSocket *> * _Nonnull)peers block:(calibrationBlock)completionBlock {
   // Check if these peers already had the time to calibrate
   if (self.calibratedPeers.count >= peers.count || (peers.count > self.connectivityManager.allSockets.count && peers.count > self.calibratedPeers.count)) {// Already calibrated
+		NSLog(@"Executing block for all peers calibrated, already calibrated!");
     completionBlock(peers);
     return;
   }
@@ -299,8 +300,10 @@
       
       // Update the bool
       self.isCalibrating = NO;
-      [[NSNotificationCenter defaultCenter] postNotificationName:@"CalibrationDone" object:self];
-      
+			
+			// Post the calibration done notification
+			[[NSNotificationCenter defaultCenter] postNotificationName:CalibrationDoneNotificationName object:self];
+			
     } else {
       // Send another calibration request.
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",

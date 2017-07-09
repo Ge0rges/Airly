@@ -25,10 +25,10 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	
 	let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.dark));
 	let blurImageView:UIImageView! = UIImageView.init();
-	let mediaPicker:MPMediaPickerController! = MPMediaPickerController(mediaTypes: .music);
 	let playerManager:PlayerManager! = PlayerManager.sharedManager;
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
 	let syncManager: HostSyncManager! = HostSyncManager.sharedManager;
+	var mediaPicker: MPMediaPickerController? = nil;
 	
 	override func viewDidLoad() {
 		super.viewDidLoad();
@@ -37,15 +37,16 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		
 		// Start broadcasting bonjour.
 		self.connectivityManager.startBonjourBroadcast();
-				
+		
+		// Create & configure the media picker
+		self.mediaPicker = MPMediaPickerController(mediaTypes: .music);
+		self.mediaPicker!.delegate = self;
+		self.mediaPicker!.showsCloudItems = false;
+		self.mediaPicker!.showsItemsWithProtectedAssets = false;
+		self.mediaPicker!.allowsPickingMultipleItems = true;
+
 		// Clear the music queue
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
-		
-		// Configure the media picker
-		mediaPicker.delegate = self;
-		mediaPicker.showsCloudItems = false;
-		mediaPicker.showsItemsWithProtectedAssets = false;
-		mediaPicker.allowsPickingMultipleItems = true;
 		
 		// Register for player notifications
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
@@ -110,7 +111,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		MPMediaLibrary.requestAuthorization { (authorizationStatus) in
 			DispatchQueue.main.async {// Main Queue
 				// Present Media Picker
-				self.present(self.mediaPicker, animated: true, completion: nil);
+				self.present(self.mediaPicker!, animated: true, completion: nil);
 			}
 		}
 	}
@@ -147,14 +148,32 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		
 		DispatchQueue.main.async {// Main Queue
 			// Dismiss Media Picker
-			self.dismiss(animated: true, completion: nil);
+			self.dismiss(animated: true, completion: { 
+				self.mediaPicker = nil;
+				
+				// Create & configure the media picker
+				self.mediaPicker = MPMediaPickerController(mediaTypes: .music);
+				self.mediaPicker!.delegate = self;
+				self.mediaPicker!.showsCloudItems = false;
+				self.mediaPicker!.showsItemsWithProtectedAssets = false;
+				self.mediaPicker!.allowsPickingMultipleItems = true;
+			});
 		};
 	}
 	
 	func mediaPickerDidCancel(_ mediaPicker: MPMediaPickerController) {
 		DispatchQueue.main.async {// Main Queue
 			// Dismiss Media Picker
-			self.dismiss(animated: true, completion: nil);
+			self.dismiss(animated: true, completion: {
+				self.mediaPicker = nil;
+				
+				// Create & configure the media picker
+				self.mediaPicker = MPMediaPickerController(mediaTypes: .music);
+				self.mediaPicker!.delegate = self;
+				self.mediaPicker!.showsCloudItems = false;
+				self.mediaPicker!.showsItemsWithProtectedAssets = false;
+				self.mediaPicker!.allowsPickingMultipleItems = true;
+			});
 		};
 	}
 	
