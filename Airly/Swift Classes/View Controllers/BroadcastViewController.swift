@@ -44,6 +44,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.mediaPicker!.showsCloudItems = false;
 		self.mediaPicker!.showsItemsWithProtectedAssets = false;
 		self.mediaPicker!.allowsPickingMultipleItems = true;
+		self.mediaPicker!.prompt = "Only music you own is playable.";
 
 		// Clear the music queue
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
@@ -157,6 +158,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 				self.mediaPicker!.showsCloudItems = false;
 				self.mediaPicker!.showsItemsWithProtectedAssets = false;
 				self.mediaPicker!.allowsPickingMultipleItems = true;
+				self.mediaPicker!.prompt = "Only music you own is playable.";
 			});
 		};
 	}
@@ -173,6 +175,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 				self.mediaPicker!.showsCloudItems = false;
 				self.mediaPicker!.showsItemsWithProtectedAssets = false;
 				self.mediaPicker!.allowsPickingMultipleItems = true;
+				self.mediaPicker!.prompt = "Only music you own is playable.";
 			});
 		};
 	}
