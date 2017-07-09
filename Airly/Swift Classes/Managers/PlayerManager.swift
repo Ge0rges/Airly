@@ -94,6 +94,9 @@ class PlayerManager: NSObject {
 		// Play at default rate
 		BASS_ChannelPlay(self.channel, false);
 		NotificationCenter.default.post(name: PlayerManager.PlayerPlayedNotificationName, object: self);
+		
+		let timeRemainingInSong = BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetLength(self.channel, DWORD(BASS_POS_BYTE))) - self.currentPlaybackTime;
+		self.perform(#selector(self.playerDidFinishPlaying(notification:)), with: nil, afterDelay: timeRemainingInSong);
 	}
 	
 	public func pause() {
@@ -196,7 +199,16 @@ class PlayerManager: NSObject {
 	}
 	
 	@objc private func playerDidFinishPlaying(notification: Notification?) {
-		//TODO: Implement. Think about if we want to post a notification and let the view controller handle it, or switch to the next song automatically.
+		let timeRemainingInSong = BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetLength(self.channel, DWORD(BASS_POS_BYTE))) - self.currentPlaybackTime;
+
+		if timeRemainingInSong < 1 {
+			if self.nextSong != nil {
+				self.playNextSong();
+			
+			} else {
+				self.pause();
+			}
+		}
 	}
 	
 	public func exportCurrentSongToFile (completionHandler: @escaping () -> Void) {
