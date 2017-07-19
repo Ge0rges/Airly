@@ -49,7 +49,7 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 		                         "playbackTime": self.playerManager.currentPlaybackTime,
 		                         "continuousPlay": self.playerManager.isPlaying,
 		                         "timeAtPlaybackTime": deviceTimeAtPlaybackTime,
-		                         "song": self.playerManager.currentSongMetadata?["title"] as Any
+		                         "song": (self.playerManager.currentSongMetadata?["title"] ?? "Unknown Song Name")!
 			] as [String : Any];
 		
 		let payloadData = NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload);
@@ -94,12 +94,13 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 			let fileData = try Data.init(contentsOf: self.playerManager.currentSongFilePath!);
 			
 			var metadataA: [String: Any?]? = self.playerManager.currentSongMetadata;
-			if let metadataB = metadataA {
-				metadataA!["artwork"] = (metadataB["artwork"] as! MPMediaItemArtwork).image(at: self.broadcastViewController!.albumArtImageView.frame.size);
+			if let _ = metadataA {// Check that metadata is not nil
+				if let artwork = metadataA?["artwork"] {// Check that atwork is not nil & exists
+					metadataA?["artwork"] = (artwork as! MPMediaItemArtwork).image(at: self.broadcastViewController!.albumArtImageView.frame.size);
+				}
 			}
-			
 			print("Building current song packet with song data: \(fileData)");
-
+			
 			let payloadDict: [String : Any] = ["command": "load", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
 			let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
 			

@@ -61,7 +61,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		NotificationCenter.default.addObserver(self, selector: #selector(self.handleInterruption(notification:)), name: .AVAudioSessionInterruption, object: AVAudioSession.sharedInstance());
 		//NotificationCenter.default.addObserver(self, selector: #selector(self.handleActivated(notification:)), name:AppDelegate.AppDelegateDidBecomeActive, object: nil);
 		//NotificationCenter.default.addObserver(self, selector: #selector(self.handleBackgrounded(notification:)), name:AppDelegate.AppDelegateDidBackground, object: nil);
-
+		
 		
 		// Round & Shadow the album art
 		self.albumArtImageView.layer.cornerRadius = self.albumArtImageView.frame.size.width/25;
@@ -96,8 +96,16 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		}
 	}
 	
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated);
+		
+		if self.isMovingFromParentViewController {
+			self.dismissBroadcastViewController(nil);
+		}
+	}
+	
 	//MARK: - Button Actions
-	@IBAction func dismissBroadcastViewController(_ sender: UIButton) {
+	@IBAction func dismissBroadcastViewController(_ sender: UIButton?) {
 		//Stop broadcasting & disconnect.
 		self.connectivityManager.stopBonjour();
 		self.connectivityManager.disconnectSockets();
@@ -109,7 +117,9 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
 		
 		// Dismiss view
-		self.navigationController?.popViewController(animated: true);
+		if self.isMovingFromParentViewController {
+			self.navigationController?.popViewController(animated: true);
+		}
 		
 		// Log
 		DispatchQueue.main.async {

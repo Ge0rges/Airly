@@ -62,6 +62,9 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate, Flur
   
   //MARK: - ConnectivityManagerDelegate
   func socket(_ socket: GCDAsyncSocket, didConnectToHost host: String, port: UInt16) {
+		// Dismiss ourself
+		self.navigationController?.popToRootViewController(animated: false);
+		
     // Show receiver view controller
     self.performSegue(withIdentifier: "showReceiverSegue", sender: self);
     

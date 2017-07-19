@@ -25,8 +25,8 @@
 
 @interface ConnectivityManager : NSObject
 
-@property (nonatomic, assign) id<ConnectivityManagerDelegate> _Nullable delegate;
-@property (nonatomic, assign) id<ConnectivityManagerDelegate> _Nullable synaction;
+@property (nonatomic, weak) id<ConnectivityManagerDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<ConnectivityManagerDelegate> _Nullable synaction;
 
 @property (strong, nonatomic) NSMutableArray<GCDAsyncSocket *> * _Nonnull allSockets;
 @property (strong, nonatomic) GCDAsyncSocket * _Nullable hostSocket;
