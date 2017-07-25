@@ -102,14 +102,14 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		// Album Art
 		let metadata:Dictionary<String, Any?>? = self.currentSongMetadata;
 		var artwork: UIImage? = #imageLiteral(resourceName: "Default Music");// Default Image
-		var title: String = "Unknown Song Name";
+		var title: String = "Unknown Title";
 		var artist: String = "Unknown Artist";
 		
 		if let metadata = metadata {
 			print("metadata not nil");
 			
 			if metadata.index(forKey: "empty") == nil {
-				print("Metadata had empty key nil.");
+				print("Metadata is not empty.");
 				
 				let mediaItemArtwork = metadata["artwork"] as! UIImage?;
 				if (mediaItemArtwork != nil) {

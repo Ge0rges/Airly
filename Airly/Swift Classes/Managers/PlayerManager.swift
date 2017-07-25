@@ -124,8 +124,8 @@ class PlayerManager: NSObject {
 			let mediaItemURL:URL = mediaItem.value(forProperty: MPMediaItemPropertyAssetURL) as! URL;
 			let playerItem: AVPlayerItem = AVPlayerItem(asset: AVAsset(url: mediaItemURL));
 			self.queue.append(playerItem);
-			
-			let metadata: Dictionary = ["artwork": mediaItem.artwork as Any, "artist": mediaItem.artist as Any, "title": mediaItem.title as Any] as [String : Any];
+            
+			let metadata: Dictionary = ["artwork": mediaItem.artwork ?? #imageLiteral(resourceName: "Default Music"), "artist": mediaItem.artist ?? "Unknown Artist", "title": mediaItem.title ?? "Unknown Title"] as [String : Any];
 			self.queueMetadata.append(metadata);
 		}
 		

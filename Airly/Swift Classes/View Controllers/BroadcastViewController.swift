@@ -214,8 +214,8 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		// Album Art
 		let metadata:Dictionary<String, Any?>? = self.playerManager.currentSongMetadata;
 		var artwork: UIImage? = #imageLiteral(resourceName: "Default Music");// Default Image
-		var title: String = "Unknown Song Name";
-		var artist: String = "Unknown Artist";
+        var title: String = (self.playerManager.currentSong != nil) ? "Unknown Title" : "Pick a Song";
+        var artist: String = (self.playerManager.currentSong != nil) ? "Unknown Artist" : "" ;
 		
 		if let metadata = metadata {
 			let mediaItemArtwork = metadata["artwork"] as! MPMediaItemArtwork?;

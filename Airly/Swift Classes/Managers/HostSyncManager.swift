@@ -95,10 +95,14 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 			
 			var metadataA: [String: Any?]? = self.playerManager.currentSongMetadata;
 			if let _ = metadataA {// Check that metadata is not nil
-				if let artwork = metadataA?["artwork"] {// Check that atwork is not nil & exists
-					metadataA?["artwork"] = (artwork as! MPMediaItemArtwork).image(at: self.broadcastViewController!.albumArtImageView.frame.size);
+				if let artwork = metadataA?["artwork"] as? MPMediaItemArtwork {// Check that atwork is not nil & exists
+					metadataA?["artwork"] = artwork.image(at: self.broadcastViewController!.albumArtImageView.frame.size);
 				}
-			}
+            
+            } else {
+                
+            }
+            
 			print("Building current song packet with song data: \(fileData)");
 			
 			let payloadDict: [String : Any] = ["command": "load", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
