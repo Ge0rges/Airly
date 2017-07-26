@@ -117,7 +117,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
 		
 		// Dismiss view
-		if self.isMovingFromParentViewController {
+		if !self.isMovingFromParentViewController {
 			self.navigationController?.popViewController(animated: true);
 		}
 		
