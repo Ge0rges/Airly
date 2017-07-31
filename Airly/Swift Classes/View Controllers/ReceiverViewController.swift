@@ -8,6 +8,7 @@
 
 import UIKit
 import MediaPlayer
+import Flurry_iOS_SDK
 
 class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
@@ -30,6 +31,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad();
+        // Analytics
+        Flurry.logEvent("startedListenning", timed: true);
+
 		// Stop browsing for bonjour broadcast.
 		self.connectivityManager.stopBonjour();
 		
@@ -93,6 +97,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		self.navigationController?.popToRootViewController(animated: true);
 		
 		NotificationCenter.default.removeObserver(self);
+        
+        Flurry.endTimedEvent("startedListenning", withParameters: nil);
 	}
 	
 	// MARK: - UI Functions
