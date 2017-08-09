@@ -98,10 +98,8 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 				if let artwork = metadataA?["artwork"] as? MPMediaItemArtwork {// Check that atwork is not nil & exists
                     let imageSize: CGSize = (self.broadcastViewController == nil) ? CGSize(width: 1024, height: 1024) : self.broadcastViewController!.albumArtImageView.frame.size;
 					metadataA?["artwork"] = artwork.image(at: imageSize);
-				}
-            
-            } else {
-                
+                    
+                }
             }
             
 			print("Building current song packet with song data: \(fileData)");

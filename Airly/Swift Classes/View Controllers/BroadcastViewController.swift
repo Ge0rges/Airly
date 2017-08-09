@@ -217,18 +217,20 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
         var title: String = (self.playerManager.currentSong != nil) ? "Unknown Title" : "Pick a Song";
         var artist: String = (self.playerManager.currentSong != nil) ? "Unknown Artist" : "" ;
 		
-		if let metadata = metadata {
-			let mediaItemArtwork = metadata["artwork"] as! MPMediaItemArtwork?;
-			if (mediaItemArtwork != nil) {
-				artwork = mediaItemArtwork!.image(at: self.albumArtImageView.frame.size);
-			}
+		if let _ = metadata {
+            if let mediaItemArtwork = metadata!["artwork"] as? MPMediaItemArtwork {
+                artwork = mediaItemArtwork.image(at: self.albumArtImageView.frame.size);
+                
+            } else if let mediaItemArtwork = metadata!["artwork"] as? UIImage {
+                    artwork = mediaItemArtwork;
+            }
 			
-			let mediaItemArtist = metadata["artist"] as! String?;
+			let mediaItemArtist = metadata!["artist"] as! String?;
 			if (mediaItemArtist != nil) {
 				artist = mediaItemArtist!;
 			}
 			
-			let mediaItemTitle = metadata["title"] as! String?;
+			let mediaItemTitle = metadata!["title"] as! String?;
 			if (mediaItemTitle != nil) {
 				title = mediaItemTitle!;
 			}

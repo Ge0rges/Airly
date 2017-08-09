@@ -117,11 +117,10 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 			if metadata.index(forKey: "empty") == nil {
 				print("Metadata is not empty.");
 				
-				let mediaItemArtwork = metadata["artwork"] as! UIImage?;
-				if (mediaItemArtwork != nil) {
-					artwork = mediaItemArtwork!
-				}
-				
+                if let mediaItemArtwork = metadata["artwork"] as? UIImage {
+                    artwork = mediaItemArtwork;
+                }
+                
 				let mediaItemArtist = metadata["artist"] as! String?;
 				if (mediaItemArtist != nil) {
 					artist = mediaItemArtist!;
