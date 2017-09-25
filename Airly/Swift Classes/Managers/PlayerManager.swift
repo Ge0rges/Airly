@@ -55,6 +55,7 @@ class PlayerManager: NSObject {
 		return BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetPosition(self.channel, DWORD(BASS_POS_BYTE)));
 	}
 	
+	public var shouldPlay = true;
 	public var channel: HSTREAM = 0;
 	private let session: AVAudioSession = AVAudioSession.sharedInstance();
 	private var currentSongIndex: Int = 0;
@@ -97,11 +98,15 @@ class PlayerManager: NSObject {
 		
 		let timeRemainingInSong = BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetLength(self.channel, DWORD(BASS_POS_BYTE))) - self.currentPlaybackTime;
 		self.perform(#selector(self.playerDidFinishPlaying(notification:)), with: nil, afterDelay: timeRemainingInSong);
+		
+		self.shouldPlay = true;
 	}
 	
 	public func pause() {
 		BASS_ChannelPause(self.channel);
 		NotificationCenter.default.post(name: PlayerManager.PlayerPausedNotificationName, object: self);
+		
+		self.shouldPlay = false;
 	}
 	
 	public func loadQueueFromMPMediaItems(mediaItems: Array<MPMediaItem>?) -> Void {
@@ -130,14 +135,12 @@ class PlayerManager: NSObject {
 		}
 		
 		self.exportCurrentSongToFile {
-			let shouldPlay = self.isPlaying;
-
 			BASS_ChannelStop(self.channel);
 			self.channel = BASS_StreamCreateFile(false, self.currentSongFilePath.path, 0, 0, DWORD(BASS_STREAM_PRESCAN));
 			
 			NotificationCenter.default.post(name: PlayerManager.PlayerQueueChangedNotificationName, object: self, userInfo: ["queue": self.queue]);
 			
-			if (shouldPlay) {
+			if (self.shouldPlay) {
 				self.play();
 			}
 		}
@@ -163,12 +166,10 @@ class PlayerManager: NSObject {
 		}
 		
 		self.exportCurrentSongToFile {
-			let shouldPlay = self.isPlaying;
-			
 			BASS_ChannelStop(self.channel);
 			self.channel = BASS_StreamCreateFile(false, self.currentSongFilePath.path, 0, 0, DWORD(BASS_STREAM_PRESCAN));
 			
-			if (shouldPlay) {
+			if self.shouldPlay {
 				self.play();
 			}
 		}
@@ -181,13 +182,11 @@ class PlayerManager: NSObject {
 			return;
 		}
 		
-		self.exportCurrentSongToFile {
-			let shouldPlay = self.isPlaying;
-			
+		self.exportCurrentSongToFile {			
 			BASS_ChannelStop(self.channel);
 			self.channel = BASS_StreamCreateFile(false, self.currentSongFilePath.path, 0, 0, DWORD(BASS_STREAM_PRESCAN));
 			
-			if (shouldPlay) {
+			if (self.shouldPlay) {
 				self.play();
 			}
 		}
@@ -207,7 +206,15 @@ class PlayerManager: NSObject {
 			
 			} else {
 				self.pause();
+				
+				//#TODO
+				// Reset to current file
+				//BASS_ChannelStop(self.channel);
+				//self.channel = BASS_StreamCreateFile(false, self.currentSongFilePath.path, 0, 0, DWORD(BASS_STREAM_PRESCAN));
 			}
+			
+		} else {
+			self.perform(#selector(self.playerDidFinishPlaying(notification:)), with: nil, afterDelay: timeRemainingInSong);
 		}
 	}
 	
