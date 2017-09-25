@@ -84,7 +84,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 			self.blurImageView.clipsToBounds = true;
 			
 			self.view.insertSubview(self.blurEffectView, at: 0);
-			self.blurEffectView.insertSubview(self.blurImageView, at: 0);
+			self.view.insertSubview(self.blurImageView, at: 0);
 		}
 		
 		// Update the interface
@@ -260,7 +260,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	
 	
 	//MARK: - Background
-	func handleInterruption(notification: NSNotification) {
+    @objc func handleInterruption(notification: NSNotification) {
 		guard let info = notification.userInfo,
 			let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
 			let type = AVAudioSessionInterruptionType(rawValue: typeValue) else {

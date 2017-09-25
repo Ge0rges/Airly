@@ -31,9 +31,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad();
-        // Analytics
-        Flurry.logEvent("startedListenning", timed: true);
-
+		// Analytics
+		Flurry.logEvent("startedListenning", timed: true);
+		
 		// Stop browsing for bonjour broadcast.
 		self.connectivityManager.stopBonjour();
 		
@@ -71,7 +71,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 			self.blurImageView.clipsToBounds = true;
 			
 			self.view.insertSubview(self.blurEffectView, at: 0);
-			self.blurEffectView.insertSubview(self.blurImageView, at: 0);
+			self.view.insertSubview(self.blurImageView, at: 0);
 		}
 	}
 	
@@ -93,12 +93,13 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		self.playerManager.pause();
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
 		
-		// Dismiss view
-		self.navigationController?.popToRootViewController(animated: true);
+		// Dismiss view modally
+		self.navigationController?.popToRootViewController(animated: true)
+		self.dismiss(animated: true, completion: nil)
 		
 		NotificationCenter.default.removeObserver(self);
-        
-        Flurry.endTimedEvent("startedListenning", withParameters: nil);
+		
+		Flurry.endTimedEvent("startedListenning", withParameters: nil);
 	}
 	
 	// MARK: - UI Functions
@@ -117,10 +118,10 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 			if metadata.index(forKey: "empty") == nil {
 				print("Metadata is not empty.");
 				
-                if let mediaItemArtwork = metadata["artwork"] as? UIImage {
-                    artwork = mediaItemArtwork;
-                }
-                
+				if let mediaItemArtwork = metadata["artwork"] as? UIImage {
+					artwork = mediaItemArtwork;
+				}
+				
 				let mediaItemArtist = metadata["artist"] as! String?;
 				if (mediaItemArtist != nil) {
 					artist = mediaItemArtist!;
@@ -274,7 +275,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		return adjustedSongTime;
 	}
 	
-	public func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
+	@objc public func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
 		if (self.playerManager.currentSong == nil) {
 			let payloadDict: [String : Any] = ["command": "getSong"]  as [String : Any];
 			let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
