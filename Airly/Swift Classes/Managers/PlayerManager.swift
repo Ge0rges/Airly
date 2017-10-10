@@ -182,7 +182,7 @@ class PlayerManager: NSObject {
 			return;
 		}
 		
-		self.exportCurrentSongToFile {			
+		self.exportCurrentSongToFile {
 			BASS_ChannelStop(self.channel);
 			self.channel = BASS_StreamCreateFile(false, self.currentSongFilePath.path, 0, 0, DWORD(BASS_STREAM_PRESCAN));
 			
@@ -194,7 +194,7 @@ class PlayerManager: NSObject {
 	
 	public func seekToTimeInSeconds(time: TimeInterval, completionHandler: @escaping (Bool) -> Void) {
 		BASS_ChannelSetPosition(self.channel, BASS_ChannelSeconds2Bytes(self.channel, time), DWORD(BASS_POS_BYTE));
-		print("error seeking: \(BASS_ErrorGetCode())");
+		print("error seeking in song: \(BASS_ErrorGetCode())");
 	}
 	
 	@objc private func playerDidFinishPlaying(notification: Notification?) {
@@ -207,10 +207,9 @@ class PlayerManager: NSObject {
 			} else {
 				self.pause();
 				
-				//#TODO
-				// Reset to current file
-				//BASS_ChannelStop(self.channel);
-				//self.channel = BASS_StreamCreateFile(false, self.currentSongFilePath.path, 0, 0, DWORD(BASS_STREAM_PRESCAN));
+//				#TODO
+//				Reset to first song
+//				self.loadQueueFromMPMediaItems(mediaItems: self.queueMediaItems)
 			}
 			
 		} else {
@@ -218,7 +217,7 @@ class PlayerManager: NSObject {
 		}
 	}
 	
-	public func exportCurrentSongToFile (completionHandler: @escaping () -> Void) {
+	public func exportCurrentSongToFile(completionHandler: @escaping () -> Void) {
 		// Delete old song
 		do {
 			try FileManager.default.removeItem(at: self.currentSongFilePath);
