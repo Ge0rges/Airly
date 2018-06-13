@@ -81,10 +81,6 @@ class PlayerManager: NSObject {
 			print("Unable to activate audio session:  \(error.localizedDescription)");
 		}
 		
-		// Register for notifications of song end
-		//FIXME
-		//NotificationCenter.default.addObserver(self, selector: #selector(self.playerDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil);
-		
 		// Initialize BASS
 		BASS_Init(-1, 44100, 0, nil, nil);
 		BASS_SetConfig(DWORD(BASS_CONFIG_IOS_NOCATEGORY), 1);
@@ -201,15 +197,15 @@ class PlayerManager: NSObject {
 		let timeRemainingInSong = BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetLength(self.channel, DWORD(BASS_POS_BYTE))) - self.currentPlaybackTime;
 
 		if timeRemainingInSong < 1 {
-			if self.nextSong != nil {
+			if self.nextSong {
 				self.playNextSong();
 			
 			} else {
 				self.pause();
 				
-//				#TODO
-//				Reset to first song
-//				self.loadQueueFromMPMediaItems(mediaItems: self.queueMediaItems)
+				// #TEST
+				// Reset to first song
+				self.loadQueueFromMPMediaItems(mediaItems: self.queueMediaItems)
 			}
 			
 		} else {

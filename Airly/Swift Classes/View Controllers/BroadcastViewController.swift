@@ -161,7 +161,6 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.playerManager.playNextSong();
 	}
 	
-	
 	//MARK: - MPMediaPickerConrollerDelegate
 	func mediaPicker(_ mediaPicker: MPMediaPickerController, didPickMediaItems mediaItemCollection: MPMediaItemCollection) {
 		// Tell the player to load the items
