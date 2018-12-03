@@ -34,7 +34,7 @@
     sharedManager.connectivityManager = [ConnectivityManager sharedManager];
     sharedManager.connectivityManager.synaction = sharedManager;
     sharedManager.hostTimeOffset = 0;
-    sharedManager.maxNumberOfCalibrations = 50000;
+    sharedManager.maxNumberOfCalibrations = 5000;
     sharedManager.calibratedPeers = [NSMutableSet new];
     sharedManager->calculatedOffsets = 0;
     sharedManager->totalCalculatedOffsets = 0;
@@ -224,7 +224,7 @@
     return;
     
   } else if ([payload[@"command"] isEqualToString:@"syncDone"]) {
-		NSLog(@"peer told us sync done");
+	NSLog(@"peer told us sync done");
 		
     [self.calibratedPeers addObject:socket];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"peerCalibrated" object:self.calibratedPeers userInfo:@{@"calibratedPeer": socket}];
@@ -254,8 +254,8 @@
     
     //uint64_t latencyWithHost = ([self currentTime] - timePingSent)/2;// Calculates the estimated latency for one way travel
     
-    // If this calculation doesn't meet our error margin, restart.
-    if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 25000000000) {
+    // If this calculation doesn't meet our error margin (5s), restart.
+    if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 5000000000) {
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                           @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
                                                                                           }];
@@ -276,18 +276,19 @@
     NSLog(@"Calculated calibration. Total: %f", calculatedOffsets);
     
     // If the calibration is accurate enough just end it.
+	BOOL doneCalibrating = false;
     double newOffset = totalCalculatedOffsets/calculatedOffsets;
     
-    if (fabs(newOffset-self.hostTimeOffset) < 200) {
-      self.maxNumberOfCalibrations = calculatedOffsets;
+    if (fabs(newOffset-self.hostTimeOffset) < 200 && calculatedOffset > 1) {
+	  doneCalibrating = true;
 	  NSLog(@"prematurely ended calibration because accurate enough with difference: %f", fabs(newOffset-self.hostTimeOffset));
     }
     
     self.hostTimeOffset = newOffset;
 	  
     // If calculation is done notify the host.
-    if (calculatedOffsets >= self.maxNumberOfCalibrations) {
-      NSLog(@"Calibration done, informing host.");
+    if (calculatedOffsets >= self.maxNumberOfCalibrations || doneCalibrating) {
+      NSLog(@"Calibration done with maximum number of calibrations, informing host.");
       
       // Let the host know we calibrated
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
