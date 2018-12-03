@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0900"
+   LastUpgradeVersion = "0930"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "35235DC0C35253D8CB719010AEC670AC"
+               BlueprintIdentifier = "961DE7189B68AFE7A59D4ADA2A709444"
                BuildableName = "Flurry_iOS_SDK.framework"
                BlueprintName = "Flurry-iOS-SDK"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "35235DC0C35253D8CB719010AEC670AC"
+            BlueprintIdentifier = "961DE7189B68AFE7A59D4ADA2A709444"
             BuildableName = "Flurry_iOS_SDK.framework"
             BlueprintName = "Flurry-iOS-SDK"
             ReferencedContainer = "container:Pods.xcodeproj">

@@ -18,7 +18,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	@IBOutlet var songNameLabel: UILabel!
 	@IBOutlet var songArtistLabel: UILabel!
 	
-	let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.dark));
+	let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark));
 	let blurImageView:UIImageView! = UIImageView.init();
 	let playerManager:PlayerManager! = PlayerManager.sharedManager;
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
@@ -60,7 +60,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		self.albumArtImageView.layer.shadowPath = shadowPath.cgPath;
 		
 		// Setup the blur view
-		if (!UIAccessibilityIsReduceTransparencyEnabled() &&  self.view.backgroundColor != UIColor.clear) {
+		if (!UIAccessibility.isReduceTransparencyEnabled &&  self.view.backgroundColor != UIColor.clear) {
 			self.view.backgroundColor = UIColor.clear
 			
 			// Always fill the view
@@ -78,7 +78,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	override func viewDidDisappear(_ animated: Bool) {
 		super.viewDidDisappear(animated);
 		
-		if self.isMovingFromParentViewController {
+		if self.isMovingFromParent {
 			self.dismissReceiverViewController(nil);
 		}
 	}
@@ -140,7 +140,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		
 		// Background blur/color
 		//only apply the blur if the user hasn't disabled transparency effects
-		if !UIAccessibilityIsReduceTransparencyEnabled() {
+		if !UIAccessibility.isReduceTransparencyEnabled {
 			// Set the background album art
 			self.blurImageView.image = artwork;
 			
@@ -162,9 +162,9 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	//MARK: - Communication
 	func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
 		let payloadDict: Dictionary<String,Any?> = NSKeyedUnarchiver.unarchiveObject(with: packet.data as! Data) as! Dictionary;
-		let command: String! = payloadDict["command"] as! String;
+		let command: String! = (payloadDict["command"] as! String);
 		
-		print("Received packet with command: \(command)");
+		print("Received packet with command: \(String(describing: command))");
 		
 		if  (command == "play") {// Play command
 			print("Received play command.");
@@ -253,7 +253,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 			}
 			
 		} else {
-			print("Received unparsed command & payload: [\(command)] \(payloadDict)");
+			print("Received unparsed command & payload: [\(String(describing: command))] \(payloadDict)");
 		}
 	}
 	
@@ -263,7 +263,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
 	func adjustedSongTimeForHost() -> TimeInterval {
 		let currentNetworkTime: UInt64 = self.synaction.currentNetworkTime()
-		let timePassedBetweenSent = UInt64.subtractWithOverflow(currentNetworkTime, lastReceivedHostTime);
+		let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostTime);
 		
 		print("timePassedBetweenSent overflowed: \(timePassedBetweenSent.overflow)");
 		

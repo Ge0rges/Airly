@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	public static let AppDelegateDidBecomeActive = NSNotification.Name(rawValue: "AppDelegateBecameActive");
 	public static let AppDelegateDidBackground = NSNotification.Name(rawValue: "AppDelegateBackgrounded");
 
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     // Override point for customization after application launch.
     // Ask review after 2 usages
     let launchesSinceReview: Int = UserDefaults.standard.integer(forKey: "launchesSinceLastReview");

@@ -23,7 +23,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	@IBOutlet var playbackButton: UIButton!
 	@IBOutlet var forwardPlaybackButton: UIButton!
 	
-	let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffectStyle.dark));
+	let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark));
 	let blurImageView:UIImageView! = UIImageView.init();
 	let playerManager:PlayerManager! = PlayerManager.sharedManager;
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
@@ -58,7 +58,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPausedNotificationName, object: nil);
-		NotificationCenter.default.addObserver(self, selector: #selector(self.handleInterruption(notification:)), name: .AVAudioSessionInterruption, object: AVAudioSession.sharedInstance());
+		NotificationCenter.default.addObserver(self, selector: #selector(self.handleInterruption(notification:)), name: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance());
 		//NotificationCenter.default.addObserver(self, selector: #selector(self.handleActivated(notification:)), name:AppDelegate.AppDelegateDidBecomeActive, object: nil);
 		//NotificationCenter.default.addObserver(self, selector: #selector(self.handleBackgrounded(notification:)), name:AppDelegate.AppDelegateDidBackground, object: nil);
 		
@@ -72,7 +72,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.albumArtImageView.layer.shadowPath = shadowPath.cgPath;
 		
 		// Setup the blur view
-		if (!UIAccessibilityIsReduceTransparencyEnabled() &&  self.view.backgroundColor != UIColor.clear) {
+		if (!UIAccessibility.isReduceTransparencyEnabled &&  self.view.backgroundColor != UIColor.clear) {
 			self.view.backgroundColor = UIColor.clear
 			
 			// Always fill the view
@@ -99,7 +99,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	override func viewDidDisappear(_ animated: Bool) {
 		super.viewDidDisappear(animated);
 		
-		if self.isMovingFromParentViewController {
+		if self.isMovingFromParent {
 			self.dismissBroadcastViewController(nil);
 		}
 	}
@@ -117,7 +117,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
 		
 		// Dismiss view
-		if !self.isMovingFromParentViewController {
+		if !self.isMovingFromParent {
 			self.navigationController?.popViewController(animated: true);
 		}
 		
@@ -241,7 +241,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		
 		// Background blur/color
 		//only apply the blur if the user hasn't disabled transparency effects
-		if !UIAccessibilityIsReduceTransparencyEnabled() {
+		if !UIAccessibility.isReduceTransparencyEnabled {
 			// Set the background album art
 			self.blurImageView.image = artwork;
 			
@@ -262,7 +262,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     @objc func handleInterruption(notification: NSNotification) {
 		guard let info = notification.userInfo,
 			let typeValue = info[AVAudioSessionInterruptionTypeKey] as? UInt,
-			let type = AVAudioSessionInterruptionType(rawValue: typeValue) else {
+			let type = AVAudioSession.InterruptionType(rawValue: typeValue) else {
 				return
 		}
 		
@@ -274,7 +274,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 				return
 			}
 			
-			let options = AVAudioSessionInterruptionOptions(rawValue: optionsValue)
+			let options = AVAudioSession.InterruptionOptions(rawValue: optionsValue)
 			if options.contains(.shouldResume) {
 				self.handleActivated(notification: nil);
 			}

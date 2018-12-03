@@ -37,13 +37,13 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate, Flur
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated);
     
-//    // Show ad banner at the bottom of the waiting screen
-//    DispatchQueue.main.async {
-//      let adBanner: FlurryAdBanner = FlurryAdBanner.init(space: "AIRLY_WAITING_SCREEN_BOTTOM_BANNER");
-//      adBanner.adDelegate = self;
-//
-//      adBanner.fetchAndDisplayAd(in: self.view, viewControllerForPresentation: self);
-//    }
+    // Show ad banner at the bottom of the waiting screen
+    DispatchQueue.main.async {
+      let adBanner: FlurryAdBanner = FlurryAdBanner.init(space: "AIRLY_WAITING_SCREEN_BOTTOM_BANNER");
+      adBanner.adDelegate = self;
+
+      adBanner.fetchAd(forFrame: self.view.frame)
+    }
   }
   
   //MARK: - Button Actions
@@ -74,16 +74,17 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate, Flur
     }
   }
   
-//  //MARK: - Ad Delegate
-//  func adBanner(_ bannerAd: FlurryAdBanner!, adError: FlurryAdError, errorDescription: Error!) {
-//    print("Error fetching ad: \(adError)");
-//  }
-//
-//  func adBannerDidFetchAd(_ bannerAd: FlurryAdBanner!) {
-//    print("Fetched ad");
-//  }
-//
-//  func adBannerDidRender(_ bannerAd: FlurryAdBanner!) {
-//    print("Rendered Ad");
-//  }
+  //MARK: - Ad Delegate
+  func adBanner(_ bannerAd: FlurryAdBanner!, adError: FlurryAdError, errorDescription: Error!) {
+    print("Error fetching ad: \(adError)");
+  }
+
+  func adBannerDidFetchAd(_ bannerAd: FlurryAdBanner!) {
+    print("Fetched ad");
+	bannerAd.displayAd(in: self.view, viewControllerForPresentation: self)
+  }
+
+  func adBannerDidRender(_ bannerAd: FlurryAdBanner!) {
+    print("Rendered Ad");
+  }
 }

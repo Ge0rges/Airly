@@ -132,7 +132,7 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 	
 	func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
 		let payloadDict: Dictionary<String,Any?> = NSKeyedUnarchiver.unarchiveObject(with: packet.data as! Data) as! Dictionary;
-		let command: String! = payloadDict["command"] as! String;
+		let command: String! = (payloadDict["command"] as! String);
 		
 		if (command == "status") {// Send our current status to this peer
 			print("A peer requested host status. Sending.");
