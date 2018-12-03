@@ -213,7 +213,7 @@
 }
 
 - (void)didReceivePacket:(Packet *)packet fromSocket:(GCDAsyncSocket *)socket {
-  
+  int64_t timeReceived = (int64_t)[self currentTime];
   NSDictionary *payload = [NSKeyedUnarchiver unarchiveObjectWithData:packet.data];
   
   // Check if the host is asking us to sync
@@ -233,7 +233,7 @@
 		
   } else if ([payload[@"command"] isEqualToString:@"syncPing"]) {// This is done on the peer with which we are calculating the offset (Host).
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
-                                                                                        @"timeReceived": [NSNumber numberWithUnsignedLongLong:[self currentTime]],
+                                                                                        @"timeReceived": [NSNumber numberWithUnsignedLongLong:timeReceived],
                                                                                         @"timeSent": payload[@"timeSent"],
                                                                                         }];
     
@@ -252,12 +252,12 @@
     uint64_t timePingSent = ((NSNumber*)payload[@"timeSent"]).unsignedLongLongValue;
     uint64_t timeHostReceivedPing = ((NSNumber*)payload[@"timeReceived"]).unsignedLongLongValue;
     
-    //uint64_t latencyWithHost = ([self currentTime] - timePingSent)/2;// Calculates the estimated latency for one way travel
+    //uint64_t latencyWithHost = (timeReceived - timePingSent)/2;// Calculates the estimated latency for one way travel
     
     // If this calculation doesn't meet our error margin (5s), restart.
     if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 5000000000) {
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
+                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:timeReceived]
                                                                                           }];
       NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic];
       
@@ -266,8 +266,9 @@
       
       return;
     }
-    
-    int64_t calculatedOffset = ((int64_t)[self currentTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
+	  
+	// This formula assumes latency both ways is constant. This is why we average the offset over many calculations.
+    int64_t calculatedOffset = ( + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2;
 	
 	// Used to get the average offset.
     totalCalculatedOffsets += calculatedOffset;
