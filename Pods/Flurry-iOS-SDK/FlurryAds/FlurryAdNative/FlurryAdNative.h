@@ -62,6 +62,8 @@ typedef enum {
     }
  *  @endcode
  *
+ *  @param delegate The object to receive notifications of various ad actions.
+ *
  */
 @property (nonatomic, weak) id<FlurryAdNativeDelegate> adDelegate;
 
@@ -274,7 +276,7 @@ typedef enum {
     if a presenting view controller has not been set
  *
  */
-@property (nonatomic, weak) UIViewController* viewControllerForPresentation;
+@property (nonatomic, strong) UIViewController* viewControllerForPresentation;
 
 /*!
  *  @brief This property should be set to the view which will 

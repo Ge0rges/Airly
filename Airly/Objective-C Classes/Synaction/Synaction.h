@@ -9,7 +9,7 @@
 // Frameworks
 #import <Foundation/Foundation.h>
 
-// Manager
+// Managers
 #import "ConnectivityManager.h"
 
 #define CalibrationDoneNotificationName  @"CalibrationDone"

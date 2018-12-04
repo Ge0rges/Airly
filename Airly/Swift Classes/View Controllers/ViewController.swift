@@ -72,8 +72,8 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
       self.receiveImageview.isUserInteractionEnabled = true;
       
       // Accessibility traits
-      self.broadcastImageView.accessibilityTraits = UIAccessibilityTraits.button;
-      self.receiveImageview.accessibilityTraits = UIAccessibilityTraits.button;
+      self.broadcastImageView.accessibilityTraits = UIAccessibilityTraitButton;
+      self.receiveImageview.accessibilityTraits = UIAccessibilityTraitButton;
       
       // Update the image view images to higher resolution
       self.broadcastImageView.image = UIImage.init(named: "Big Broadcast");

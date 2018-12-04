@@ -109,7 +109,7 @@
 - (void)askPeersToCalculateOffset:(NSArray <GCDAsyncSocket*>* _Nonnull)peers {
   if (!peers) {
     NSLog(@"Peers cannot be nil when calling `-askPeersToCalculateOffset`");
-	return;
+		return;
   }
   
   // Remove all peer calibrated
@@ -127,10 +127,10 @@
 
 // Meant for peers.
 - (void)calculateTimeOffsetWithHost:(GCDAsyncSocket *)hostPeer {
-  NSLog(@"Called calibrate function.");
+	NSLog(@"Called calibrate function.");
 	
   if (!self.isCalibrating) {
-	NSLog(@"Calibration request valid sending ping.");
+		NSLog(@"Calibration request valid sending ping.");
 		
     self.isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
@@ -138,7 +138,7 @@
     
     // Handle 0 calibrations
     if (self.maxNumberOfCalibrations == 0) {
-	  NSLog(@"Max calibs 0 so ending now.");
+			NSLog(@"Max calibs 0 so ending now.");
 			
       self.isCalibrating = NO;
       
@@ -152,7 +152,7 @@
       return;
     }
 		
-	NSLog(@"Sending initial ping.");
+		NSLog(@"Sending initial ping.");
 		
     // Send a starting ping
     NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
@@ -266,11 +266,19 @@
       
       return;
     }
+<<<<<<< HEAD
 	  
 	// This formula assumes latency both ways is constant. This is why we average the offset over many calculations.
     int64_t calculatedOffset = ( + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2;
 	
 	// Used to get the average offset.
+=======
+    
+    int64_t calculatedOffset = ((int64_t)[self currentTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
+    //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2
+    //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentTime];// WAY 3
+    
+>>>>>>> parent of 39f44ea... Updated to Swift 4.2 Target 10.0
     totalCalculatedOffsets += calculatedOffset;
     calculatedOffsets += 1;
     
@@ -280,13 +288,20 @@
 	BOOL doneCalibrating = false;
     double newOffset = totalCalculatedOffsets/calculatedOffsets;
     
+<<<<<<< HEAD
     if (fabs(newOffset-self.hostTimeOffset) < 200 && calculatedOffset > 1) {
 	  doneCalibrating = true;
 	  NSLog(@"prematurely ended calibration because accurate enough with difference: %f", fabs(newOffset-self.hostTimeOffset));
+=======
+    if (fabs(newOffset-self.hostTimeOffset) < 5000) {
+      self.maxNumberOfCalibrations = calculatedOffsets;
+      NSLog(@"prematurely ended calibration because accurate enough at value: %f", newOffset);
+>>>>>>> parent of 39f44ea... Updated to Swift 4.2 Target 10.0
     }
     
     self.hostTimeOffset = newOffset;
-	  
+    
+    
     // If calculation is done notify the host.
     if (calculatedOffsets >= self.maxNumberOfCalibrations || doneCalibrating) {
       NSLog(@"Calibration done with maximum number of calibrations, informing host.");
@@ -301,8 +316,8 @@
       // Update the bool
       self.isCalibrating = NO;
 			
-	  // Post the calibration done notification
-	  [[NSNotificationCenter defaultCenter] postNotificationName:CalibrationDoneNotificationName object:self];
+			// Post the calibration done notification
+			[[NSNotificationCenter defaultCenter] postNotificationName:CalibrationDoneNotificationName object:self];
 			
     } else {
       // Send another calibration request.

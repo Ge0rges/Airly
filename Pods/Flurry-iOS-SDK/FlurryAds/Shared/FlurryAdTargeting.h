@@ -76,14 +76,14 @@ typedef enum {
         adTargeting.location = locationManager.location;
     }
  *  @endcode
+ *  @param location A CLLocation object containing latitude and longitude.
  *
  */
 @property (nonatomic, strong) CLLocation* location;
 
 /*!
- *  @brief The information about the user executing ad actions which will be transmitted to Flurry servers when a user clicks on an ad. Note: do not transmit personally identifiable information in the user cookies.
+ *  @brief Sets a dictionary of key/value pairs, which will be transmitted to Flurry servers when a user clicks on an ad.
  *  @since 6.0.0
- 
  *
  *  UserCookies allow the developer to specify information on a user executing an ad action. On each ad click the UserCookies are transmitted to the Flurry servers. The UserCookie key/value pairs will be transmitted back to the developer via the app callback if one is set. This is useful for rewarded inventory, to identify which of your users should be rewarded when a reward callback is sent.
  *
@@ -104,11 +104,12 @@ typedef enum {
     }
  *  @endcode
  *
+ *  @param userCookies The information about the user executing ad actions. Note: do not transmit personally identifiable information in the user cookies.
  */
 @property (nonatomic, strong) NSDictionary *userCookies;
 
 /*!
- *  @brief The information about the user to be used in targeting an ad, which will be transmitted to Flurry servers when an ad is requested. Note: do not transmit personally identifiable information in keywords.
+ *  @brief Sets a dictionary of key/value pairs, which will be transmitted to Flurry servers when an ad is requested.
  *  @since 6.0.0
  *
  *  Keywords allow the developer to specify information on a user executing an ad action for the purposes of targeting.  These keywords are transmitted to the Flurry servers on this ad object's ad request. If corresponding keywords are matched on the ad server, a subset of targeted ads will be delivered. This allows partners to supply information they track internally, which is not available to Flurry's targeting system.
@@ -130,6 +131,7 @@ typedef enum {
     }
  *  @endcode
  *
+ *  @param keywords The information about the user to be used in targeting an ad. Note: do not transmit personally identifiable information in keywords.
  */
 @property (nonatomic, strong) NSDictionary *keywords;
 
