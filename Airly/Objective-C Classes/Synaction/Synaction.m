@@ -254,8 +254,9 @@
     
     //uint64_t latencyWithHost = (timeReceived - timePingSent)/2;// Calculates the estimated latency for one way travel
     
-    // If this calculation doesn't meet our error margin (5s), restart.
-    if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 5000000000) {
+    // If this calculation doesn't meet our error margin (2s), restart.
+    if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 2000000000) {
+	  NSLog(@"Calibration took too long. Repeating.");
       NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
                                                                                           @"timeSent": [NSNumber numberWithUnsignedLongLong:timeReceived]
                                                                                           }];
@@ -278,13 +279,13 @@
 	BOOL doneCalibrating = false;
     double newOffset = totalCalculatedOffsets/calculatedOffsets;
 	  
-    if (fabs(newOffset-self.hostTimeOffset) < 5000) {
-      self.maxNumberOfCalibrations = calculatedOffsets;
-      NSLog(@"prematurely ended calibration because accurate enough at value: %f", newOffset);
+    if (fabs(newOffset-self.hostTimeOffset) <= 500) {
+	  doneCalibrating = true;
+	  NSLog(@"prematurely ended calibration because accurate enough with difference old/new: %f", fabs(newOffset-self.hostTimeOffset));
     }
-    
+	NSLog(@"Got diff old/new: %f", fabs(newOffset-self.hostTimeOffset));
+	  
     self.hostTimeOffset = newOffset;
-    
     
     // If calculation is done notify the host.
     if (calculatedOffsets >= self.maxNumberOfCalibrations || doneCalibrating) {
