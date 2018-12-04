@@ -197,7 +197,7 @@ class PlayerManager: NSObject {
 		let timeRemainingInSong = BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetLength(self.channel, DWORD(BASS_POS_BYTE))) - self.currentPlaybackTime;
 
 		if timeRemainingInSong < 1 {
-			if self.nextSong {
+			if (self.nextSong != nil) {
 				self.playNextSong();
 			
 			} else {

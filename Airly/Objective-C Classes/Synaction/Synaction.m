@@ -266,19 +266,9 @@
       
       return;
     }
-<<<<<<< HEAD
+    
+    int64_t calculatedOffset = ((int64_t)[self currentTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2;
 	  
-	// This formula assumes latency both ways is constant. This is why we average the offset over many calculations.
-    int64_t calculatedOffset = ( + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2;
-	
-	// Used to get the average offset.
-=======
-    
-    int64_t calculatedOffset = ((int64_t)[self currentTime] + (int64_t)timePingSent - (2*(int64_t)timeHostReceivedPing))/2; // WAY 1. Best because it doesn't depend on latency
-    //calculatedOffset2 = (int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)timePingSent;// WAY 2
-    //calculatedOffset3 = -(int64_t)latencyWithHost - (int64_t)timeHostReceivedPing + (int64_t)[self currentTime];// WAY 3
-    
->>>>>>> parent of 39f44ea... Updated to Swift 4.2 Target 10.0
     totalCalculatedOffsets += calculatedOffset;
     calculatedOffsets += 1;
     
@@ -287,16 +277,10 @@
     // If the calibration is accurate enough just end it.
 	BOOL doneCalibrating = false;
     double newOffset = totalCalculatedOffsets/calculatedOffsets;
-    
-<<<<<<< HEAD
-    if (fabs(newOffset-self.hostTimeOffset) < 200 && calculatedOffset > 1) {
-	  doneCalibrating = true;
-	  NSLog(@"prematurely ended calibration because accurate enough with difference: %f", fabs(newOffset-self.hostTimeOffset));
-=======
+	  
     if (fabs(newOffset-self.hostTimeOffset) < 5000) {
       self.maxNumberOfCalibrations = calculatedOffsets;
       NSLog(@"prematurely ended calibration because accurate enough at value: %f", newOffset);
->>>>>>> parent of 39f44ea... Updated to Swift 4.2 Target 10.0
     }
     
     self.hostTimeOffset = newOffset;

@@ -265,12 +265,12 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		let currentNetworkTime: UInt64 = self.synaction.currentNetworkTime()
 		let timePassedBetweenSent = UInt64.subtractWithOverflow(currentNetworkTime, lastReceivedHostTime);
 		
-		print("timePassedBetweenSent overflowed: \(timePassedBetweenSent.overflow)");
+		print("lastReceivedHostTime: \(lastReceivedHostTime) currentNetworkTime: \(currentNetworkTime) timePassedBetweenSent: \(timePassedBetweenSent)");
 		
-		let timeToForwardSong: TimeInterval = Double.init(exactly: timePassedBetweenSent.0)!/1000000000.0// Convert to seconds
+		let timeToForwardSong: TimeInterval = TimeInterval(timePassedBetweenSent.0/UInt64(1000000000.0)) // Convert to seconds
 		let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
 		
-		print("adjustedSongTime: \(adjustedSongTime) timeToForwardSong: \(timeToForwardSong) lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime)  outputLatency: \(self.playerManager.outputLatency)");
+		print("lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime) + timeToForwardSong: \(timeToForwardSong) = adjustedSongTime: \(adjustedSongTime) ");
 		
 		return adjustedSongTime;
 	}
