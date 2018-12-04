@@ -1,6 +1,6 @@
 # Airly
 A Local Music Streaming App
+Published on the App Store.
 
 # License
-(c) Georges Kanaan 2015-2017
-No License.
+Check License file.
