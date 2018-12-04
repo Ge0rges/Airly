@@ -73,7 +73,7 @@ class PlayerManager: NSObject {
 		
 		// Setup the session
 		do {
-			try self.session.setCategory(AVAudioSessionCategoryPlayback);
+			try self.session.setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playback)), mode: .default);
 			try self.session.setActive(true);
 			try self.session.setPreferredIOBufferDuration(0.005);
 			
@@ -232,7 +232,7 @@ class PlayerManager: NSObject {
 		// Export the current song to a file and send the file to the peer
 		let currentSongAsset: AVAsset = self.queue[currentSongIndex].asset;
 		let exporter: AVAssetExportSession = AVAssetExportSession.init(asset: currentSongAsset, presetName: AVAssetExportPresetPassthrough)!;
-		exporter.outputFileType = "com.apple.coreaudio-format";
+		exporter.outputFileType = convertToOptionalAVFileType("com.apple.coreaudio-format");
 		exporter.outputURL = self.currentSongFilePath;
 		
 		print("Exporting current song host");
@@ -244,4 +244,15 @@ class PlayerManager: NSObject {
 			}
 		};
 	}
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalAVFileType(_ input: String?) -> AVFileType? {
+	guard let input = input else { return nil }
+	return AVFileType(rawValue: input)
 }

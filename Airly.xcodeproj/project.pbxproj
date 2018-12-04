@@ -288,7 +288,7 @@
 					FB2F4A7D1EF25CBA00C9D835 = {
 						CreatedOnToolsVersion = 8.3.3;
 						DevelopmentTeam = X427N69BRP;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -550,8 +550,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -574,8 +574,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Off;
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
