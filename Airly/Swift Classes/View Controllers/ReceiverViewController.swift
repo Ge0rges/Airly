@@ -24,8 +24,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
 	let synaction:Synaction! = Synaction.sharedManager();
 	
-	var lastReceivedHostTime: UInt64 = 0;
-	var lastReceivedHostPlaybackTime: TimeInterval = 0;
+	var lastReceivedHostPlaybackTime: UInt64 = 0;
+	var lastReceivedHostSongPlaybackTime: TimeInterval = 0;
 	var lastReceivedTimeToExecute: UInt64 = 0;
 	var currentSongMetadata: Dictionary<String, Any?>? = nil;
 	
@@ -170,8 +170,8 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 			print("Received play command.");
 			
 			// Save the values for next play
-			lastReceivedHostTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
-			lastReceivedHostPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
+			lastReceivedHostPlaybackTime = (payloadDict["timeAtPlaybackTime"] as! UInt64);
+			lastReceivedHostSongPlaybackTime = (payloadDict["playbackTime"] as! TimeInterval);
 			
 			let continuousPlay: Bool = payloadDict["continuousPlay"] as! Bool;
 			
@@ -263,12 +263,12 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
 	func adjustedSongTimeForHost() -> TimeInterval {
 		let currentNetworkTime: UInt64 = self.synaction.currentNetworkTime()
-		let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostTime);
+		let timePassedBetweenSent = currentNetworkTime.subtractingReportingOverflow(lastReceivedHostPlaybackTime);
 		
-		print("lastReceivedHostTime: \(lastReceivedHostTime) currentNetworkTime: \(currentNetworkTime) timePassedBetweenSent: \(timePassedBetweenSent)");
+		print("lastReceivedHostTime: \(lastReceivedHostPlaybackTime) currentNetworkTime: \(currentNetworkTime) timePassedBetweenSent: \(timePassedBetweenSent)");
 		
 		let timeToForwardSong: TimeInterval = TimeInterval(timePassedBetweenSent.0/UInt64(1000000000.0)) // Convert to seconds
-		let adjustedSongTime: TimeInterval = lastReceivedHostPlaybackTime + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
+		let adjustedSongTime: TimeInterval = lastReceivedHostSongPlaybackTime + timeToForwardSong + self.playerManager.outputLatency;// Adjust song time
 		
 		print("lastReceivedHostPlaybackTime: \(lastReceivedHostPlaybackTime) + timeToForwardSong: \(timeToForwardSong) = adjustedSongTime: \(adjustedSongTime) ");
 		
