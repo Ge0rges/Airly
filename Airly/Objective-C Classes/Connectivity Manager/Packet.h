@@ -13,18 +13,18 @@ extern  NSString * _Nonnull const PacketKeyType;
 extern  NSString * _Nonnull const PacketKeyAction;
 
 typedef enum {
-  PacketTypeUnknown = -1,
-  PacketTypeControl = 0,
-  PacketTypeFile,
-  PacketTypeMetadata,
-  
+    PacketTypeUnknown = -1,
+    PacketTypeControl = 0,
+    PacketTypeFile,
+    PacketTypeMetadata,
+    
 } PacketType;
 
 typedef enum {
-  PacketActionUnknown = -1,
-  PacketActionSync = 0,
-  PacketActionPlay,
-  PacketActionPause,
+    PacketActionUnknown = -1,
+    PacketActionSync = 0,
+    PacketActionPlay,
+    PacketActionPause,
 } PacketAction;
 
 @interface Packet : NSObject <NSCoding, NSSecureCoding>
