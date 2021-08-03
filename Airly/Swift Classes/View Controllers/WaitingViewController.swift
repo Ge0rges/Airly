@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Flurry_iOS_SDK
 
 class WaitingViewController: UIViewController, ConnectivityManagerDelegate, FlurryAdBannerDelegate {
   @IBOutlet var backButton: UIButton!
@@ -23,27 +22,6 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate, Flur
     
     // Start looking for a host
     self.synaction.connectivityManager.startBrowsingForBonjourBroadcast();
-  }
-  
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated);
-    
-    // Flurry log time spent waiting
-    DispatchQueue.main.async {
-      Flurry.logEvent("listenerWaiting", timed: true);
-    }
-  }
-  
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated);
-    
-//    // Show ad banner at the bottom of the waiting screen
-//    DispatchQueue.main.async {
-//      let adBanner: FlurryAdBanner = FlurryAdBanner.init(space: "AIRLY_WAITING_SCREEN_BOTTOM_BANNER");
-//      adBanner.adDelegate = self;
-//
-//      adBanner.fetchAndDisplayAd(in: self.view, viewControllerForPresentation: self);
-//    }
   }
   
   //MARK: - Button Actions
@@ -67,23 +45,5 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate, Flur
 		
     // Show receiver view controller
     self.performSegue(withIdentifier: "showReceiverSegue", sender: self);
-    
-    // End log
-    DispatchQueue.main.async {
-      Flurry.endTimedEvent("listenerWaiting", withParameters: ["canceled": false]);
-    }
   }
-  
-//  //MARK: - Ad Delegate
-//  func adBanner(_ bannerAd: FlurryAdBanner!, adError: FlurryAdError, errorDescription: Error!) {
-//    print("Error fetching ad: \(adError)");
-//  }
-//
-//  func adBannerDidFetchAd(_ bannerAd: FlurryAdBanner!) {
-//    print("Fetched ad");
-//  }
-//
-//  func adBannerDidRender(_ bannerAd: FlurryAdBanner!) {
-//    print("Rendered Ad");
-//  }
 }

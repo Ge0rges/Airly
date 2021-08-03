@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Flurry_iOS_SDK
 
 class ViewController: UIViewController, UIGestureRecognizerDelegate {
   
@@ -21,11 +20,6 @@ class ViewController: UIViewController, UIGestureRecognizerDelegate {
   
   override func viewDidLoad() {
     super.viewDidLoad();
-    
-    // Flurry log page views
-    DispatchQueue.main.async {
-      Flurry.logAllPageViews(forTarget: self.navigationController);
-    };
   }
 	
 	override func viewDidAppear(_ animated: Bool) {

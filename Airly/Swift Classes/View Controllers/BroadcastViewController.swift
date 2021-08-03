@@ -8,7 +8,6 @@
 
 import UIKit
 import MediaPlayer
-import Flurry_iOS_SDK
 import StoreKit
 
 class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate, SKCloudServiceSetupViewControllerDelegate {
@@ -89,11 +88,6 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		
 		// Update the interface
 		self.updateInterface(notification: nil);
-		
-		// Log
-		DispatchQueue.main.async {
-			Flurry.logEvent("startedBroadcast", timed: true);
-		}
 	}
 	
 	override func viewDidDisappear(_ animated: Bool) {
@@ -119,11 +113,6 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		// Dismiss view
 		if !self.isMovingFromParent {
 			self.navigationController?.popViewController(animated: true);
-		}
-		
-		// Log
-		DispatchQueue.main.async {
-			Flurry.endTimedEvent("startedBroadcast", withParameters: nil);
 		}
 	}
 	

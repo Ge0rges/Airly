@@ -10,7 +10,6 @@
 
 import UIKit
 import MediaPlayer
-import Flurry_iOS_SDK
 import AVFoundation
 
 class HostSyncManager: NSObject, ConnectivityManagerDelegate {

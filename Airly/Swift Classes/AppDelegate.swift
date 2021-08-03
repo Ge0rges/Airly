@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Flurry_iOS_SDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -33,13 +32,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 		
 		UIApplication.shared.isIdleTimerDisabled = true;
-		
-    // Start Flurry session
-    DispatchQueue.main.async {
-      Flurry.startSession("WNWRYRCQXJ2CKHJYQ9PW", withOptions: launchOptions);
-      Flurry.setLogLevel(FlurryLogLevelCriticalOnly);
-      Flurry.setShowErrorInLogEnabled(true);
-    }
     
     return true
   }
