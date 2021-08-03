@@ -37,6 +37,12 @@
 	<true/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Access is required to play your music through Airly.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_airly._tcp</string>
+	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Airly uses your local network to connect with nearby friends who have also opened Airly in "Receiving" mode.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
