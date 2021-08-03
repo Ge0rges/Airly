@@ -6,8 +6,6 @@
 //  Copyright © 2017 Georges Kanaan. All rights reserved.
 //
 
-//TODO: Don't send same song twice. + File ID + Delete all end session + no sending twice.
-
 import UIKit
 import MediaPlayer
 import AVFoundation
@@ -65,7 +63,7 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 		
 		let dictionaryPayload = ["command": "pause",
 		                         "timeToExecute": timeToExecute,
-		                         "song": (self.playerManager.currentSongMetadata?["title"] ?? "")!
+		                         "song": (self.playerManager.currentSongMetadata?["title"] ?? "Uknown Title")!
 			] as [String : Any];
         
         let payloadData = try! NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload, requiringSecureCoding: false);
@@ -128,7 +126,7 @@ class HostSyncManager: NSObject, ConnectivityManagerDelegate {
 	}
 	
 	func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
-        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data) as! Dictionary;
+        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data!) as! Dictionary;
 		let command: String! = payloadDict["command"] as? String;
 		
 		if (command == "status") {// Send our current status to this peer

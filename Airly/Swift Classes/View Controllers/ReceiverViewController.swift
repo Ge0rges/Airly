@@ -155,7 +155,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
 	//MARK: - Communication
 	func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
-        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data) as! Dictionary;
+        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data!) as! Dictionary;
 		let command: String! = payloadDict["command"] as? String;
 		
 		print("Received packet with command: \(String(describing: command))");

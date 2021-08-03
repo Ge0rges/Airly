@@ -49,10 +49,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.mediaPicker!.showsItemsWithProtectedAssets = false;
 		self.mediaPicker!.allowsPickingMultipleItems = true;
 		self.mediaPicker!.prompt = "Only music you own is playable.";
-		
-		// Clear the music queue
-		// self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil); TODO: Is this needed when closing the view ad coming bacK?
-		
+				
 		// Register for player notifications
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
@@ -117,6 +114,17 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	}
 	
 	@IBAction func addMusicButtonPressed(_ sender: Any?) {
+        if !UIApplication.shared.canOpenURL(URL(string: "music://")!) {
+            let dialogMessage = UIAlertController(title: "Music not Installed", message: "Airly requires the Apple Music app to be installed on this device. Airly retrieves your songs from the Apple Music app's library. At this timen other music service is supported.", preferredStyle: .alert)
+                        
+            dialogMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            
+            // Present alert to user
+            self.present(dialogMessage, animated: true, completion: nil)
+            
+            return
+        }
+        
 		// Request authentication to music library
 		MPMediaLibrary.requestAuthorization { (authorizationStatus) in
 			DispatchQueue.main.async {// Main Queue

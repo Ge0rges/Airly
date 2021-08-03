@@ -117,10 +117,11 @@
     [self.calibratedPeers removeObject:peerID];
   }
   
-  // Send the "sync" command to peers to trigger their offset calculations.
-  NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"sync"}];
-  NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic requiringSecureCoding:FALSE error:nil];
-  
+    // Send the "sync" command to peers to trigger their offset calculations.
+    NSError *error;
+    NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"sync"} requiringSecureCoding:FALSE error:&error];
+    if (error) NSLog(@"%@", error);
+
   Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
   [self.connectivityManager sendPacket:packet toSockets:peers];
 }
@@ -134,8 +135,10 @@
 		
     self.isCalibrating = YES;// Used to track the calibration
     calculatedOffsets = 0;// Reset calculated offsets number
-    totalCalculatedOffsets = 0;
+      totalCalculatedOffsets = 0;
     
+      NSError *error; // For archivers
+
     // Handle 0 calibrations
     if (self.maxNumberOfCalibrations == 0) {
 			NSLog(@"Max calibs 0 so ending now.");
@@ -143,9 +146,9 @@
       self.isCalibrating = NO;
       
       // Let the host know we calibrated
-      NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
-      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic requiringSecureCoding:FALSE error:nil];
-      
+        NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"syncDone"} requiringSecureCoding:FALSE error:&error];
+        if (error) NSLog(@"%@", error);
+
       Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[hostPeer]];
       
@@ -155,11 +158,10 @@
 		NSLog(@"Sending initial ping.");
 		
     // Send a starting ping
-    NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                        @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
-                                                                                        }];
-    NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic requiringSecureCoding:FALSE error:nil];
-    
+    NSDictionary *payloadDict = @{@"command": @"syncPing", @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]};
+    NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDict requiringSecureCoding:FALSE error:&error];
+      if (error) NSLog(@"%@", error);
+
     Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
     [self.connectivityManager sendPacket:packet toSockets:@[hostPeer]];
   }
@@ -214,8 +216,10 @@
 
 - (void)didReceivePacket:(Packet *)packet fromSocket:(GCDAsyncSocket *)socket {
   int64_t timeReceived = (int64_t)[self currentTime];
-  NSDictionary *payload = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class] fromData:packet.data error:nil];
-  
+    NSError *error;
+  NSDictionary *payload = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class] fromData:packet.data error:&error];
+    if (error) NSLog(@"%@", error);
+    
   // Check if the host is asking us to sync
   if ([payload[@"command"] isEqualToString:@"sync"]) {
 		NSLog(@"Host asked us to sync.");
@@ -232,13 +236,15 @@
     return;
 		
   } else if ([payload[@"command"] isEqualToString:@"syncPing"]) {// This is done on the peer with which we are calculating the offset (Host).
-    NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
+    NSMutableDictionary *payloadDict = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPong",
                                                                                         @"timeReceived": [NSNumber numberWithUnsignedLongLong:timeReceived],
                                                                                         @"timeSent": payload[@"timeSent"],
                                                                                         }];
     
-    NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic requiringSecureCoding:FALSE error:nil];
-    
+      NSError *error;
+    NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDict requiringSecureCoding:FALSE error:&error];
+      if (error) NSLog(@"%@", error);
+
     // Speakers are only connected to the host.
     Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
     [self.connectivityManager sendPacket:packet toSockets:@[socket]];
@@ -257,11 +263,11 @@
     // If this calculation doesn't meet our error margin (2s), restart.
     if (((int64_t)[self currentTime] - (int64_t)timePingSent) > 2000000000) {
 	  NSLog(@"Calibration took too long. Repeating.");
-      NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:timeReceived]
-                                                                                          }];
-      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic requiringSecureCoding:FALSE error:nil];
-      
+      NSDictionary *payloadDict = @{@"command": @"syncPing", @"timeSent": [NSNumber numberWithUnsignedLongLong:timeReceived]};
+        NSError *error;
+      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDict requiringSecureCoding:FALSE error:&error];
+        if (error) NSLog(@"%@", error);
+
       Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
@@ -292,9 +298,10 @@
       NSLog(@"Calibration done with maximum number of calibrations, informing host.");
       
       // Let the host know we calibrated
-      NSMutableDictionary *payloadDict = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncDone"}];
-      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDict requiringSecureCoding:FALSE error:nil];
-      
+        NSError *error;
+        NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:@{@"command": @"syncDone"} requiringSecureCoding:FALSE error:&error];
+        if (error) NSLog(@"%@", error);
+        
       Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
       
@@ -306,11 +313,11 @@
 			
     } else {
       // Send another calibration request.
-      NSMutableDictionary *payloadDic = [[NSMutableDictionary alloc] initWithDictionary:@{@"command": @"syncPing",
-                                                                                          @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]
-                                                                                          }];
-      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDic requiringSecureCoding:FALSE error:nil];
-      
+      NSDictionary *payloadDict = @{@"command": @"syncPing", @"timeSent": [NSNumber numberWithUnsignedLongLong:[self currentTime]]};
+        NSError *error;
+      NSData *payload = [NSKeyedArchiver archivedDataWithRootObject:payloadDict requiringSecureCoding:FALSE error:&error];
+        if (error) NSLog(@"%@", error);
+
       Packet *packet = [[Packet alloc] initWithData:payload type:0 action:PacketActionSync];
       [self.connectivityManager sendPacket:packet toSockets:@[socket]];
     }

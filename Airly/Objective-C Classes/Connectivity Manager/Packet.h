@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString * const PacketKeyData;
-extern NSString * const PacketKeyType;
-extern NSString * const PacketKeyAction;
+extern  NSString * _Nonnull  const PacketKeyData;
+extern  NSString * _Nonnull const PacketKeyType;
+extern  NSString * _Nonnull const PacketKeyAction;
 
 typedef enum {
   PacketTypeUnknown = -1,
@@ -27,12 +27,14 @@ typedef enum {
   PacketActionPause,
 } PacketAction;
 
-@interface Packet : NSObject
+@interface Packet : NSObject <NSCoding, NSSecureCoding>
 
-@property (strong, nonatomic) NSData *data;// Must conform to NSCoding
+@property (strong, nonatomic) NSData * _Nullable data;// Must conform to NSCoding
 @property (assign, nonatomic) PacketType type;// Optionally assign a type to this packet
 @property (assign, nonatomic) PacketAction action;// Optionally assign a action to this packet
 
-- (id)initWithData:(id)data type:(PacketType)type action:(PacketAction)action;
+- (_Nonnull instancetype)initWithData:(_Nonnull id)data type:(PacketType)type action:(PacketAction)action;
+- (_Nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder;
+- (void)encodeWithCoder:(NSCoder * _Nonnull)coder;
 
 @end

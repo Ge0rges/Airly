@@ -33,11 +33,10 @@
 
 @property (readonly, strong, nonatomic) NSString * _Nullable hostName;
 
-+ (instancetype _Nullable)sharedManager;
++ (_Nullable instancetype)sharedManager;
 
 - (void)sendPacket:(Packet * _Nonnull)packet toSockets:(NSArray<GCDAsyncSocket *> *_Nonnull)sockets;
 - (void)startBonjourBroadcast;
-
 - (void)startBrowsingForBonjourBroadcast;
 - (void)stopBonjour;
 - (void)disconnectSockets;

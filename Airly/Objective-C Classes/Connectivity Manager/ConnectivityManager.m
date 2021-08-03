@@ -9,6 +9,8 @@
 
 #import "ConnectivityManager.h"
 
+#define PacketString @"Packet"
+
 @interface ConnectivityManager () <NSNetServiceDelegate, NSNetServiceBrowserDelegate, GCDAsyncSocketDelegate>
 
 @property (strong, nonatomic) GCDAsyncSocket *serverSocket;
@@ -140,12 +142,10 @@
 	NSLog(@"Sending packet to sockets");
 	
 	// Encode Packet Data
-	NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:FALSE];
-	[archiver encodeObject:packet forKey:@"packet"];
-	[archiver finishEncoding];
-    
-    NSData *packetData = [archiver encodedData];
-	
+    NSError *error;
+	NSData *packetData = [NSKeyedArchiver archivedDataWithRootObject:packet requiringSecureCoding:FALSE error:&error];
+    if (error) NSLog(@"%@", error);
+
 	// Initialize Buffer
 	NSMutableData *buffer = [[NSMutableData alloc] init];
 	
@@ -168,10 +168,10 @@
 }
 
 - (Packet *)parseBody:(NSData *)data {
-	NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
-	Packet *packet = [unarchiver decodeObjectForKey:@"packet"];
-	[unarchiver finishDecoding];
-    	
+    NSError *error;
+    Packet *packet = [NSKeyedUnarchiver unarchivedObjectOfClass:[Packet class] fromData:data error:&error];
+    if (error) NSLog(@"%@", error);
+
 	return packet;
 }
 

@@ -16,7 +16,7 @@ NSString * const PacketKeyAction = @"action";
 
 #pragma mark -
 #pragma mark Initialization
-- (id)initWithData:(id)data type:(PacketType)type action:(PacketAction)action {
+- (instancetype)initWithData:(_Nonnull id)data type:(PacketType)type action:(PacketAction)action {
   self = [super init];
   
   if (self) {
@@ -30,22 +30,27 @@ NSString * const PacketKeyAction = @"action";
 
 #pragma mark -
 #pragma mark NSCoding Protocol
-- (void)encodeWithCoder:(NSCoder *)coder {
+- (void)encodeWithCoder:(NSCoder * _Nonnull)coder {
   [coder encodeObject:self.data forKey:PacketKeyData];
   [coder encodeInteger:self.type forKey:PacketKeyType];
   [coder encodeInteger:self.action forKey:PacketKeyAction];
 }
 
-- (id)initWithCoder:(NSCoder *)decoder {
+- (_Nullable instancetype)initWithCoder:(NSCoder * _Nonnull)decoder {
   self = [super init];
   
   if (self) {
-    [self setData:[decoder decodeObjectForKey:PacketKeyData]];
+    [self setData:[decoder decodeObjectOfClass:[NSData class] forKey:PacketKeyData]];
     [self setType:(PacketType)[decoder decodeIntegerForKey:PacketKeyType]];
     [self setAction:(PacketAction)[decoder decodeIntegerForKey:PacketKeyAction]];
   }
   
   return self;
+}
+
+#pragma mark NSSecureCoding Protocol
++ (BOOL)supportsSecureCoding {
+    return TRUE;
 }
 
 @end
