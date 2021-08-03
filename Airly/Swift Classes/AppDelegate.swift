@@ -23,7 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let launchesSinceReview: Int = UserDefaults.standard.integer(forKey: "launchesSinceLastReview");
     if launchesSinceReview >= 2 {
         if #available(iOS 10.3, *) {
-//        SKStoreReviewController.requestReview();
+        SKStoreReviewController.requestReview();
       }
       
       UserDefaults.standard.set(0, forKey: "launchesSinceLastReview");
