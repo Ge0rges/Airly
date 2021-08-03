@@ -13,6 +13,8 @@
 		FB2F4A871EF25CBA00C9D835 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A851EF25CBA00C9D835 /* Main.storyboard */; };
 		FB2F4A891EF25CBA00C9D835 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */; };
 		FB2F4A8C1EF25CBA00C9D835 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */; };
+		FB71F3FD26B9675B00574301 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB71F3FC26B9675B00574301 /* SpotifyiOS.framework */; };
+		FB71F3FE26B975B500574301 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB59D9111EFB986200972E2E /* StoreKit.framework */; };
 		FB77BC671EF2BCD6001362F8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */; };
 		FB77BC691EF2BCE0001362F8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC681EF2BCE0001362F8 /* UIKit.framework */; };
 		FB77BC6B1EF2BCE8001362F8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC6A1EF2BCE8001362F8 /* Foundation.framework */; };
@@ -48,6 +50,7 @@
 		FB2F4A8B1EF25CBA00C9D835 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FB2F4A8D1EF25CBA00C9D835 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FB59D9111EFB986200972E2E /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		FB71F3FC26B9675B00574301 /* SpotifyiOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SpotifyiOS.framework; sourceTree = "<group>"; };
 		FB77BC641EF2BCD1001362F8 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
 		FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FB77BC681EF2BCE0001362F8 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -86,7 +89,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBB15AF21F11A1C9009D3C48 /* Accelerate.framework in Frameworks */,
+				FB71F3FD26B9675B00574301 /* SpotifyiOS.framework in Frameworks */,
 				FBB15AF01F11A1BF009D3C48 /* SystemConfiguration.framework in Frameworks */,
+				FB71F3FE26B975B500574301 /* StoreKit.framework in Frameworks */,
 				FBB15AEE1F11A1B5009D3C48 /* CFNetwork.framework in Frameworks */,
 				FBB15AEC1F11A1AF009D3C48 /* AudioToolbox.framework in Frameworks */,
 				FB77BC6D1EF2BCF4001362F8 /* MediaPlayer.framework in Frameworks */,
@@ -143,6 +148,7 @@
 		FB77BC611EF2BCCC001362F8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB71F3FC26B9675B00574301 /* SpotifyiOS.framework */,
 				FBB15AF11F11A1C9009D3C48 /* Accelerate.framework */,
 				FBB15AEF1F11A1BF009D3C48 /* SystemConfiguration.framework */,
 				FBB15AED1F11A1B5009D3C48 /* CFNetwork.framework */,
@@ -309,6 +315,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -360,18 +367,16 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Airly/Pods-Airly-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Airly/Pods-Airly-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/CocoaAsyncSocket/CocoaAsyncSocket.framework",
-				"${BUILT_PRODUCTS_DIR}/Flurry-iOS-SDK/Flurry_iOS_SDK.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaAsyncSocket.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Flurry_iOS_SDK.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Airly/Pods-Airly-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Airly/Pods-Airly-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -470,7 +475,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -523,7 +528,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -540,6 +545,10 @@
 				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Airly/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -547,9 +556,20 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Airly/Objective-C\\ Classes/Bass",
 				);
+				MARKETING_VERSION = 2.1;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CocoaAsyncSocket\"",
+					"-framework",
+					"\"Security\"",
+					"-ObjC\n-ObjC\n-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -564,6 +584,10 @@
 				CODE_SIGN_ENTITLEMENTS = Airly/Airly.entitlements;
 				DEVELOPMENT_TEAM = X427N69BRP;
 				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = Airly/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -571,9 +595,20 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Airly/Objective-C\\ Classes/Bass",
 				);
+				MARKETING_VERSION = 2.1;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"CocoaAsyncSocket\"",
+					"-framework",
+					"\"Security\"",
+					"-ObjC\n-ObjC\n-ObjC",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ge0rges.Airly;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/iOS_Development/Apps/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "/Users/GeorgesKanaan/Documents/Development/Airly/Airly/Objective-C Classes/Airly-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";

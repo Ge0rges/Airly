@@ -8,7 +8,7 @@
 
 import UIKit
 
-class WaitingViewController: UIViewController, ConnectivityManagerDelegate, FlurryAdBannerDelegate {
+class WaitingViewController: UIViewController, ConnectivityManagerDelegate {
   @IBOutlet var backButton: UIButton!
   @IBOutlet var pingImageView: UIImageView!
   
@@ -31,11 +31,6 @@ class WaitingViewController: UIViewController, ConnectivityManagerDelegate, Flur
     
     // Dismiss
     self.navigationController?.popViewController(animated: true);
-    
-    // End log
-    DispatchQueue.main.async {
-      Flurry.endTimedEvent("listenerWaiting", withParameters: ["canceled": true]);
-    }
   }
   
   //MARK: - ConnectivityManagerDelegate
