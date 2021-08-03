@@ -15,7 +15,7 @@
 #define CalibrationDoneNotificationName  @"CalibrationDone"
 
 typedef void(^ _Nullable calibrationBlock)(NSArray <GCDAsyncSocket *> * _Nullable peers);
- 
+
 @interface Synaction : NSObject <ConnectivityManagerDelegate>
 
 + (instancetype _Nonnull)sharedManager;// Use this to get an instance of Synaction

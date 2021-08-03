@@ -29,7 +29,7 @@ typedef enum {
 
 @interface Packet : NSObject
 
-@property (strong, nonatomic) id data;// Must conform to NSCoding
+@property (strong, nonatomic) NSData *data;// Must conform to NSCoding
 @property (assign, nonatomic) PacketType type;// Optionally assign a type to this packet
 @property (assign, nonatomic) PacketAction action;// Optionally assign a action to this packet
 

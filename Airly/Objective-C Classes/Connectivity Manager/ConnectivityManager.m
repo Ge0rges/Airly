@@ -140,10 +140,11 @@
 	NSLog(@"Sending packet to sockets");
 	
 	// Encode Packet Data
-	NSMutableData *packetData = [[NSMutableData alloc] init];
-	NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:packetData];
+	NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:FALSE];
 	[archiver encodeObject:packet forKey:@"packet"];
 	[archiver finishEncoding];
+    
+    NSData *packetData = [archiver encodedData];
 	
 	// Initialize Buffer
 	NSMutableData *buffer = [[NSMutableData alloc] init];
@@ -167,10 +168,10 @@
 }
 
 - (Packet *)parseBody:(NSData *)data {
-	NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+	NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
 	Packet *packet = [unarchiver decodeObjectForKey:@"packet"];
 	[unarchiver finishDecoding];
-	
+    	
 	return packet;
 }
 

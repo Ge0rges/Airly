@@ -193,7 +193,7 @@ class PlayerManager: NSObject {
 		print("error seeking in song: \(BASS_ErrorGetCode())");
 	}
 	
-	@objc private func playerDidFinishPlaying(notification: Notification?) {
+    @objc private func playerDidFinishPlaying(notification: Notification?) {
 		let timeRemainingInSong = BASS_ChannelBytes2Seconds(self.channel, BASS_ChannelGetLength(self.channel, DWORD(BASS_POS_BYTE))) - self.currentPlaybackTime;
 
 		if timeRemainingInSong < 1 {

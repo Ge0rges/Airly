@@ -97,7 +97,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	}
 	
 	// MARK: - UI Functions
-	@objc func updateInterface(notification: Notification?) {
+    @objc func updateInterface(notification: Notification?) {
 		print("Listener updating UI");
 		
 		// Album Art
@@ -155,7 +155,7 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 	
 	//MARK: - Communication
 	func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
-		let payloadDict: Dictionary<String,Any?> = NSKeyedUnarchiver.unarchiveObject(with: packet.data as! Data) as! Dictionary;
+        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data) as! Dictionary;
 		let command: String! = payloadDict["command"] as? String;
 		
 		print("Received packet with command: \(String(describing: command))");
@@ -269,18 +269,18 @@ class ReceiverViewController: UIViewController, ConnectivityManagerDelegate {
 		return adjustedSongTime;
 	}
 	
-	@objc public func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
+    @objc public func requestHostState(notification: Notification?) {// Ask the host to send us the song if we don't have it, otherwise it's state (play/pause)
 		if (self.playerManager.currentSong == nil) {
 			let payloadDict: [String : Any] = ["command": "getSong"]  as [String : Any];
-			let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
-			
+			let packet: Packet = try! Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict, requiringSecureCoding: false), type: PacketTypeFile, action: PacketActionUnknown);
+
 			print("Asking host to send us the song");
 			self.connectivityManager.send(packet, to: [self.connectivityManager.hostSocket!]);
 			return;
 		}
 		
 		let payloadDict: [String : Any] = ["command": "status"]  as [String : Any];
-		let packet: Packet = Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict), type: PacketTypeFile, action: PacketActionUnknown);
+		let packet: Packet = try! Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict, requiringSecureCoding: false), type: PacketTypeFile, action: PacketActionUnknown);
 		
 		print("Asking host to send us their status");
 		self.connectivityManager.send(packet, to: [self.connectivityManager.hostSocket!]);

@@ -189,7 +189,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 	}
 	
 	// MARK: - UI Functions
-	@objc func updateInterface(notification: Notification?) {
+    @objc func updateInterface(notification: Notification?) {
 		// Toggle Playback button
 		let playbackImage = (self.playerManager.isPlaying) ? #imageLiteral(resourceName: "Pause") : #imageLiteral(resourceName: "Play");
 		self.playbackButton.setImage(playbackImage, for: .normal);
