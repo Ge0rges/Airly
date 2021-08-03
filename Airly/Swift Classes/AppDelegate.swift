@@ -22,8 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // Ask review after 2 usages
     let launchesSinceReview: Int = UserDefaults.standard.integer(forKey: "launchesSinceLastReview");
     if launchesSinceReview >= 2 {
-      if #available(iOS 10.3, *) {
-        SKStoreReviewController.requestReview();
+        if #available(iOS 10.3, *) {
+//        SKStoreReviewController.requestReview();
       }
       
       UserDefaults.standard.set(0, forKey: "launchesSinceLastReview");
@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
       UserDefaults.standard.set(launchesSinceReview+1, forKey: "launchesSinceLastReview");
     }
 		
-		UIApplication.shared.isIdleTimerDisabled = true;
+    UIApplication.shared.isIdleTimerDisabled = true;
     
     return true
   }

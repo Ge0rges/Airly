@@ -113,10 +113,9 @@ class PlayerManager: NSObject {
 		
 		if (mediaItems == nil || mediaItems!.count == 0) {
 			print("Empty queue: deleting song file and stopping channel.");
-			self.exportCurrentSongToFile {
-				BASS_ChannelStop(self.channel);
-			}
-			
+            try? FileManager.default.removeItem(at: self.currentSongFilePath);
+            BASS_ChannelStop(self.channel);
+            
 			return;
 		}
 		
@@ -202,10 +201,6 @@ class PlayerManager: NSObject {
 			
 			} else {
 				self.pause();
-				
-				// #TEST
-				// Reset to first song
-				self.loadQueueFromMPMediaItems(mediaItems: self.queueMediaItems)
 			}
 			
 		} else {
@@ -223,7 +218,7 @@ class PlayerManager: NSObject {
 		}
 		
 		// If no new song return.
-		if (currentSongIndex >= self.queue.count && self.queue.count < 1) {
+		if (currentSongIndex >= self.queue.count || self.queue.count < 1) {
 			print("Error exporting file, invalid song index.");
 			completionHandler();
 			return;

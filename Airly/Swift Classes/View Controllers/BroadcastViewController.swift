@@ -51,7 +51,7 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
 		self.mediaPicker!.prompt = "Only music you own is playable.";
 		
 		// Clear the music queue
-		self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil);
+		// self.playerManager.loadQueueFromMPMediaItems(mediaItems: nil); TODO: Is this needed when closing the view ad coming bacK?
 		
 		// Register for player notifications
 		NotificationCenter.default.addObserver(self, selector: #selector(self.updateInterface(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);

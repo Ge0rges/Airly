@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12121" systemVersion="16F2104" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="MUv-nj-NYK">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="MUv-nj-NYK">
+    <device id="retina6_1" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,11 +17,11 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Airly" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jlJ-yo-jj7">
-                                <rect key="frame" x="131.5" y="40" width="113.5" height="72"/>
+                                <rect key="frame" x="151" y="64" width="112" height="72"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
@@ -33,20 +29,17 @@
                                 <color key="textColor" red="0.92549019607843142" green="0.25490196078431371" blue="0.16862745098039217" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share your music with your friends." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="165" translatesAutoresizingMaskIntoConstraints="NO" id="8Ju-HD-JHv">
-                                <rect key="frame" x="111" y="128" width="155.5" height="44"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Share your music with your friends." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Ju-HD-JHv">
+                                <rect key="frame" x="88" y="146" width="238.5" height="17"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="YiZ-c9-MoI"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2tW-7h-byx">
-                                <rect key="frame" x="17" y="609" width="342" height="38"/>
+                            <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2tW-7h-byx">
+                                <rect key="frame" x="21" y="804" width="373" height="38"/>
                                 <color key="backgroundColor" red="0.92549019607843142" green="0.25490196078431371" blue="0.16862745098039217" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES" causesPageTurn="YES"/>
@@ -67,32 +60,32 @@
                                     <action selector="getStartedPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Jkm-nv-mN0"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invite your friends and stream your music between devices." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="240" translatesAutoresizingMaskIntoConstraints="NO" id="JVQ-Cj-y2v">
-                                <rect key="frame" x="97" y="258.5" width="240" height="36"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Invite your friends and stream your music between devices." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JVQ-Cj-y2v">
+                                <rect key="frame" x="101" y="373.5" width="271" height="36"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Or" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="240" translatesAutoresizingMaskIntoConstraints="NO" id="NLd-qU-Ssn">
-                                <rect key="frame" x="97" y="324.5" width="17" height="18"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Or" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="240" translatesAutoresizingMaskIntoConstraints="NO" id="NLd-qU-Ssn">
+                                <rect key="frame" x="101" y="439.5" width="16" height="17"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                 <color key="textColor" red="0.5607843137254902" green="0.55686274509803924" blue="0.58039215686274503" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let others invite you so they can use your device to play music." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="240" translatesAutoresizingMaskIntoConstraints="NO" id="4vd-CU-ppr">
-                                <rect key="frame" x="97" y="373" width="226" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Let others invite you so they can use your device to play music." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4vd-CU-ppr">
+                                <rect key="frame" x="101" y="486.5" width="257" height="36"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Small Broadcast" translatesAutoresizingMaskIntoConstraints="NO" id="srA-3d-ey4">
-                                <rect key="frame" x="17" y="247" width="60" height="60"/>
+                                <rect key="frame" x="21" y="361.5" width="60" height="60"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
                                     <bool key="isElement" value="YES"/>
@@ -107,7 +100,7 @@
                                 </connections>
                             </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Small Receive" translatesAutoresizingMaskIntoConstraints="NO" id="Zbh-7k-6Rr">
-                                <rect key="frame" x="17" y="360.5" width="60" height="60"/>
+                                <rect key="frame" x="21" y="474.5" width="60" height="60"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
                                     <bool key="isElement" value="YES"/>
@@ -122,7 +115,7 @@
                                 </connections>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <accessibility key="accessibilityConfiguration">
                             <accessibilityTraits key="traits" notEnabled="YES"/>
                             <bool key="isElement" value="YES"/>
@@ -130,13 +123,15 @@
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="JVQ-Cj-y2v" secondAttribute="trailing" constant="22" id="1UN-Cb-cjt"/>
                             <constraint firstItem="8Ju-HD-JHv" firstAttribute="centerX" secondItem="jlJ-yo-jj7" secondAttribute="centerX" id="8bp-wa-0mO"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="2tW-7h-byx" secondAttribute="bottom" constant="20" id="8u9-yT-jjD"/>
+                            <constraint firstItem="jlJ-yo-jj7" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="951-iE-IXr"/>
                             <constraint firstItem="JVQ-Cj-y2v" firstAttribute="leading" secondItem="srA-3d-ey4" secondAttribute="trailing" constant="20" id="AGo-nw-6xY"/>
-                            <constraint firstItem="jlJ-yo-jj7" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="20" id="CAh-SL-DjB"/>
                             <constraint firstItem="2tW-7h-byx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="1" id="Fml-Op-b1w"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="2tW-7h-byx" secondAttribute="bottom" constant="20" id="IfO-mZ-NWw"/>
-                            <constraint firstItem="8Ju-HD-JHv" firstAttribute="top" secondItem="jlJ-yo-jj7" secondAttribute="bottom" constant="16" id="Jix-h0-b1V"/>
+                            <constraint firstItem="8Ju-HD-JHv" firstAttribute="top" secondItem="jlJ-yo-jj7" secondAttribute="bottom" constant="10" id="Jix-h0-b1V"/>
                             <constraint firstItem="jlJ-yo-jj7" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Kbb-TT-Qza"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="8Ju-HD-JHv" secondAttribute="trailing" constant="10" id="LVR-Cg-eyK"/>
                             <constraint firstItem="Zbh-7k-6Rr" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="1" id="LvI-5c-f7h"/>
+                            <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="NLd-qU-Ssn" secondAttribute="trailing" id="Nht-6N-h9k"/>
                             <constraint firstItem="4vd-CU-ppr" firstAttribute="leading" secondItem="Zbh-7k-6Rr" secondAttribute="trailing" constant="20" id="O9U-tM-Sfu"/>
                             <constraint firstItem="4vd-CU-ppr" firstAttribute="top" secondItem="NLd-qU-Ssn" secondAttribute="bottom" constant="30" id="P7i-yc-kQu"/>
                             <constraint firstItem="Zbh-7k-6Rr" firstAttribute="centerY" secondItem="4vd-CU-ppr" secondAttribute="centerY" id="SJI-YP-rIw"/>
@@ -145,6 +140,7 @@
                             <constraint firstItem="NLd-qU-Ssn" firstAttribute="leading" secondItem="JVQ-Cj-y2v" secondAttribute="leading" id="ZJc-gK-KWy"/>
                             <constraint firstAttribute="trailingMargin" secondItem="2tW-7h-byx" secondAttribute="trailing" id="gpJ-bd-E4Y"/>
                             <constraint firstItem="NLd-qU-Ssn" firstAttribute="top" secondItem="JVQ-Cj-y2v" secondAttribute="bottom" constant="30" id="kCO-WI-zRw"/>
+                            <constraint firstItem="8Ju-HD-JHv" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="10" id="luB-hC-G6V"/>
                             <constraint firstItem="srA-3d-ey4" firstAttribute="centerY" secondItem="JVQ-Cj-y2v" secondAttribute="centerY" id="u47-mI-PFZ"/>
                             <constraint firstItem="srA-3d-ey4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="1" id="vzQ-RO-Itd"/>
                             <constraint firstItem="NLd-qU-Ssn" firstAttribute="leading" secondItem="4vd-CU-ppr" secondAttribute="leading" id="y7n-nz-H4E"/>
@@ -160,6 +156,7 @@
                         <outlet property="receiveImageview" destination="Zbh-7k-6Rr" id="T3L-WU-B6d"/>
                         <outlet property="receiveLabel" destination="4vd-CU-ppr" id="em1-7c-9en"/>
                         <outlet property="subtitleLabel" destination="8Ju-HD-JHv" id="ttP-KN-bhL"/>
+                        <outlet property="titleLabel" destination="jlJ-yo-jj7" id="wY3-VA-IY8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -185,11 +182,11 @@
                         <viewControllerLayoutGuide type="bottom" id="mus-tL-pqe"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="4jX-tU-ymn">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kc6-aV-4Tx">
-                                <rect key="frame" x="16" y="30" width="54" height="33"/>
+                                <rect key="frame" x="16" y="54" width="54" height="33"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES" causesPageTurn="YES"/>
                                 </accessibility>
@@ -202,7 +199,7 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Broadcast" translatesAutoresizingMaskIntoConstraints="NO" id="o92-8y-1uu">
-                                <rect key="frame" x="165" y="29" width="45" height="35"/>
+                                <rect key="frame" x="184.5" y="53" width="45" height="35"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
@@ -213,54 +210,52 @@
                                     <constraint firstAttribute="height" constant="35" id="ii8-C7-Mmw"/>
                                 </constraints>
                             </imageView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="izl-di-b30">
-                                <rect key="frame" x="283" y="30" width="84" height="33"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="izl-di-b30">
+                                <rect key="frame" x="322" y="54" width="84" height="33"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
-                                <state key="normal" title="Add Music">
-                                    <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                </state>
+                                <state key="normal" title="Add Music"/>
                                 <connections>
                                     <action selector="addMusicButtonPressed:" destination="KaY-s5-P31" eventType="touchUpInside" id="GOA-oT-qLH"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Broadcasting" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zZx-fo-65J">
-                                <rect key="frame" x="135.5" y="72" width="104" height="21"/>
+                                <rect key="frame" x="155" y="96" width="104" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="to 0 people" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8ah-uM-Unt">
-                                <rect key="frame" x="152.5" y="96" width="69" height="16"/>
+                                <rect key="frame" x="172.5" y="120" width="69" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All you Need is Love" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qAx-CR-jLm">
-                                <rect key="frame" x="-0.5" y="445.5" width="375" height="21"/>
+                                <rect key="frame" x="0.0" y="500.5" width="414" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Beatles" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="P6f-zW-cP4">
-                                <rect key="frame" x="-0.5" y="470" width="375" height="16"/>
+                                <rect key="frame" x="0.0" y="525" width="414" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Default Music" translatesAutoresizingMaskIntoConstraints="NO" id="GcT-0I-lbs">
-                                <rect key="frame" x="37" y="137" width="300" height="300"/>
+                                <rect key="frame" x="41.5" y="161" width="331" height="331"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES" updatesFrequently="YES"/>
                                     <bool key="isElement" value="YES"/>
@@ -270,7 +265,7 @@
                                 </constraints>
                             </imageView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nfS-e8-Kyw">
-                                <rect key="frame" x="172" y="525.5" width="31" height="37"/>
+                                <rect key="frame" x="191.5" y="581" width="31" height="37"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="37" id="C5V-oC-7hL"/>
                                     <constraint firstAttribute="width" constant="31" id="SmX-xu-aVy"/>
@@ -281,14 +276,14 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Ec-PS-iA3">
-                                <rect key="frame" x="229" y="533.5" width="34" height="22"/>
+                                <rect key="frame" x="248.5" y="588.5" width="34" height="22"/>
                                 <state key="normal" image="Skip"/>
                                 <connections>
                                     <action selector="forwardPlaybackButtonPressed:" destination="KaY-s5-P31" eventType="touchUpInside" id="Bmd-ex-UGF"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ajw-gP-QEO">
-                                <rect key="frame" x="112" y="533.5" width="34" height="22"/>
+                                <rect key="frame" x="131.5" y="588.5" width="34" height="22"/>
                                 <state key="normal" image="Rewind"/>
                                 <connections>
                                     <action selector="backwardPlaybackButtonPressed:" destination="KaY-s5-P31" eventType="touchUpInside" id="HQj-pq-kKX"/>
@@ -302,6 +297,8 @@
                             <constraint firstItem="o92-8y-1uu" firstAttribute="centerX" secondItem="4jX-tU-ymn" secondAttribute="centerX" id="CME-up-9Yp"/>
                             <constraint firstItem="8Ec-PS-iA3" firstAttribute="centerY" secondItem="nfS-e8-Kyw" secondAttribute="centerY" id="DIP-zK-9ew"/>
                             <constraint firstItem="P6f-zW-cP4" firstAttribute="width" secondItem="4jX-tU-ymn" secondAttribute="width" id="EUe-zJ-8o8"/>
+                            <constraint firstItem="izl-di-b30" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="o92-8y-1uu" secondAttribute="trailing" id="GGL-Tu-UVe"/>
+                            <constraint firstItem="o92-8y-1uu" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Kc6-aV-4Tx" secondAttribute="trailing" id="IOM-4S-74e"/>
                             <constraint firstItem="qAx-CR-jLm" firstAttribute="top" secondItem="GcT-0I-lbs" secondAttribute="bottom" constant="8.5" id="NGR-Nt-1Rm"/>
                             <constraint firstItem="izl-di-b30" firstAttribute="centerY" secondItem="Kc6-aV-4Tx" secondAttribute="centerY" id="SQK-2T-cCj"/>
                             <constraint firstItem="P6f-zW-cP4" firstAttribute="top" secondItem="qAx-CR-jLm" secondAttribute="bottom" constant="3.5" id="VY7-kc-PN5"/>
@@ -347,9 +344,11 @@
                 <navigationController navigationBarHidden="YES" id="MUv-nj-NYK" sceneMemberID="viewController">
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="cdP-uV-jcS">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
+                    <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="px9-hX-qCA">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </toolbar>
                     <connections>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="LoJ-7z-8u2"/>
                     </connections>
@@ -367,11 +366,11 @@
                         <viewControllerLayoutGuide type="bottom" id="zdg-9l-6YV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="cjC-TW-QU2">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LeP-D5-cyf">
-                                <rect key="frame" x="16" y="30" width="54" height="21"/>
+                                <rect key="frame" x="16" y="54" width="54" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES" causesPageTurn="YES"/>
                                 </accessibility>
@@ -385,25 +384,25 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Waiting..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3mP-Dj-2ZC">
-                                <rect key="frame" x="127.5" y="50" width="120" height="36"/>
+                                <rect key="frame" x="150" y="86" width="114.5" height="36"/>
                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Others can invite you to play music through your device by choosing &quot;Broadcast.&quot;" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="302" translatesAutoresizingMaskIntoConstraints="NO" id="KA6-NS-WM5">
-                                <rect key="frame" x="36.5" y="88.5" width="301" height="36"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <color key="textColor" red="0.20392156862745098" green="0.21568627450980393" blue="0.27843137254901962" alpha="1" colorSpace="calibratedRGB"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Others can invite you to play music through your device by choosing &quot;Broadcast.&quot;" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KA6-NS-WM5">
+                                <rect key="frame" x="26" y="124.5" width="362" height="36"/>
+                                <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Ping" translatesAutoresizingMaskIntoConstraints="NO" id="JZO-Cs-L03">
-                                <rect key="frame" x="38" y="183.5" width="300" height="300"/>
+                                <rect key="frame" x="41.5" y="282.5" width="331" height="331"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="JZO-Cs-L03" secondAttribute="height" multiplier="1:1" id="3jT-ae-QFa"/>
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="3mP-Dj-2ZC" firstAttribute="centerX" secondItem="cjC-TW-QU2" secondAttribute="centerX" id="5LD-35-SyG"/>
                             <constraint firstItem="JZO-Cs-L03" firstAttribute="centerY" secondItem="cjC-TW-QU2" secondAttribute="centerY" id="7rN-uL-cBQ"/>
@@ -412,6 +411,8 @@
                             <constraint firstItem="JZO-Cs-L03" firstAttribute="width" secondItem="cjC-TW-QU2" secondAttribute="width" multiplier="0.8" id="O1L-MT-uiY"/>
                             <constraint firstItem="3mP-Dj-2ZC" firstAttribute="top" secondItem="1aF-9H-x8H" secondAttribute="bottom" multiplier="1.5" constant="20" id="O41-fr-cth"/>
                             <constraint firstItem="LeP-D5-cyf" firstAttribute="top" secondItem="1aF-9H-x8H" secondAttribute="bottom" constant="10" id="Xqn-lk-gdL"/>
+                            <constraint firstItem="KA6-NS-WM5" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="cjC-TW-QU2" secondAttribute="leading" constant="20" id="eEV-fR-UsM"/>
+                            <constraint firstItem="3mP-Dj-2ZC" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="LeP-D5-cyf" secondAttribute="trailing" id="mH5-vl-hEf"/>
                             <constraint firstItem="JZO-Cs-L03" firstAttribute="centerX" secondItem="cjC-TW-QU2" secondAttribute="centerX" id="pCE-oJ-N0T"/>
                             <constraint firstItem="KA6-NS-WM5" firstAttribute="top" secondItem="3mP-Dj-2ZC" secondAttribute="bottom" constant="2.5" id="tmB-xe-Hbi"/>
                         </constraints>
@@ -435,11 +436,11 @@
                         <viewControllerLayoutGuide type="bottom" id="tCf-Jl-hao"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="6bE-pi-3pn">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zTJ-TX-v3k">
-                                <rect key="frame" x="16" y="30" width="54" height="21"/>
+                                <rect key="frame" x="16" y="54" width="54" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" button="YES" causesPageTurn="YES"/>
                                 </accessibility>
@@ -452,7 +453,7 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Receive" translatesAutoresizingMaskIntoConstraints="NO" id="dc4-46-Use">
-                                <rect key="frame" x="165" y="23" width="45" height="35"/>
+                                <rect key="frame" x="184.5" y="47" width="45" height="35"/>
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES"/>
@@ -464,43 +465,43 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Receiving" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6ob-xk-x5o">
-                                <rect key="frame" x="149.5" y="66" width="76.5" height="21"/>
+                                <rect key="frame" x="169" y="90" width="76" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="from &quot;John's iPhone&quot;" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YDO-h5-BmL">
-                                <rect key="frame" x="124.5" y="90" width="126" height="16"/>
+                                <rect key="frame" x="143.5" y="114" width="127.5" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="All you Need is Love" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Sa-y7-9ml">
-                                <rect key="frame" x="-0.5" y="439.5" width="375" height="21"/>
+                                <rect key="frame" x="0.0" y="494.5" width="414" height="21"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The Beatles" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jz7-Ba-ERd">
-                                <rect key="frame" x="-1" y="463.5" width="375" height="16"/>
+                                <rect key="frame" x="0.0" y="518.5" width="414" height="16"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" staticText="YES" notEnabled="YES" updatesFrequently="YES"/>
                                 </accessibility>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Default Music" translatesAutoresizingMaskIntoConstraints="NO" id="NUS-4Z-Md5">
-                                <rect key="frame" x="37" y="131" width="300" height="300"/>
+                                <rect key="frame" x="41.5" y="155" width="331" height="331"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <accessibilityTraits key="traits" image="YES" notEnabled="YES" updatesFrequently="YES"/>
                                     <bool key="isElement" value="YES"/>
@@ -518,6 +519,7 @@
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="top" secondItem="YDO-h5-BmL" secondAttribute="bottom" constant="25" id="9hm-mj-rye"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" multiplier="0.8" id="Atr-5k-CrB"/>
                             <constraint firstItem="NUS-4Z-Md5" firstAttribute="centerX" secondItem="6bE-pi-3pn" secondAttribute="centerX" id="DYG-SE-rcq"/>
+                            <constraint firstItem="dc4-46-Use" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zTJ-TX-v3k" secondAttribute="trailing" id="KJo-7u-rmY"/>
                             <constraint firstItem="7Sa-y7-9ml" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" id="Noh-A6-8UF"/>
                             <constraint firstItem="dc4-46-Use" firstAttribute="centerY" secondItem="zTJ-TX-v3k" secondAttribute="centerY" id="PGX-6W-A2b"/>
                             <constraint firstItem="jz7-Ba-ERd" firstAttribute="width" secondItem="6bE-pi-3pn" secondAttribute="width" id="ZX4-eH-3lK"/>
@@ -544,6 +546,7 @@
             <point key="canvasLocation" x="2609" y="436"/>
         </scene>
     </scenes>
+    <color key="tintColor" red="1" green="0.80392156862745101" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
     <resources>
         <image name="Backward Disclosure" width="10" height="16"/>
         <image name="Broadcast" width="29" height="22"/>
@@ -556,6 +559,8 @@
         <image name="Small Broadcast" width="48" height="48"/>
         <image name="Small Receive" width="48" height="48"/>
         <image name="Yellow Backward Disclosure" width="10" height="16"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
-    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>
