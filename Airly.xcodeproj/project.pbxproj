@@ -13,6 +13,7 @@
 		FB2F4A871EF25CBA00C9D835 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A851EF25CBA00C9D835 /* Main.storyboard */; };
 		FB2F4A891EF25CBA00C9D835 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A881EF25CBA00C9D835 /* Assets.xcassets */; };
 		FB2F4A8C1EF25CBA00C9D835 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A8A1EF25CBA00C9D835 /* LaunchScreen.storyboard */; };
+		FB40594026B9E64F005D60A7 /* SpotifyiOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB71F3FC26B9675B00574301 /* SpotifyiOS.framework */; };
 		FB71F3FE26B975B500574301 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB59D9111EFB986200972E2E /* StoreKit.framework */; };
 		FB77BC671EF2BCD6001362F8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC661EF2BCD6001362F8 /* AVFoundation.framework */; };
 		FB77BC691EF2BCE0001362F8 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB77BC681EF2BCE0001362F8 /* UIKit.framework */; };
@@ -88,6 +89,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FBB15AF21F11A1C9009D3C48 /* Accelerate.framework in Frameworks */,
+				FB40594026B9E64F005D60A7 /* SpotifyiOS.framework in Frameworks */,
 				FBB15AF01F11A1BF009D3C48 /* SystemConfiguration.framework in Frameworks */,
 				FB71F3FE26B975B500574301 /* StoreKit.framework in Frameworks */,
 				FBB15AEE1F11A1B5009D3C48 /* CFNetwork.framework in Frameworks */,

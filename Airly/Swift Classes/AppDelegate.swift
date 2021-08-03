@@ -10,13 +10,37 @@ import UIKit
 import StoreKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    
-    var window: UIWindow?
-    
+class AppDelegate: UIResponder, UIApplicationDelegate, SPTAppRemoteDelegate, SPTAppRemotePlayerStateDelegate {
+        
     public static let AppDelegateDidBecomeActive = NSNotification.Name(rawValue: "AppDelegateBecameActive");
     public static let AppDelegateDidBackground = NSNotification.Name(rawValue: "AppDelegateBackgrounded");
     
+    private let SpotifyClientID = "9e006a8cd8b943a28a7539c5a631f05e"
+    private let SpotifyRedirectURI = URL(string: "airly://spotify-login-callback")!
+    
+    var window: UIWindow?
+    
+    public var access_token = ""
+    
+    lazy var configuration: SPTConfiguration = {
+        let configuration = SPTConfiguration(clientID: SpotifyClientID, redirectURL: SpotifyRedirectURI)
+        // Set the playURI to a non-nil value so that Spotify plays music after authenticating and App Remote can connect
+        // otherwise another app switch will be required
+        configuration.playURI = ""
+
+        // Set these url's to your backend which contains the secret to exchange for an access token
+        // You can use the provided ruby script spotify_token_swap.rb for testing purposes
+        configuration.tokenSwapURL = URL(string: "https://gkanaan.com:90/swap")
+        configuration.tokenRefreshURL = URL(string: "https://gkanaan.com:90/refresh")
+        return configuration
+    }()
+    
+    lazy var appRemote: SPTAppRemote = {
+        let appRemote = SPTAppRemote(configuration: configuration, logLevel: .debug)
+        appRemote.delegate = self
+        return appRemote
+    }()
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         // Ask review after 2 usages
@@ -37,10 +61,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        let parameters = appRemote.authorizationParameters(from: url)
+        if let access_token = parameters?[SPTAppRemoteAccessTokenKey] {
+            appRemote.connectionParameters.accessToken = access_token
+            self.access_token = access_token
+        } else if let error_description = parameters?[SPTAppRemoteErrorDescriptionKey] {
+            print(error_description)
+        }
+        
+        return true
+    }
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
         NotificationCenter.default.post(name: AppDelegate.AppDelegateDidBackground, object: self);
+        
+        // Give up spotify connection
+        if (self.appRemote.isConnected) {
+            self.appRemote.disconnect()
+        }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -57,10 +98,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
         NotificationCenter.default.post(name: AppDelegate.AppDelegateDidBecomeActive, object: self);
+        
+        // Connect spotify
+        if let _ = self.appRemote.connectionParameters.accessToken {
+            self.appRemote.connect()
+        }
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+//MARK: - STAppRemoteDelegate
+    func appRemoteDidEstablishConnection(_ appRemote: SPTAppRemote) {
+        print("connected")
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didDisconnectWithError error: Error?) {
+        print("disconnected with error")
+        print(error as Any)
+    }
+
+    func appRemote(_ appRemote: SPTAppRemote, didFailConnectionAttemptWithError error: Error?) {
+        print("failed to connect with error")
+        print(error as Any)
+    }
+
+// MARK: - SPTAppRemotePlayerAPIDelegate
+
+    func playerStateDidChange(_ playerState: SPTAppRemotePlayerState) {
+        print("player state changed")
     }
     
 }

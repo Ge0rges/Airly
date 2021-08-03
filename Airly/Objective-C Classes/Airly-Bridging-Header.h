@@ -13,3 +13,6 @@
 #import "Packet.h"
 #import "SLColorArt.h"
 #import "Bass.h"
+
+#import <SpotifyiOS/SpotifyiOS.h>
+

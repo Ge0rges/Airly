@@ -22,20 +22,25 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     @IBOutlet var playbackButton: UIButton!
     @IBOutlet var forwardPlaybackButton: UIButton!
     
-    let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark));
-    let blurImageView:UIImageView! = UIImageView.init();
-    let playerManager:PlayerManager! = PlayerManager.sharedManager;
-    let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
-    let syncManager: HostSyncManager! = HostSyncManager.sharedManager;
-    var mediaPicker: MPMediaPickerController? = nil;
-    var timeAtInterruption: UInt64 = 0;
-    var playbackPositionAtInterruption: TimeInterval = 0;
-    var shouldResumePlayAfterInterruption: Bool = false;
+    private let blurEffectView:UIVisualEffectView! = UIVisualEffectView(effect: UIBlurEffect(style: UIBlurEffect.Style.dark));
+    private let blurImageView:UIImageView! = UIImageView.init();
+    private let playerManager:PlayerManager! = PlayerManager.sharedManager;
+    private let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
+    private let syncManager: HostSyncManager! = HostSyncManager.sharedManager;
+
+    private var mediaPicker: MPMediaPickerController? = nil;
+    private var timeAtInterruption: UInt64 = 0;
+    private var playbackPositionAtInterruption: TimeInterval = 0;
+    private var shouldResumePlayAfterInterruption: Bool = false;
     
+
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    private let appRemote = (UIApplication.shared.delegate as! AppDelegate).appRemote
     
     //MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad();
+                
         // Set the sync manager
         self.syncManager.broadcastViewController = self;
         
@@ -114,24 +119,46 @@ class BroadcastViewController: UIViewController, MPMediaPickerControllerDelegate
     }
     
     @IBAction func addMusicButtonPressed(_ sender: Any?) {
-        if !UIApplication.shared.canOpenURL(URL(string: "music://")!) {
-            let dialogMessage = UIAlertController(title: "Music not Installed", message: "Airly requires the Apple Music app to be installed on this device. Airly retrieves your songs from the Apple Music app's library. At this timen other music service is supported.", preferredStyle: .alert)
-            
-            dialogMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            
-            // Present alert to user
-            self.present(dialogMessage, animated: true, completion: nil)
-            
-            return
-        }
+        // Ask whether we'll be using Spotify or Apple Music
+        let musicSourceController = UIAlertController(title: "Apple Music or Spotify?", message: "From which service would you like to source your music? Please note that if spotify is selected, all listeners must have a valid spotify account.", preferredStyle: .alert)
         
-        // Request authentication to music library
-        MPMediaLibrary.requestAuthorization { (authorizationStatus) in
-            DispatchQueue.main.async {// Main Queue
-                // Present Media Picker
-                self.present(self.mediaPicker!, animated: true, completion: nil);
+        // Apple Music
+        let appleMusicAction = UIAlertAction(title: "Apple Music", style: UIAlertAction.Style.default) {_ in
+            
+            // Check that the music app is installed
+            if !UIApplication.shared.canOpenURL(URL(string: "music://")!) {
+                let dialogMessage = UIAlertController(title: "Music not Installed", message: "Airly requires the Apple Music app to be installed on this device. Airly retrieves your songs from the Apple Music app's library. At this timen other music service is supported.", preferredStyle: .alert)
+                
+                let okAction = UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil)
+                dialogMessage.addAction(okAction)
+                
+                // Present alert to user
+                self.present(dialogMessage, animated: true, completion: nil)
+                
+                return
+            }
+            
+            // Request authentication to music library
+            MPMediaLibrary.requestAuthorization { (authorizationStatus) in
+                DispatchQueue.main.async {// Main Queue
+                    // Present Media Picker
+                    self.present(self.mediaPicker!, animated: true, completion: nil);
+                }
             }
         }
+        
+        // Spotify
+        let spotifyAction = UIAlertAction(title: "Spotify", style: UIAlertAction.Style.cancel) {UIAlertAction in
+            self.appRemote.authorizeAndPlayURI("")
+        }
+        
+        // Add the actions
+        musicSourceController.addAction(appleMusicAction)
+        musicSourceController.addAction(spotifyAction)
+        
+        // Present the controller
+        self.present(musicSourceController, animated: true, completion: nil)
+        
     }
     
     //MARK: Playback Controls
