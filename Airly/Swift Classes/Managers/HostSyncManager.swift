@@ -12,136 +12,151 @@ import AVFoundation
 
 class HostSyncManager: NSObject, ConnectivityManagerDelegate {
     
-    let playerManager:PlayerManager! = PlayerManager.sharedManager;
-    let connectivityManager:ConnectivityManager! = ConnectivityManager.shared();
-    let synaction:Synaction! = Synaction.sharedManager();
-    public var broadcastViewController: BroadcastViewController?;
+    let connectivityManager:ConnectivityManager! = ConnectivityManager.shared()
+    let synaction:Synaction! = Synaction.sharedManager()
+    public var broadcastViewController: BroadcastViewController?
+    private var playerManager: PlayerManager?
     
-    static let sharedManager = HostSyncManager();
+    static let sharedManager = HostSyncManager()
     override private init() {//This prevents others from using the default '()' initializer for this class
-        super.init();
+        super.init()
+        
+        // Get playerManager from BroadcastVC later
+        self.playerManager = nil
         
         // Set ourselves as the delegate
-        self.synaction.connectivityManager.delegate = self;
+        self.synaction.connectivityManager.delegate = self
         
         // Register for notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(self.sendCurrentSong(notification:)), name: PlayerManager.PlayerSongChangedNotificationName, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlayCommand(notification:)), name: PlayerManager.PlayerPlayedNotificationName, object: nil);
-        NotificationCenter.default.addObserver(self, selector: #selector(self.sendPauseCommand(calibrate:)), name: PlayerManager.PlayerPausedNotificationName, object: nil);
+        NotificationCenter.default.addObserver(self, selector: #selector(self.sendCurrentSong(notification:)), name: PlayerSongChangedNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.sendPlayCommand(notification:)), name: PlayerPlayedNotificationName, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.sendPauseCommand(calibrate:)), name: PlayerPausedNotificationName, object: nil)
     }
     
-    @objc public func sendPlayCommand(notification: Notification?) -> UInt64 {
-        print("Sending play command.");
+    @objc public func sendPlayCommand(notification: Notification?) {
         
-        if self.playerManager.currentSong == nil {
-            print("Canceled send play, current song was nil: %@", self.playerManager.currentSong as Any);
-            return 0;
+        print("Sending play command.")
+        
+        self.playerManager = self.broadcastViewController!.playerManager!
+        
+        self.playerManager!.currentSong { songItem in
+            if songItem == nil {
+                print("Canceled send play, current song was nil: %@", self.playerManager!.currentSong as Any)
+                
+            } else {
+                let deviceTimeAtPlaybackTime: UInt64 = self.synaction.currentTime()
+                let timeToExecute: UInt64 = deviceTimeAtPlaybackTime + 1000000000
+                
+                self.playerManager!.currentPlaybackTime { playbackTime in
+                    self.playerManager!.isPlaying { isPlaying in
+                        let dictionaryPayload = ["command": "play",
+                                                 "timeToExecute": timeToExecute,
+                                                 "playbackTime": playbackTime,
+                                                 "continuousPlay": isPlaying,
+                                                 "timeAtPlaybackTime": deviceTimeAtPlaybackTime,
+                                                 "song": songItem!.title!,
+                                                 "isSpotify": self.playerManager!.isSpotify
+                        ] as [String : Any]
+                        
+                        let payloadData = try! NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload, requiringSecureCoding: false)
+                        let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay)
+                        self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket])
+                    }
+                }
+            }
         }
-        
-        let deviceTimeAtPlaybackTime: UInt64 = self.synaction.currentTime();
-        let timeToExecute: UInt64 = deviceTimeAtPlaybackTime + 1000000000;
-        
-        let dictionaryPayload = ["command": "play",
-                                 "timeToExecute": timeToExecute,
-                                 "playbackTime": self.playerManager.currentPlaybackTime,
-                                 "continuousPlay": self.playerManager.isPlaying,
-                                 "timeAtPlaybackTime": deviceTimeAtPlaybackTime,
-                                 "song": (self.playerManager.currentSongMetadata?["title"] ?? "Unknown Song Name")!
-        ] as [String : Any];
-        
-        let payloadData = try! NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload, requiringSecureCoding: false)
-        let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
-        self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-        
-        return timeToExecute;
     }
     
-    @objc public func sendPauseCommand(calibrate: Bool) -> UInt64 {
-        print("Sending pause command.");
+    @objc public func sendPauseCommand(calibrate: Bool)  {
+        print("Sending pause command.")
         
-        let timeToExecute = self.synaction.currentTime();
+        self.playerManager = self.broadcastViewController!.playerManager!
         
-        let dictionaryPayload = ["command": "pause",
-                                 "timeToExecute": timeToExecute,
-                                 "song": (self.playerManager.currentSongMetadata?["title"] ?? "Uknown Title")!
-        ] as [String : Any];
+        let timeToExecute = self.synaction.currentTime()
         
-        let payloadData = try! NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload, requiringSecureCoding: false);
-        let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay);
-        self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-        
-        if (calibrate) {
-            print("Asking peers to calibrate after pause");
-            self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
+        self.playerManager!.currentSong { songItem in
+            let dictionaryPayload = ["command": "pause",
+                                     "timeToExecute": timeToExecute,
+                                     "song": songItem!.title!,
+                                     "isSpotify": self.playerManager!.isSpotify
+            ] as [String : Any]
+            
+            let payloadData = try! NSKeyedArchiver.archivedData(withRootObject: dictionaryPayload, requiringSecureCoding: false)
+            let packet: Packet = Packet.init(data: payloadData, type: PacketTypeControl, action: PacketActionPlay)
+            self.synaction.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket])
+            
+            if (calibrate) {
+                print("Asking peers to calibrate after pause")
+                self.synaction.askPeers(toCalculateOffset: self.connectivityManager.allSockets as! [GCDAsyncSocket])
+            }
         }
-        
-        return timeToExecute;
     }
     
     @objc public func sendCurrentSong(notification: Notification?) {
-        print("sendCurrentSong called on thread: \(Thread.current)");
+        print("sendCurrentSong called on thread: \(Thread.current)")
+        
+        self.playerManager = self.broadcastViewController!.playerManager!
         
         // Pause command
-        let _ = self.sendPauseCommand(calibrate: false);
+        self.sendPauseCommand(calibrate: false)
         
         // Send the file
-        do {
-            let fileData = try Data.init(contentsOf: self.playerManager.currentSongFilePath!);
+        self.playerManager!.currentSong { songItem in
             
-            var metadataA: [String: Any?]? = self.playerManager.currentSongMetadata;
-            if let _ = metadataA {// Check that metadata is not nil
-                if let artwork = metadataA?["artwork"] as? MPMediaItemArtwork {// Check that atwork is not nil & exists
-                    let imageSize: CGSize = (self.broadcastViewController == nil) ? CGSize(width: 1024, height: 1024) : self.broadcastViewController!.albumArtImageView.frame.size;
-                    metadataA?["artwork"] = artwork.image(at: imageSize);
-                    
-                }
-            }
+            let fileData = try? Data.init(contentsOf: URL(string: songItem!.path!)!)
             
-            print("Building current song packet with song data: \(fileData)");
+            print("Building current song packet with song data: \(String(describing: fileData))")
+            // TODO
+//            var songItemNoAV = SongItem()
+//            songItemNoAV.title = songItem?.title
+//            songItemNoAV.artist = songItem?.artist
+//            songItemNoAV.image = songItem?.image
+//            songItemNoAV.avItem = nil // Can't encode AVAsset
             
-            let payloadDict: [String : Any] = ["command": "load", "file": fileData, "metadata": (metadataA ?? ["empty": true])]  as [String : Any];
-            let packet: Packet = try! Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict, requiringSecureCoding: false), type: PacketTypeFile, action: PacketActionUnknown);
+            let payloadDict: [String : Any] = ["command": "load", "file": fileData ?? NSData(), "songItem": songItem!]  as [String : Any]
+            let packet: Packet = try! Packet.init(data: NSKeyedArchiver.archivedData(withRootObject: payloadDict, requiringSecureCoding: false), type: PacketTypeFile, action: PacketActionUnknown)
             
             self.synaction.executeBlock(whenAllPeersCalibrate: self.connectivityManager.allSockets as! [GCDAsyncSocket], block: { (sockets) in
-                print("Sending current song: \(payloadDict)");
-                self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket]);
-            });
-            
-        } catch {
-            print("failed to get data of file on host \(error)");
+                print("Sending current song: \(payloadDict)")
+                self.connectivityManager.send(packet, to: self.connectivityManager.allSockets as! [GCDAsyncSocket])
+            })
         }
     }
     
     func socket(_ socket: GCDAsyncSocket, didAcceptNewSocket newSocket: GCDAsyncSocket) {
         // Update UI
-        self.broadcastViewController!.numberOfClientsLabel.text = (self.connectivityManager.allSockets.count == 1) ? "to 1 person" : "to \(self.connectivityManager.allSockets.count) people";
+        self.broadcastViewController!.numberOfClientsLabel.text = (self.connectivityManager.allSockets.count == 1) ? "to 1 person" : "to \(self.connectivityManager.allSockets.count) people"
         
-        print("Socket connected, asking to calibrate");
-        self.synaction.askPeers(toCalculateOffset: [newSocket] );
+        print("Socket connected, asking to calibrate")
+        self.synaction.askPeers(toCalculateOffset: [newSocket] )
     }
     
     func socketDidDisconnect(_ socket: GCDAsyncSocket, withError error: Error) {
         // Update UI
-        self.broadcastViewController!.numberOfClientsLabel.text = "to \(self.connectivityManager.allSockets.count) people";
+        self.broadcastViewController!.numberOfClientsLabel.text = "to \(self.connectivityManager.allSockets.count) people"
     }
     
     func didReceive(_ packet: Packet, from socket: GCDAsyncSocket) {
-        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data!) as! Dictionary;
-        let command: String! = payloadDict["command"] as? String;
+        let payloadDict: Dictionary<String,Any?> = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(packet.data!) as! Dictionary
+        let command: String! = payloadDict["command"] as? String
         
         if (command == "status") {// Send our current status to this peer
-            print("A peer requested host status. Sending.");
+            print("A peer requested host status. Sending.")
             
-            if self.playerManager.isPlaying {
-                let _ = self.sendPlayCommand(notification: nil);
-                
-            } else {
-                let _ = self.sendPauseCommand(calibrate: false);
+            self.playerManager = self.broadcastViewController!.playerManager!
+            
+            self.playerManager!.isPlaying { isPlaying in
+                if isPlaying {
+                    self.sendPlayCommand(notification: nil)
+                    
+                } else {
+                    self.sendPauseCommand(calibrate: false)
+                }
             }
             
         } else if (command == "getSong") {
-            print("A peer requested the song. Sending.");
-            self.sendCurrentSong(notification: nil);// It will handle sending player state
+            print("A peer requested the song. Sending.")
+            self.sendCurrentSong(notification: nil)// It will handle sending player state
         }
     }
 }

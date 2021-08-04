@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5F150DA7FD6DE8D528FEF21D /* Pods_Airly.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B50A7FAF7A127F24894AB42 /* Pods_Airly.framework */; };
+		FB08430F26BA9FEC0072B839 /* SpotifyPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB08430E26BA9FEC0072B839 /* SpotifyPlayerManager.swift */; };
+		FB08431126BAA11D0072B839 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB08431026BAA11D0072B839 /* PlayerManager.swift */; };
 		FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */; };
 		FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2F4A831EF25CBA00C9D835 /* ViewController.swift */; };
 		FB2F4A871EF25CBA00C9D835 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FB2F4A851EF25CBA00C9D835 /* Main.storyboard */; };
@@ -34,13 +36,15 @@
 		FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */; };
 		FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */; };
 		FBFB895F1EF2879A00F7F445 /* WaitingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */; };
-		FBFB89961EF2AC0300F7F445 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */; };
+		FBFB89961EF2AC0300F7F445 /* ApplePlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBFB89951EF2AC0300F7F445 /* ApplePlayerManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		6B50A7FAF7A127F24894AB42 /* Pods_Airly.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Airly.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1CA24D835EB4CE3925D9EF3 /* Pods-Airly.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Airly.release.xcconfig"; path = "Pods/Target Support Files/Pods-Airly/Pods-Airly.release.xcconfig"; sourceTree = "<group>"; };
 		DEEE16FEBFFE7ABA2B64DFEE /* Pods-Airly.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Airly.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Airly/Pods-Airly.debug.xcconfig"; sourceTree = "<group>"; };
+		FB08430E26BA9FEC0072B839 /* SpotifyPlayerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpotifyPlayerManager.swift; sourceTree = "<group>"; };
+		FB08431026BAA11D0072B839 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
 		FB0A77481EF2D51700FE1B77 /* Airly.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Airly.entitlements; sourceTree = "<group>"; };
 		FB2F4A7E1EF25CBA00C9D835 /* Airly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Airly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB2F4A811EF25CBA00C9D835 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -80,7 +84,7 @@
 		FBFB895A1EF2764700F7F445 /* BroadcastViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastViewController.swift; sourceTree = "<group>"; };
 		FBFB895C1EF2829B00F7F445 /* ReceiverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiverViewController.swift; sourceTree = "<group>"; };
 		FBFB895E1EF2879A00F7F445 /* WaitingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaitingViewController.swift; sourceTree = "<group>"; };
-		FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
+		FBFB89951EF2AC0300F7F445 /* ApplePlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePlayerManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,8 +257,10 @@
 		FBFB89971EF2AC0700F7F445 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
+				FB08431026BAA11D0072B839 /* PlayerManager.swift */,
+				FB08430E26BA9FEC0072B839 /* SpotifyPlayerManager.swift */,
+				FBFB89951EF2AC0300F7F445 /* ApplePlayerManager.swift */,
 				FBE3CD451EFBAE1500D6C980 /* HostSyncManager.swift */,
-				FBFB89951EF2AC0300F7F445 /* PlayerManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -391,14 +397,16 @@
 				FB2F4A841EF25CBA00C9D835 /* ViewController.swift in Sources */,
 				FB2F4A821EF25CBA00C9D835 /* AppDelegate.swift in Sources */,
 				FB8831A91EF2CCCA00E2A30E /* ConnectivityManager.m in Sources */,
+				FB08431126BAA11D0072B839 /* PlayerManager.swift in Sources */,
 				FB8831AB1EF2CCCA00E2A30E /* Packet.m in Sources */,
 				FB8831AC1EF2CCCA00E2A30E /* SLColorArt.m in Sources */,
 				FBFB895D1EF2829B00F7F445 /* ReceiverViewController.swift in Sources */,
-				FBFB89961EF2AC0300F7F445 /* PlayerManager.swift in Sources */,
+				FBFB89961EF2AC0300F7F445 /* ApplePlayerManager.swift in Sources */,
 				FB8831AF1EF2CCCA00E2A30E /* Synaction.m in Sources */,
 				FB8831AD1EF2CCCA00E2A30E /* UIImage+ColorArt.m in Sources */,
 				FB8831AE1EF2CCCA00E2A30E /* UIImage+Scale.m in Sources */,
 				FBFB895B1EF2764700F7F445 /* BroadcastViewController.swift in Sources */,
+				FB08430F26BA9FEC0072B839 /* SpotifyPlayerManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
